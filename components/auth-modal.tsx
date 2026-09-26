@@ -21,6 +21,8 @@ import {
 } from 'lucide-react'
 import { MascotVariant, useWorkfolio } from '@/lib/workfolio-store'
 import { WorkfolioMascot } from './workfolio-mascot'
+import { signInWithGoogleFirebase, signInWithGithubFirebase } from '@/lib/firebase'
+import { saveUserDataToSupabase } from '@/lib/supabase'
 
 interface AuthModalProps {
   onClose: () => void
@@ -29,7 +31,7 @@ interface AuthModalProps {
 
 export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
   const router = useRouter()
-  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider } = useWorkfolio()
+  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider, projects, activityLog } = useWorkfolio()
 
   const [activeTab, setActiveTab] = useState<'profile' | 'auth' | 'apikeys'>(initialTab)
 
@@ -63,32 +65,67 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
     setTimeout(() => onClose(), 600)
   }
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsSyncing(true)
-    connectProvider('google', {
-      first_name: firstName || 'Alex',
-      last_name: lastName || 'Rivera',
-      display_name: displayName || 'Alex Rivera',
-      email: email || 'alex.rivera@workfolio.app',
-      google_connected: true
-    })
-    setTimeout(() => {
+    setSyncStatus('Connecting to Firebase Auth...')
+    try {
+      const session = await signInWithGoogleFirebase()
+      const nameParts = (session.displayName || 'Google User').split(' ')
+      const fName = nameParts[0] || 'User'
+      const lName = nameParts.slice(1).join(' ') || ''
+
+      connectProvider('google', {
+        first_name: fName,
+        last_name: lName,
+        display_name: session.displayName || 'Google User',
+        email: session.email || 'user@google.com',
+        google_connected: true
+      })
+
+      setEmail(session.email || '')
+      if (fName) setFirstName(fName)
+      if (lName) setLastName(lName)
+
+      const syncRes = await saveUserDataToSupabase(
+        { ...userProfile, google_connected: true, email: session.email },
+        projects || [],
+        activityLog || []
+      )
+
+      setSyncStatus(`Firebase Auth Verified (${session.email})! ${syncRes.message}`)
+    } catch (err: any) {
+      setSyncStatus(`Google sign-in cancelled or failed: ${err.message}`)
+    } finally {
       setIsSyncing(false)
-      setSyncStatus('Google OAuth connected! Profile & workspace data synced to LocalStorage & Firebase cache.')
-    }, 500)
+    }
   }
 
-  const handleGithubLogin = () => {
+  const handleGithubLogin = async () => {
     setIsSyncing(true)
-    const ghName = githubUser.trim() || 'alexrivera-dev'
-    connectProvider('github', {
-      github_username: ghName,
-      github_connected: true
-    })
-    setTimeout(() => {
+    setSyncStatus('Connecting to GitHub via Firebase Auth...')
+    try {
+      const session = await signInWithGithubFirebase()
+      const ghName = session.displayName || 'github-user'
+
+      connectProvider('github', {
+        github_username: ghName,
+        github_connected: true
+      })
+
+      setGithubUser(ghName)
+
+      const syncRes = await saveUserDataToSupabase(
+        { ...userProfile, github_connected: true, github_username: ghName },
+        projects || [],
+        activityLog || []
+      )
+
+      setSyncStatus(`GitHub Connected (@${ghName})! ${syncRes.message}`)
+    } catch (err: any) {
+      setSyncStatus(`GitHub sign-in cancelled or failed: ${err.message}`)
+    } finally {
       setIsSyncing(false)
-      setSyncStatus(`GitHub connected (@${ghName})! Engineering activity ledger updated.`)
-    }, 500)
+    }
   }
 
   const handleRedirectToApiSettings = () => {

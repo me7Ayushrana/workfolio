@@ -305,9 +305,9 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   mascot_variant: 'male',
   headline: 'Senior Full Stack & AI Systems Engineer',
   bio: 'Building verifiable proof systems, OCR pipelines, and minimalist workspace tools.',
-  github_username: 'alexrivera-dev',
-  github_connected: true,
-  google_connected: true,
+  github_username: '',
+  github_connected: false,
+  google_connected: false,
   onboarding_completed: true,
   created_at: '2026-08-01',
   updated_at: '2026-09-26'
