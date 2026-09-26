@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   ArrowLeft,
@@ -97,6 +98,7 @@ const INITIAL_MEDIA_ITEMS: DigitalWorkspaceItem[] = [
 ]
 
 export default function OceanDigitalWorkspacePage() {
+  const router = useRouter()
   const { projects, logActivityEntry } = useWorkfolio()
 
   const [mediaItems, setMediaItems] = useState<DigitalWorkspaceItem[]>(INITIAL_MEDIA_ITEMS)
@@ -105,6 +107,18 @@ export default function OceanDigitalWorkspacePage() {
   const [activeMedia, setActiveMedia] = useState<DigitalWorkspaceItem>(INITIAL_MEDIA_ITEMS[0])
   const [isPlaying, setIsPlaying] = useState(true)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // Clicking directly on video pauses playback and redirects to Digital Workspace studio page
+  const handleVideoClick = () => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }),
+        '*'
+      )
+    }
+    setIsPlaying(false)
+    router.push('/digital-workspace')
+  }
 
   const togglePlayPause = () => {
     if (iframeRef.current && iframeRef.current.contentWindow) {
@@ -228,20 +242,33 @@ export default function OceanDigitalWorkspacePage() {
             </span>
           </div>
 
-          <button
-            onClick={() => window.open('/digital-workspace', '_blank')}
-            className="flex items-center gap-2 bg-[#c1a05b] px-5 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#0c1612] hover:bg-[#f3eee4] transition-colors shadow-md cursor-pointer"
-          >
-            <Plus size={14} /> + CREATE DIGITAL WORKSPACE
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-1.5 border border-[#c1a05b]/60 bg-[#12241b] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-colors cursor-pointer"
+            >
+              <Plus size={13} /> Quick Add Stream
+            </button>
+
+            <Link
+              href="/digital-workspace"
+              className="group flex items-center gap-2 bg-gradient-to-r from-[#c1a05b] via-[#f3eee4] to-[#c1a05b] px-6 py-2.5 text-xs font-black uppercase tracking-[.22em] text-[#0c1612] border-2 border-[#c1a05b] shadow-[0_0_25px_rgba(193,160,91,0.6)] hover:shadow-[0_0_35px_rgba(243,238,228,0.9)] hover:scale-105 transition-all duration-300 cursor-pointer rounded-xs"
+              title="Open Interactive Digital Workspace Studio"
+            >
+              <Sparkles size={16} className="text-[#0c1612] animate-pulse" />
+              <span>+ CREATE DIGITAL WORKSPACE</span>
+              <ArrowUpRight size={15} className="text-[#0c1612] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          </div>
         </div>
 
         {/* HERO FEATURED MEDIA PLAYER DISPLAY - CLEAN VIDEO ONLY (NO YOUTUBE BUTTONS) */}
         <div className="border border-[#f3eee4]/20 bg-[#12241b] p-3 md:p-4 shadow-2xl space-y-3">
-          {/* Square/Aspect Video Container */}
+          {/* Square/Aspect Video Container - Clicking Video Pauses & Redirects to Digital Workspace */}
           <div 
-            onClick={togglePlayPause}
+            onClick={handleVideoClick}
             className="relative aspect-video w-full overflow-hidden border border-[#f3eee4]/20 bg-black shadow-lg cursor-pointer group"
+            title="Click to pause video and open full Digital Workspace Studio"
           >
             <iframe
               ref={iframeRef}
@@ -251,6 +278,11 @@ export default function OceanDigitalWorkspacePage() {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
+            {/* Overlay hint banner on hover */}
+            <div className="absolute top-3 right-3 z-10 bg-[#0c1612]/90 text-[#c1a05b] border border-[#c1a05b]/40 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
+              Click Video to Open Digital Workspace Studio →
+            </div>
+
             {/* Click overlay layer with gold play indicator when paused */}
             {!isPlaying && (
               <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all flex items-center justify-center">
