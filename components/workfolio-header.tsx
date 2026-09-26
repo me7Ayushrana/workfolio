@@ -77,12 +77,12 @@ export function WorkfolioHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-[#f3eee4]/15 bg-[#0c1612]/95 text-[#f3eee4] backdrop-blur-md px-5 py-3 md:px-10 transition-colors">
+      <header className="sticky top-0 z-50 w-full border-b border-[#f3eee4]/15 bg-[#08090f]/95 text-[#f3eee4] backdrop-blur-md px-5 py-3 md:px-10 transition-colors">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           
           {/* LOGO & BRAND */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-[#c1a05b]/50 shadow-md transition-transform group-hover:scale-105 shrink-0 bg-[#0c1612]">
+            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-[#c1a05b]/50 shadow-md transition-transform group-hover:scale-105 shrink-0 bg-[#08090f]">
               <Image
                 src="/images/workfolio-logo.jpg"
                 alt="Workfolio Emblem Logo"
@@ -107,8 +107,8 @@ export function WorkfolioHeader() {
               href="/"
               className={`px-3 py-1.5 transition-all ${
                 isActive('/') && pathname === '/'
-                  ? 'bg-[#c1a05b] text-[#0c1612] font-bold'
-                  : 'hover:bg-[#193b2c]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
+                  ? 'bg-[#c1a05b] text-[#08090f] font-bold'
+                  : 'hover:bg-[#0c0d14]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
               }`}
             >
               Dashboard
@@ -118,8 +118,8 @@ export function WorkfolioHeader() {
               href="/learning"
               className={`px-3 py-1.5 transition-all ${
                 isActive('/learning') || isActive('/skills')
-                  ? 'bg-[#c1a05b] text-[#0c1612] font-bold'
-                  : 'hover:bg-[#193b2c]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
+                  ? 'bg-[#c1a05b] text-[#08090f] font-bold'
+                  : 'hover:bg-[#0c0d14]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
               }`}
             >
               Learning & Goals
@@ -129,8 +129,8 @@ export function WorkfolioHeader() {
               href="/projects"
               className={`px-3 py-1.5 transition-all ${
                 isActive('/projects')
-                  ? 'bg-[#c1a05b] text-[#0c1612] font-bold'
-                  : 'hover:bg-[#193b2c]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
+                  ? 'bg-[#c1a05b] text-[#08090f] font-bold'
+                  : 'hover:bg-[#0c0d14]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
               }`}
             >
               Projects
@@ -141,8 +141,8 @@ export function WorkfolioHeader() {
               href="/ocean"
               className={`flex items-center gap-1.5 px-3 py-1.5 border transition-all ${
                 isActive('/ocean') || isActive('/digital-workspace')
-                  ? 'border-[#c1a05b] bg-[#c1a05b] text-[#0c1612] font-bold shadow-sm'
-                  : 'border-[#c1a05b]/40 bg-[#c1a05b]/10 text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612]'
+                  ? 'border-[#c1a05b] bg-[#c1a05b] text-[#08090f] font-bold shadow-sm'
+                  : 'border-[#c1a05b]/40 bg-[#c1a05b]/10 text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f]'
               }`}
             >
               <Waves size={13} className="text-[#c1a05b] animate-pulse" />
@@ -155,8 +155,8 @@ export function WorkfolioHeader() {
                 onClick={() => setProofDropdownOpen(!proofDropdownOpen)}
                 className={`flex items-center gap-1 px-3 py-1.5 transition-all ${
                   isActive('/evidence') || isActive('/capabilities') || isActive('/admin')
-                    ? 'bg-[#c1a05b] text-[#0c1612] font-bold'
-                    : 'hover:bg-[#193b2c]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
+                    ? 'bg-[#c1a05b] text-[#08090f] font-bold'
+                    : 'hover:bg-[#0c0d14]/80 text-[#f3eee4]/80 hover:text-[#f3eee4]'
                 }`}
               >
                 <span>Proof & Vaults</span>
@@ -164,18 +164,18 @@ export function WorkfolioHeader() {
               </button>
 
               {proofDropdownOpen && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-48 border border-[#f3eee4]/20 bg-[#12241b] p-2 shadow-xl">
+                <div className="absolute left-0 top-full z-50 mt-1 w-48 border border-[#f3eee4]/20 bg-[#0c0d14] p-2 shadow-xl">
                   <Link
                     href="/evidence"
                     onClick={() => setProofDropdownOpen(false)}
-                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4] hover:bg-[#193b2c]"
+                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4] hover:bg-[#0c0d14]"
                   >
                     Evidence Vault
                   </Link>
                   <Link
                     href="/capabilities"
                     onClick={() => setProofDropdownOpen(false)}
-                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4] hover:bg-[#193b2c]"
+                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4] hover:bg-[#0c0d14]"
                   >
                     Capabilities
                   </Link>
@@ -183,14 +183,14 @@ export function WorkfolioHeader() {
                   <Link
                     href="/admin"
                     onClick={() => setProofDropdownOpen(false)}
-                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70 hover:bg-[#193b2c]"
+                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70 hover:bg-[#0c0d14]"
                   >
                     Admin Console
                   </Link>
                   <Link
                     href="/settings"
                     onClick={() => setProofDropdownOpen(false)}
-                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#193b2c]"
+                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#0c0d14]"
                   >
                     AI & GitHub Settings
                   </Link>
@@ -205,7 +205,7 @@ export function WorkfolioHeader() {
             {/* ASK WORKFOLIO AI ASSISTANT BUTTON */}
             <button
               onClick={() => setShowAskModal(true)}
-              className="flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer"
               title="Ask Workfolio AI Assistant"
             >
               <Sparkles size={13} />
@@ -215,18 +215,18 @@ export function WorkfolioHeader() {
             {/* GLOBAL SEARCH BUTTON */}
             <button
               onClick={handleOpenCommandPalette}
-              className="hidden items-center gap-2 border border-[#f3eee4]/20 bg-[#12241b] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]/80 hover:border-[#c1a05b] hover:text-[#f3eee4] md:flex"
+              className="hidden items-center gap-2 border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]/80 hover:border-[#c1a05b] hover:text-[#f3eee4] md:flex"
               title="Global Search (⌘K)"
             >
               <Search size={13} />
               <span>Search</span>
-              <kbd className="border border-[#f3eee4]/20 bg-[#0c1612] px-1 py-0.5 text-[8px] text-[#f3eee4]">⌘K</kbd>
+              <kbd className="border border-[#f3eee4]/20 bg-[#08090f] px-1 py-0.5 text-[8px] text-[#f3eee4]">⌘K</kbd>
             </button>
 
             {/* PRIMARY + LOG ACTIVITY BUTTON */}
             <button
               onClick={() => setShowLogModal(true)}
-              className="flex items-center gap-2 bg-[#c1a05b] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#0c1612] font-bold shadow-sm transition-colors hover:bg-[#f3eee4]"
+              className="flex items-center gap-2 bg-[#c1a05b] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#08090f] font-bold shadow-sm transition-colors hover:bg-[#f3eee4]"
             >
               <Plus size={13} /> Log Activity
             </button>
@@ -244,25 +244,25 @@ export function WorkfolioHeader() {
 
         {/* MOBILE DROPDOWN */}
         {mobileMenuOpen && (
-          <div className="mt-3 border-t border-[#193b2c]/15 dark:border-[#f3eee4]/15 pt-3 pb-2 xl:hidden space-y-2 text-xs font-bold uppercase tracking-[.16em]">
+          <div className="mt-3 border-t border-[#0c0d14]/15 dark:border-[#f3eee4]/15 pt-3 pb-2 xl:hidden space-y-2 text-xs font-bold uppercase tracking-[.16em]">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Dashboard
             </Link>
             <Link
               href="/learning"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Learning & Goals
             </Link>
             <Link
               href="/projects"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Projects
             </Link>
@@ -276,21 +276,21 @@ export function WorkfolioHeader() {
             <Link
               href="/evidence"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Evidence Vault
             </Link>
             <Link
               href="/capabilities"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Capabilities
             </Link>
             <Link
               href="/admin"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-[#193b2c] dark:text-[#f3eee4]"
+              className="block py-1.5 text-[#111318] dark:text-[#f3eee4]"
             >
               Admin Console
             </Link>

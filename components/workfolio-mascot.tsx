@@ -207,7 +207,7 @@ export function WorkfolioMascot({
       ctx.arc(0, 46, 3.5, 0, Math.PI * 2)
       ctx.arc(0, 59, 3.5, 0, Math.PI * 2)
       ctx.fill()
-      ctx.strokeStyle = '#0c1612'
+      ctx.strokeStyle = '#08090f'
       ctx.lineWidth = 1
       ctx.stroke()
 
@@ -229,7 +229,7 @@ export function WorkfolioMascot({
       headGrad.addColorStop(1, '#d8be9d')
 
       ctx.fillStyle = headGrad
-      ctx.strokeStyle = '#12241b'
+      ctx.strokeStyle = '#0c0d14'
       ctx.lineWidth = 2.8
 
       // Head Shape
@@ -255,7 +255,7 @@ export function WorkfolioMascot({
         const earSide = sinY > 0 ? -1 : 1
         ctx.translate(earSide * 34 * cosY, 2)
         ctx.fillStyle = '#e8dec9'
-        ctx.strokeStyle = '#0c1612'
+        ctx.strokeStyle = '#08090f'
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.arc(0, 0, 7, 0, Math.PI * 2)
@@ -279,7 +279,7 @@ export function WorkfolioMascot({
       const rightEyeScale = Math.max(0.1, 1 - sinY * 0.5)
 
       // Eyebrows
-      ctx.strokeStyle = '#0c1612'
+      ctx.strokeStyle = '#08090f'
       ctx.lineWidth = activeVariant === 'male' ? 3.5 : 2.5
       ctx.beginPath()
       if (leftEyeScale > 0.25) {
@@ -297,7 +297,7 @@ export function WorkfolioMascot({
         ctx.save()
         ctx.translate(-14 * cosY, -1)
         ctx.scale(leftEyeScale, 1)
-        ctx.fillStyle = '#0c1612'
+        ctx.fillStyle = '#08090f'
         ctx.beginPath()
         ctx.arc(0, 0, 5.5, 0, Math.PI * 2)
         ctx.fill()
@@ -319,7 +319,7 @@ export function WorkfolioMascot({
         ctx.save()
         ctx.translate(14 * cosY, -1)
         ctx.scale(rightEyeScale, 1)
-        ctx.fillStyle = '#0c1612'
+        ctx.fillStyle = '#08090f'
         ctx.beginPath()
         ctx.arc(0, 0, 5.5, 0, Math.PI * 2)
         ctx.fill()
@@ -337,7 +337,7 @@ export function WorkfolioMascot({
       }
 
       // Friendly Smile
-      ctx.strokeStyle = '#0c1612'
+      ctx.strokeStyle = '#08090f'
       ctx.lineWidth = 2.5
       ctx.beginPath()
       ctx.arc(0, 11, 9 * Math.max(0.4, cosY), 0.15 * Math.PI, 0.85 * Math.PI)
@@ -382,7 +382,7 @@ export function WorkfolioMascot({
 
       // --- 6. HAIRSTYLE (MALE VS FEMALE) ---
       ctx.fillStyle = '#2b1b17'
-      ctx.strokeStyle = '#0c1612'
+      ctx.strokeStyle = '#08090f'
       ctx.lineWidth = 2
 
       if (activeVariant === 'female') {
@@ -461,13 +461,13 @@ export function WorkfolioMascot({
 
       {/* Optional Gender Switcher Pill */}
       {showGenderToggle && onVariantChange && (
-        <div className="mt-2 flex items-center gap-1 rounded-full border border-[#c1a05b]/40 bg-[#0c1612]/90 p-1 backdrop-blur-sm shadow-md">
+        <div className="mt-2 flex items-center gap-1 rounded-full border border-[#c1a05b]/40 bg-[#08090f]/90 p-1 backdrop-blur-sm shadow-md">
           <button
             type="button"
             onClick={() => onVariantChange('male')}
             className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer ${
               activeVariant === 'male'
-                ? 'bg-[#c1a05b] text-[#0c1612]'
+                ? 'bg-[#c1a05b] text-[#08090f]'
                 : 'text-[#f3eee4]/70 hover:text-[#f3eee4]'
             }`}
           >
@@ -478,7 +478,7 @@ export function WorkfolioMascot({
             onClick={() => onVariantChange('female')}
             className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer ${
               activeVariant === 'female'
-                ? 'bg-[#c1a05b] text-[#0c1612]'
+                ? 'bg-[#c1a05b] text-[#08090f]'
                 : 'text-[#f3eee4]/70 hover:text-[#f3eee4]'
             }`}
           >

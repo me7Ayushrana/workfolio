@@ -8,7 +8,7 @@ interface ExploreHeroProps {
 
 export function ExploreHero({ onRequestResource }: ExploreHeroProps) {
   return (
-    <div className="relative overflow-hidden bg-[#193b2c] text-[#f3eee4] px-6 py-16 md:px-12 md:py-24 border-b border-[#f3eee4]/15">
+    <div className="relative overflow-hidden bg-[#0c0d14] text-[#f3eee4] px-6 py-16 md:px-12 md:py-24 border-b border-[#f3eee4]/15">
       <div className="mx-auto max-w-7xl relative z-10">
         <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[.28em] text-[#c1a05b]">
           <Compass size={14} />
@@ -30,7 +30,7 @@ export function ExploreHero({ onRequestResource }: ExploreHeroProps) {
 
           <button
             onClick={onRequestResource}
-            className="group flex shrink-0 items-center gap-2.5 border border-[#c1a05b] bg-[#c1a05b] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#193b2c] transition-all hover:bg-[#f3eee4] hover:border-[#f3eee4]"
+            className="group flex shrink-0 items-center gap-2.5 border border-[#c1a05b] bg-[#c1a05b] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#111318] transition-all hover:bg-[#f3eee4] hover:border-[#f3eee4]"
           >
             <Sparkles size={14} className="transition-transform group-hover:rotate-12" />
             <span>Request a Resource</span>

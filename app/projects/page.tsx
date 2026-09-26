@@ -102,20 +102,20 @@ export default function ProjectsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-12 space-y-8">
         {/* Breadcrumb Back Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/70 hover:text-[#193b2c]"
+          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/70 hover:text-[#111318]"
         >
           <ArrowLeft size={14} /> Back to Workspace Dashboard
         </Link>
 
         {/* VISUAL HERO BANNER WITH REAL ARTWORK */}
-        <div className="relative overflow-hidden rounded-3xl border border-[#193b2c]/20 bg-[#12241b] text-[#f3eee4] shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl border border-[#0c0d14]/20 bg-[#0c0d14] text-[#f3eee4] shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-12 items-center">
             <div className="p-8 md:p-12 md:col-span-8 space-y-4">
               <span className="text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
@@ -130,7 +130,7 @@ export default function ProjectsPage() {
               <div className="pt-2">
                 <button
                   onClick={() => setShowNewModal(true)}
-                  className="flex items-center gap-2 bg-[#c1a05b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#0c1612] shadow-lg transition-all hover:bg-[#f3eee4] cursor-pointer"
+                  className="flex items-center gap-2 bg-[#c1a05b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#08090f] shadow-lg transition-all hover:bg-[#f3eee4] cursor-pointer"
                 >
                   <Plus size={14} /> + CREATE DIGITAL PROJECT
                 </button>
@@ -144,13 +144,13 @@ export default function ProjectsPage() {
                 fill
                 className="object-cover opacity-80"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#12241b] via-transparent to-transparent hidden md:block" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0c0d14] via-transparent to-transparent hidden md:block" />
             </div>
           </div>
         </div>
 
         {/* Status Tabs */}
-        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#193b2c]/15 pb-4">
+        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#0c0d14]/15 pb-4">
           {(['ALL', 'ACTIVE', 'COMPLETED', 'ARCHIVED'] as const).map((tab) => (
             <button
               key={tab}
@@ -160,8 +160,8 @@ export default function ProjectsPage() {
               }}
               className={`px-4 py-2 transition-all rounded-sm cursor-pointer ${
                 activeTab === tab
-                  ? 'bg-[#c1a05b] text-[#0c1612] font-bold shadow'
-                  : 'bg-[#12241b] text-[#f3eee4]/80 border border-[#f3eee4]/15 hover:border-[#c1a05b] hover:text-[#f3eee4]'
+                  ? 'bg-[#c1a05b] text-[#08090f] font-bold shadow'
+                  : 'bg-[#0c0d14] text-[#f3eee4]/80 border border-[#f3eee4]/15 hover:border-[#c1a05b] hover:text-[#f3eee4]'
               }`}
             >
               {tab} (
@@ -178,8 +178,8 @@ export default function ProjectsPage() {
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="flex flex-col gap-3 border-b border-[#193b2c]/15 pb-6 lg:flex-row lg:items-center">
-          <div className="flex flex-1 items-center gap-3 border border-[#c1a05b]/30 bg-[#12241b] px-4 py-3 shadow-md rounded">
+        <div className="flex flex-col gap-3 border-b border-[#0c0d14]/15 pb-6 lg:flex-row lg:items-center">
+          <div className="flex flex-1 items-center gap-3 border border-[#c1a05b]/30 bg-[#0c0d14] px-4 py-3 shadow-md rounded">
             <Search size={15} className="text-[#c1a05b]" />
             <input
               value={searchQuery}
@@ -204,7 +204,7 @@ export default function ProjectsPage() {
                 setSelectedCategory(e.target.value)
                 setCurrentPage(1)
               }}
-              className="border border-[#c1a05b]/30 bg-[#12241b] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
+              className="border border-[#c1a05b]/30 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
             >
               <option value="All">All Categories</option>
               <option value="AI">AI</option>
@@ -219,7 +219,7 @@ export default function ProjectsPage() {
                 setSelectedStatus(e.target.value)
                 setCurrentPage(1)
               }}
-              className="border border-[#c1a05b]/30 bg-[#12241b] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
+              className="border border-[#c1a05b]/30 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
             >
               <option value="All">All Statuses</option>
               <option value="Planning">Planning</option>
@@ -231,7 +231,7 @@ export default function ProjectsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="border border-[#c1a05b]/30 bg-[#12241b] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
+              className="border border-[#c1a05b]/30 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] rounded"
             >
               <option value="Recently Updated">Sort: Recently Active</option>
               <option value="Newest">Sort: Newest</option>
@@ -248,7 +248,7 @@ export default function ProjectsPage() {
             {activeFilterChips.map((chip, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#12241b] px-2.5 py-1 text-[#f3eee4] rounded"
+                className="inline-flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#0c0d14] px-2.5 py-1 text-[#f3eee4] rounded"
               >
                 {chip.label}
                 <button onClick={chip.reset} className="hover:text-[#7c2634]">
@@ -276,13 +276,13 @@ export default function ProjectsPage() {
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="group flex flex-col justify-between border border-[#c1a05b]/40 bg-[#12241b] text-[#f3eee4] shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c1a05b] hover:shadow-2xl rounded"
+                  className="group flex flex-col justify-between border border-[#c1a05b]/40 bg-[#0c0d14] text-[#f3eee4] shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c1a05b] hover:shadow-2xl rounded"
                 >
-                  <div className="h-24 bg-[#0c1612] relative p-4 flex justify-between items-start border-b border-[#c1a05b]/20">
-                    <span className="bg-[#c1a05b] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.16em] text-[#0c1612]">
+                  <div className="h-24 bg-[#08090f] relative p-4 flex justify-between items-start border-b border-[#c1a05b]/20">
+                    <span className="bg-[#c1a05b] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.16em] text-[#08090f]">
                       {project.category}
                     </span>
-                    <span className="bg-[#12241b] border border-[#2ec4b6]/40 text-[#2ec4b6] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.16em]">
+                    <span className="bg-[#0c0d14] border border-[#2ec4b6]/40 text-[#2ec4b6] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.16em]">
                       {project.status}
                     </span>
                   </div>
@@ -314,14 +314,14 @@ export default function ProjectsPage() {
             })}
           </div>
         ) : (
-          <div className="border border-dashed border-[#c1a05b]/40 bg-[#12241b] text-[#f3eee4] p-16 text-center space-y-3 rounded">
+          <div className="border border-dashed border-[#c1a05b]/40 bg-[#0c0d14] text-[#f3eee4] p-16 text-center space-y-3 rounded">
             <h3 className="font-serif text-3xl font-light">No projects match your current view</h3>
             <p className="text-xs text-[#f3eee4]/65 max-w-md mx-auto">
               Clear your search queries or create a new project to start tracking your work.
             </p>
             <button
               onClick={clearAllFilters}
-              className="bg-[#c1a05b] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#0c1612] font-bold"
+              className="bg-[#c1a05b] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#08090f] font-bold"
             >
               Clear All Filters
             </button>
@@ -334,7 +334,7 @@ export default function ProjectsPage() {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-              className="border border-[#193b2c]/20 p-2.5 disabled:opacity-30"
+              className="border border-[#0c0d14]/20 p-2.5 disabled:opacity-30"
               aria-label="Previous page"
             >
               <ChevronLeft size={15} />
@@ -345,8 +345,8 @@ export default function ProjectsPage() {
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-9 w-9 text-xs font-bold ${
                   currentPage === i + 1
-                    ? 'bg-[#193b2c] text-[#f3eee4]'
-                    : 'border border-[#193b2c]/20 bg-transparent'
+                    ? 'bg-[#0c0d14] text-[#f3eee4]'
+                    : 'border border-[#0c0d14]/20 bg-transparent'
                 }`}
               >
                 {i + 1}
@@ -355,7 +355,7 @@ export default function ProjectsPage() {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-              className="border border-[#193b2c]/20 p-2.5 disabled:opacity-30"
+              className="border border-[#0c0d14]/20 p-2.5 disabled:opacity-30"
               aria-label="Next page"
             >
               <ChevronRight size={15} />
@@ -366,8 +366,8 @@ export default function ProjectsPage() {
 
       {/* New Project Modal */}
       {showNewModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#193b2c]/65 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-[#f3eee4] p-7 shadow-2xl border border-[#193b2c]/20">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#0c0d14]/65 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-[#f3eee4] p-7 shadow-2xl border border-[#0c0d14]/20">
             <h3 className="font-serif text-3xl font-light">Create New Project</h3>
             <form onSubmit={handleCreateProject} className="mt-6 space-y-4">
               <div>
@@ -378,7 +378,7 @@ export default function ProjectsPage() {
                   value={newProjName}
                   onChange={(e) => setNewProjName(e.target.value)}
                   placeholder="e.g. Finance Analytics Engine"
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                   required
                 />
               </div>
@@ -390,7 +390,7 @@ export default function ProjectsPage() {
                 <select
                   value={newProjCat}
                   onChange={(e) => setNewProjCat(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 >
                   <option value="AI">AI</option>
                   <option value="Development">Development</option>
@@ -408,7 +408,7 @@ export default function ProjectsPage() {
                   onChange={(e) => setNewProjDesc(e.target.value)}
                   rows={3}
                   placeholder="What is the goal of this project?"
-                  className="w-full border border-[#193b2c]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
                 />
               </div>
 
@@ -422,7 +422,7 @@ export default function ProjectsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#193b2c] px-5 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                  className="bg-[#0c0d14] px-5 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                 >
                   Create Project
                 </button>

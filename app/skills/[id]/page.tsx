@@ -74,13 +74,13 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
 
   if (!skill) {
     return (
-      <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+      <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
         <WorkfolioHeader />
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
           <h1 className="font-serif text-5xl">Skill Not Found</h1>
           <Link
             href="/learning?tab=skills"
-            className="mt-6 inline-block bg-[#193b2c] px-6 py-3 text-xs font-bold uppercase tracking-[.18em] text-[#f3eee4]"
+            className="mt-6 inline-block bg-[#0c0d14] px-6 py-3 text-xs font-bold uppercase tracking-[.18em] text-[#f3eee4]"
           >
             Back to Skills Workspace
           </Link>
@@ -160,48 +160,48 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-6xl px-5 py-8 md:px-10 space-y-8">
         {/* BREADCRUMBS & TOP ACTIONS */}
-        <div className="flex flex-wrap items-center justify-between border-b border-[#193b2c]/10 pb-4 gap-3">
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#193b2c]/60">
-            <Link href="/learning" className="hover:text-[#193b2c]">
+        <div className="flex flex-wrap items-center justify-between border-b border-[#0c0d14]/10 pb-4 gap-3">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#111318]/60">
+            <Link href="/learning" className="hover:text-[#111318]">
               Learning
             </Link>
             <span>/</span>
-            <Link href="/learning?tab=skills" className="hover:text-[#193b2c]">
+            <Link href="/learning?tab=skills" className="hover:text-[#111318]">
               Skills
             </Link>
             <span>/</span>
-            <span className="text-[#26513d] font-bold">{skill.name}</span>
+            <span className="text-[#c1a05b] font-bold">{skill.name}</span>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowApplyProjectModal(true)}
-              className="flex items-center gap-1.5 border border-[#26513d]/30 bg-[#26513d]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#26513d] hover:bg-[#26513d] hover:text-[#f3eee4] transition-colors"
+              className="flex items-center gap-1.5 border border-[#c1a05b]/30 bg-[#c1a05b]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#f3eee4] transition-colors"
             >
               <Folder size={12} /> Apply to Project
             </button>
             <button
               onClick={handleOpenEditModal}
-              className="flex items-center gap-1.5 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
+              className="flex items-center gap-1.5 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
             >
               <Edit size={12} /> Edit Skill
             </button>
             {skill.status === 'ARCHIVED' ? (
               <button
                 onClick={() => restoreSkill(skill.id)}
-                className="flex items-center gap-1.5 border border-[#26513d] bg-[#26513d] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]"
+                className="flex items-center gap-1.5 border border-[#c1a05b] bg-[#c1a05b] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]"
               >
                 Restore Skill
               </button>
             ) : (
               <button
                 onClick={() => archiveSkill(skill.id)}
-                className="flex items-center gap-1.5 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
+                className="flex items-center gap-1.5 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
               >
                 Archive
               </button>
@@ -218,24 +218,24 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
         {/* SKILL HEADER */}
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#26513d]">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
               <GraduationCap size={14} />
               <span>SKILL LEARNING PROFILE</span>
               <span>·</span>
-              <span className="bg-[#26513d] text-[#f3eee4] px-2 py-0.5">{skill.status}</span>
-              <span className="border border-[#193b2c]/20 px-2 py-0.5 text-[#193b2c]">{skill.currentLevel}</span>
+              <span className="bg-[#c1a05b] text-[#f3eee4] px-2 py-0.5">{skill.status}</span>
+              <span className="border border-[#0c0d14]/20 px-2 py-0.5 text-[#111318]">{skill.currentLevel}</span>
             </div>
             <h1 className="mt-3 font-serif text-5xl font-light leading-none md:text-7xl">
               {skill.name}
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#193b2c]/75">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#111318]/75">
               {skill.learningGoal}
             </p>
           </div>
 
           <button
             onClick={() => setShowLogModal(true)}
-            className="flex shrink-0 items-center gap-2 bg-[#26513d] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4] hover:bg-[#193b2c] shadow-md transition-all"
+            className="flex shrink-0 items-center gap-2 bg-[#c1a05b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4] hover:bg-[#0c0d14] shadow-md transition-all"
           >
             <Plus size={14} /> + ADD LEARNING UPDATE
           </button>
@@ -244,14 +244,14 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
         {/* PROMINENT CURRENTLY LEARNING & NEXT STEP BOXES */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Currently Learning Focus Box */}
-          <div className="border-l-4 border-[#26513d] bg-[#26513d]/10 p-5 space-y-2">
+          <div className="border-l-4 border-[#c1a05b] bg-[#c1a05b]/10 p-5 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#26513d]">
+              <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
                 CURRENTLY LEARNING
               </span>
               <button
                 onClick={() => setEditingCurrentFocus(!editingCurrentFocus)}
-                className="text-[9px] font-bold uppercase text-[#26513d] hover:underline"
+                className="text-[9px] font-bold uppercase text-[#c1a05b] hover:underline"
               >
                 {editingCurrentFocus ? 'Cancel' : 'Edit Focus'}
               </button>
@@ -263,17 +263,17 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                   type="text"
                   value={focusText}
                   onChange={(e) => setFocusText(e.target.value)}
-                  className="w-full border border-[#26513d]/40 bg-[#f3eee4] px-3 py-1.5 text-xs outline-none"
+                  className="w-full border border-[#c1a05b]/40 bg-[#f3eee4] px-3 py-1.5 text-xs outline-none"
                 />
                 <button
                   onClick={handleSaveFocus}
-                  className="bg-[#26513d] px-3 py-1 text-[10px] font-bold uppercase text-[#f3eee4]"
+                  className="bg-[#c1a05b] px-3 py-1 text-[10px] font-bold uppercase text-[#f3eee4]"
                 >
                   Save Focus
                 </button>
               </div>
             ) : (
-              <p className="font-serif text-2xl font-light text-[#193b2c]">
+              <p className="font-serif text-2xl font-light text-[#111318]">
                 "{skill.currentlyLearning || 'Defining current focus topic...'}"
               </p>
             )}
@@ -309,7 +309,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 </button>
               </div>
             ) : (
-              <p className="font-serif text-2xl font-light text-[#193b2c]">
+              <p className="font-serif text-2xl font-light text-[#111318]">
                 {skill.nextStep || 'Plan next practical learning step...'}
               </p>
             )}
@@ -317,15 +317,15 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* TABS */}
-        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#193b2c]/15 pb-3">
+        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#0c0d14]/15 pb-3">
           {(['Timeline', 'Projects', 'Evidence', 'Capabilities', 'Goals'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-3.5 py-2 transition-all ${
                 activeTab === tab
-                  ? 'bg-[#26513d] text-[#f3eee4]'
-                  : 'bg-[#e5dac9]/60 text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#c1a05b] text-[#f3eee4]'
+                  : 'bg-[#e5dac9]/60 text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
               {tab} {tab === 'Timeline' ? `(${skillActivities.length})` : tab === 'Projects' ? `(${appliedProjects.length})` : ''}
@@ -340,29 +340,29 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
               <h2 className="font-serif text-3xl font-light">Learning Timeline ({skillActivities.length} Sessions)</h2>
               <button
                 onClick={() => setShowLogModal(true)}
-                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#26513d]"
+                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#c1a05b]"
               >
                 + Add Update
               </button>
             </div>
 
-            <div className="space-y-6 border-l-2 border-[#26513d]/30 pl-6">
+            <div className="space-y-6 border-l-2 border-[#c1a05b]/30 pl-6">
               {skillActivities.length ? (
                 skillActivities.map((act) => (
                   <div key={act.id} className="relative space-y-2">
-                    <div className="absolute -left-[31px] top-1.5 h-3.5 w-3.5 rounded-full bg-[#26513d] border-2 border-[#f3eee4]" />
+                    <div className="absolute -left-[31px] top-1.5 h-3.5 w-3.5 rounded-full bg-[#c1a05b] border-2 border-[#f3eee4]" />
                     <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.14em]">
                       <div className="flex items-center gap-2">
-                        <span className="bg-[#26513d] text-[#f3eee4] px-2 py-0.5">{act.type}</span>
+                        <span className="bg-[#c1a05b] text-[#f3eee4] px-2 py-0.5">{act.type}</span>
                         {act.projectTitle && (
                           <span className="text-[#9b7b3b] font-bold">Project: {act.projectTitle}</span>
                         )}
                       </div>
-                      <span className="text-[#193b2c]/50">{act.date} · {act.time}</span>
+                      <span className="text-[#111318]/50">{act.date} · {act.time}</span>
                     </div>
                     <h3 className="font-serif text-2xl font-light">{act.work}</h3>
                     {act.learning && (
-                      <p className="text-xs text-[#26513d]">Key Learning: {act.learning}</p>
+                      <p className="text-xs text-[#c1a05b]">Key Learning: {act.learning}</p>
                     )}
                     {act.struggle && (
                       <p className="text-xs text-[#7c2634]">Struggle / Blocker: {act.struggle}</p>
@@ -370,15 +370,15 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                   </div>
                 ))
               ) : (
-                <div className="bg-[#e5dac9]/40 p-8 text-center space-y-3 border border-[#193b2c]/10">
-                  <BookOpen className="mx-auto text-[#193b2c]/40" size={32} />
+                <div className="bg-[#e5dac9]/40 p-8 text-center space-y-3 border border-[#0c0d14]/10">
+                  <BookOpen className="mx-auto text-[#111318]/40" size={32} />
                   <h3 className="font-serif text-2xl font-light">NO LEARNING UPDATES YET</h3>
-                  <p className="text-xs text-[#193b2c]/60 max-w-sm mx-auto">
+                  <p className="text-xs text-[#111318]/60 max-w-sm mx-auto">
                     Start recording what you learn and practice for {skill.name}.
                   </p>
                   <button
                     onClick={() => setShowLogModal(true)}
-                    className="bg-[#26513d] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                    className="bg-[#c1a05b] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                   >
                     + ADD LEARNING UPDATE
                   </button>
@@ -388,7 +388,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         ) : activeTab === 'Projects' ? (
           <div className="space-y-6 pt-2">
-            <div className="flex items-center justify-between border-b border-[#193b2c]/15 pb-3">
+            <div className="flex items-center justify-between border-b border-[#0c0d14]/15 pb-3">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#9b7b3b]">
                   REAL WORLD APPLICATION
@@ -397,7 +397,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <button
                 onClick={() => setShowApplyProjectModal(true)}
-                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#26513d]"
+                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#c1a05b]"
               >
                 + Apply to Another Project
               </button>
@@ -406,17 +406,17 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
             {appliedProjects.length ? (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {appliedProjects.map((proj) => (
-                  <div key={proj.id} className="border border-[#193b2c]/15 bg-[#e5dac9] p-5 space-y-3">
+                  <div key={proj.id} className="border border-[#0c0d14]/15 bg-[#e5dac9] p-5 space-y-3">
                     <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.14em]">
-                      <span className="bg-[#193b2c] text-[#f3eee4] px-2 py-0.5">{proj.status}</span>
+                      <span className="bg-[#0c0d14] text-[#f3eee4] px-2 py-0.5">{proj.status}</span>
                       <span className="text-[#9b7b3b]">{proj.category}</span>
                     </div>
                     <h3 className="font-serif text-2xl font-light">{proj.name}</h3>
-                    <p className="text-xs text-[#193b2c]/75 line-clamp-2">{proj.description}</p>
+                    <p className="text-xs text-[#111318]/75 line-clamp-2">{proj.description}</p>
 
                     <Link
                       href={`/projects/${proj.id}`}
-                      className="inline-flex items-center justify-between w-full border border-[#193b2c]/20 bg-[#f3eee4] px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors"
+                      className="inline-flex items-center justify-between w-full border border-[#0c0d14]/20 bg-[#f3eee4] px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors"
                     >
                       <span>Open Project Workspace</span>
                       <ArrowUpRight size={12} />
@@ -425,7 +425,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-[#193b2c]/60 py-6">No projects currently linked to this skill.</p>
+              <p className="text-xs text-[#111318]/60 py-6">No projects currently linked to this skill.</p>
             )}
           </div>
         ) : activeTab === 'Evidence' ? (
@@ -434,7 +434,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
             {skillEvidence.length ? (
               <div className="grid gap-3 md:grid-cols-2">
                 {skillEvidence.map((a) => (
-                  <div key={a.id} className="border border-[#193b2c]/15 bg-[#e5dac9]/60 p-4 space-y-2">
+                  <div key={a.id} className="border border-[#0c0d14]/15 bg-[#e5dac9]/60 p-4 space-y-2">
                     <span className="text-[9px] font-bold uppercase tracking-[.14em] text-[#9b7b3b]">{a.date}</span>
                     <h3 className="font-serif text-xl font-light">{a.evidenceTitle}</h3>
                     {a.evidenceUrl && (
@@ -442,7 +442,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                         href={a.evidenceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-[#26513d] hover:underline"
+                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-[#c1a05b] hover:underline"
                       >
                         <span>View Artifact</span> <ExternalLink size={10} />
                       </a>
@@ -451,11 +451,11 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-[#193b2c]/60 py-6">No direct evidence items attached yet.</p>
+              <p className="text-xs text-[#111318]/60 py-6">No direct evidence items attached yet.</p>
             )}
           </div>
         ) : (
-          <div className="py-6 text-xs text-[#193b2c]/70">
+          <div className="py-6 text-xs text-[#111318]/70">
             <p>Skill details and related capability mappings active for {skill.name}.</p>
           </div>
         )}
@@ -463,61 +463,61 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* EDIT SKILL MODAL */}
       {showEditModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#193b2c] shadow-2xl border border-[#193b2c]/20 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-[#193b2c]/15 pb-3 mb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#111318] shadow-2xl border border-[#0c0d14]/20 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-[#0c0d14]/15 pb-3 mb-4">
               <h2 className="font-serif text-3xl font-light">Edit Skill</h2>
-              <button onClick={() => setShowEditModal(false)} className="text-[#193b2c]/50">
+              <button onClick={() => setShowEditModal(false)} className="text-[#111318]/50">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveEditSkill} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Skill Name
                 </label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Learning Goal
                 </label>
                 <textarea
                   value={editGoal}
                   onChange={(e) => setEditGoal(e.target.value)}
                   rows={3}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                     Category
                   </label>
                   <input
                     type="text"
                     value={editCategory}
                     onChange={(e) => setEditCategory(e.target.value)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                     Learning Status
                   </label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as SkillStatus)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   >
                     <option value="PLANNED">PLANNED</option>
                     <option value="LEARNING">LEARNING</option>
@@ -530,17 +530,17 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#193b2c]/15">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#0c0d14]/15">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#193b2c]/60"
+                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#111318]/60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#26513d] px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]"
+                  className="bg-[#c1a05b] px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]"
                 >
                   Save Skill
                 </button>
@@ -552,24 +552,24 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* APPLY TO PROJECT MODAL */}
       {showApplyProjectModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-[#f3eee4] p-6 text-[#193b2c] shadow-2xl border border-[#193b2c]/20">
-            <div className="flex justify-between items-center border-b border-[#193b2c]/15 pb-3 mb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-[#f3eee4] p-6 text-[#111318] shadow-2xl border border-[#0c0d14]/20">
+            <div className="flex justify-between items-center border-b border-[#0c0d14]/15 pb-3 mb-4">
               <h2 className="font-serif text-2xl font-light">Apply Skill to Project</h2>
-              <button onClick={() => setShowApplyProjectModal(false)} className="text-[#193b2c]/50">
+              <button onClick={() => setShowApplyProjectModal(false)} className="text-[#111318]/50">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleApplyToProject} className="space-y-4">
-              <p className="text-xs text-[#193b2c]/75">
+              <p className="text-xs text-[#111318]/75">
                 Select a project where you are applying your learning in <strong>{skill.name}</strong>:
               </p>
 
               <select
                 value={selectedApplyProjectId}
                 onChange={(e) => setSelectedApplyProjectId(e.target.value)}
-                className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 required
               >
                 <option value="">-- Select Project --</option>
@@ -584,13 +584,13 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 <button
                   type="button"
                   onClick={() => setShowApplyProjectModal(false)}
-                  className="px-4 py-2 text-xs font-bold uppercase text-[#193b2c]/60"
+                  className="px-4 py-2 text-xs font-bold uppercase text-[#111318]/60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#26513d] px-5 py-2 text-xs font-bold uppercase text-[#f3eee4]"
+                  className="bg-[#c1a05b] px-5 py-2 text-xs font-bold uppercase text-[#f3eee4]"
                 >
                   Connect Skill & Project
                 </button>
@@ -602,9 +602,9 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* DELETE SKILL CONFIRMATION MODAL */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#193b2c] shadow-2xl border border-[#7c2634]/30 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start gap-3 border-b border-[#193b2c]/15 pb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#111318] shadow-2xl border border-[#7c2634]/30 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start gap-3 border-b border-[#0c0d14]/15 pb-4">
               <AlertTriangle className="text-[#7c2634] shrink-0 mt-1" size={24} />
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#7c2634]">
@@ -615,28 +615,28 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="mt-4 space-y-4 text-xs">
-              <p className="text-[#193b2c]/80">
-                You're about to remove <strong className="font-bold text-[#193b2c]">{skill.name}</strong>.
+              <p className="text-[#111318]/80">
+                You're about to remove <strong className="font-bold text-[#111318]">{skill.name}</strong>.
               </p>
 
               <div className="space-y-2 pt-2">
-                <label className="flex items-start gap-3 p-3 border border-[#26513d]/40 bg-[#26513d]/10 cursor-pointer">
+                <label className="flex items-start gap-3 p-3 border border-[#c1a05b]/40 bg-[#c1a05b]/10 cursor-pointer">
                   <input
                     type="radio"
                     name="deleteSkillOption"
                     checked={deleteOption === 'archive'}
                     onChange={() => setDeleteOption('archive')}
-                    className="mt-0.5 accent-[#26513d]"
+                    className="mt-0.5 accent-[#c1a05b]"
                   />
                   <div>
-                    <span className="font-bold text-[#26513d]">Archive skill instead (Recommended)</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <span className="font-bold text-[#c1a05b]">Archive skill instead (Recommended)</span>
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Keep all learning history and project links intact. Skill moves to Archived status.
                     </p>
                   </div>
                 </label>
 
-                <label className="flex items-start gap-3 p-3 border border-[#193b2c]/20 bg-[#f3eee4] cursor-pointer">
+                <label className="flex items-start gap-3 p-3 border border-[#0c0d14]/20 bg-[#f3eee4] cursor-pointer">
                   <input
                     type="radio"
                     name="deleteSkillOption"
@@ -646,7 +646,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                   />
                   <div>
                     <span className="font-bold">Keep learning history (Remove skill association)</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Delete skill profile but preserve logged work & learning entries in Work Journal.
                     </p>
                   </div>
@@ -662,7 +662,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                   />
                   <div>
                     <span className="font-bold text-[#7c2634]">Delete skill and associated learning records</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Irreversibly delete skill and all learning update activities.
                     </p>
                   </div>
@@ -685,11 +685,11 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
               )}
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-[#193b2c]/15 mt-6">
+            <div className="flex justify-end gap-3 pt-6 border-t border-[#0c0d14]/15 mt-6">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#193b2c]/20"
+                className="px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#0c0d14]/20"
               >
                 Cancel
               </button>
@@ -697,7 +697,7 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
                 type="button"
                 onClick={handleConfirmDeleteSkill}
                 className={`px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4] shadow-md ${
-                  deleteOption === 'delete_all' ? 'bg-[#7c2634]' : 'bg-[#26513d]'
+                  deleteOption === 'delete_all' ? 'bg-[#7c2634]' : 'bg-[#c1a05b]'
                 }`}
               >
                 Confirm Action

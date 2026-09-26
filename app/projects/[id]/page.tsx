@@ -87,13 +87,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   if (!project) {
     return (
-      <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+      <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
         <WorkfolioHeader />
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
           <h1 className="font-serif text-5xl">Project Not Found</h1>
           <Link
             href="/projects"
-            className="mt-6 inline-block bg-[#193b2c] px-6 py-3 text-xs font-bold uppercase tracking-[.18em] text-[#f3eee4]"
+            className="mt-6 inline-block bg-[#0c0d14] px-6 py-3 text-xs font-bold uppercase tracking-[.18em] text-[#f3eee4]"
           >
             Back to Projects Workspace
           </Link>
@@ -170,14 +170,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-6xl px-5 py-8 md:px-10 space-y-8">
         {/* BREADCRUMB & TOP ACTIONS */}
-        <div className="flex flex-wrap items-center justify-between border-b border-[#193b2c]/10 pb-4 gap-3">
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#193b2c]/60">
-            <Link href="/projects" className="hover:text-[#193b2c]">
+        <div className="flex flex-wrap items-center justify-between border-b border-[#0c0d14]/10 pb-4 gap-3">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#111318]/60">
+            <Link href="/projects" className="hover:text-[#111318]">
               Projects
             </Link>
             <span>/</span>
@@ -187,27 +187,27 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleOpenEditModal}
-              className="flex items-center gap-1.5 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
+              className="flex items-center gap-1.5 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
             >
               <Edit size={12} /> Edit Project
             </button>
             <button
               onClick={handleDuplicate}
-              className="flex items-center gap-1.5 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
+              className="flex items-center gap-1.5 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
             >
               <Copy size={12} /> Duplicate
             </button>
             {project.status === 'Archived' ? (
               <button
                 onClick={() => restoreProject(project.id)}
-                className="flex items-center gap-1.5 border border-[#26513d]/40 bg-[#26513d] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]"
+                className="flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#c1a05b] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4]"
               >
                 Restore Project
               </button>
             ) : (
               <button
                 onClick={handleArchive}
-                className="flex items-center gap-1.5 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
+                className="flex items-center gap-1.5 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] hover:bg-[#e5dac9] transition-colors"
               >
                 Archive
               </button>
@@ -227,26 +227,26 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#9b7b3b]">
               <span>PROJECT WORKSPACE</span>
               <span>·</span>
-              <span className="bg-[#193b2c] text-[#f3eee4] px-2 py-0.5">{project.status}</span>
+              <span className="bg-[#0c0d14] text-[#f3eee4] px-2 py-0.5">{project.status}</span>
             </div>
             <h1 className="mt-3 font-serif text-5xl font-light leading-none md:text-7xl">
               {project.name}
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#193b2c]/75">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#111318]/75">
               {project.description}
             </p>
           </div>
 
           <button
             onClick={() => setShowLogModal(true)}
-            className="flex shrink-0 items-center gap-2 bg-[#193b2c] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4] hover:bg-[#9b7b3b] shadow-md transition-all"
+            className="flex shrink-0 items-center gap-2 bg-[#0c0d14] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4] hover:bg-[#9b7b3b] shadow-md transition-all"
           >
             <Plus size={14} /> + ADD PROJECT UPDATE
           </button>
         </div>
 
         {/* EXTERNAL LINKS ROW */}
-        <div className="border border-[#193b2c]/15 bg-[#e5dac9] p-4">
+        <div className="border border-[#0c0d14]/15 bg-[#e5dac9] p-4">
           <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.18em] text-[#9b7b3b] mb-3">
             <span className="flex items-center gap-1.5"><LinkIcon size={13} /> EXTERNAL PROJECT LINKS</span>
             <span>Verified Source Endpoints</span>
@@ -257,7 +257,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               href={project.liveUrl || 'https://expense-demo.workfolio.app'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between border border-[#193b2c]/20 bg-[#f3eee4] p-3 text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors"
+              className="flex items-center justify-between border border-[#0c0d14]/20 bg-[#f3eee4] p-3 text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors"
             >
               <span>LIVE DEMO ↗</span>
               <ExternalLink size={12} />
@@ -267,7 +267,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               href={project.repositoryUrl || 'https://github.com/workfolio/project'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between border border-[#193b2c]/20 bg-[#f3eee4] p-3 text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors"
+              className="flex items-center justify-between border border-[#0c0d14]/20 bg-[#f3eee4] p-3 text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors"
             >
               <span>REPOSITORY ↗</span>
               <FileCode size={12} />
@@ -277,7 +277,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               href={project.documentationUrl || 'https://docs.workfolio.app'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between border border-[#193b2c]/20 bg-[#f3eee4] p-3 text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors"
+              className="flex items-center justify-between border border-[#0c0d14]/20 bg-[#f3eee4] p-3 text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors"
             >
               <span>DOCUMENTATION ↗</span>
               <ExternalLink size={12} />
@@ -287,7 +287,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               href={project.figmaUrl || 'https://figma.com'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-between border border-[#193b2c]/20 bg-[#f3eee4] p-3 text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors"
+              className="flex items-center justify-between border border-[#0c0d14]/20 bg-[#f3eee4] p-3 text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors"
             >
               <span>FIGMA SPECS ↗</span>
               <ExternalLink size={12} />
@@ -296,7 +296,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* LOCAL PROJECT NAVIGATION TABS */}
-        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#193b2c]/15 pb-3">
+        <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em] border-b border-[#0c0d14]/15 pb-3">
           {(['Overview', 'Timeline', 'Skills', 'Updates', 'Evidence', 'Capabilities', 'Milestones', 'Links'] as const).map(
             (tab) => (
               <button
@@ -304,8 +304,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 onClick={() => setActiveTab(tab)}
                 className={`px-3.5 py-2 transition-all ${
                   activeTab === tab
-                    ? 'bg-[#193b2c] text-[#f3eee4]'
-                    : 'bg-[#e5dac9]/60 text-[#193b2c]/70 hover:text-[#193b2c]'
+                    ? 'bg-[#0c0d14] text-[#f3eee4]'
+                    : 'bg-[#e5dac9]/60 text-[#111318]/70 hover:text-[#111318]'
                 }`}
               >
                 {tab} {tab === 'Skills' ? `(${projectSkills.length})` : tab === 'Timeline' ? `(${projectActivities.length})` : ''}
@@ -320,13 +320,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <span className="text-[9px] font-bold uppercase tracking-[.18em] text-[#9b7b3b]">
               CURRENT NEXT ACTION
             </span>
-            <p className="font-serif text-lg font-light text-[#193b2c] mt-0.5">
+            <p className="font-serif text-lg font-light text-[#111318] mt-0.5">
               Implement adaptive receipt image preprocessing and fallback verification.
             </p>
           </div>
           <button
             onClick={() => setShowLogModal(true)}
-            className="shrink-0 bg-[#193b2c] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4] hover:bg-[#9b7b3b] transition-colors"
+            className="shrink-0 bg-[#0c0d14] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4] hover:bg-[#9b7b3b] transition-colors"
           >
             Log Progress
           </button>
@@ -336,16 +336,16 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         {activeTab === 'Skills' ? (
           /* SKILLS USED & LEARNING CONTEXT SECTION */
           <div className="space-y-6 pt-2">
-            <div className="flex items-center justify-between border-b border-[#193b2c]/15 pb-3">
+            <div className="flex items-center justify-between border-b border-[#0c0d14]/15 pb-3">
               <div>
-                <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#26513d]">
+                <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
                   SKILLS & KNOWLEDGE CONTEXT
                 </span>
                 <h2 className="font-serif text-3xl font-light">Skills Used in {project.name}</h2>
               </div>
               <Link
                 href="/learning?tab=skills"
-                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c] hover:text-[#9b7b3b]"
+                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#111318] hover:text-[#9b7b3b]"
               >
                 View All Skills →
               </Link>
@@ -356,17 +356,17 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 {projectSkills.map((sk) => (
                   <div
                     key={sk.id}
-                    className="border border-[#193b2c]/15 bg-[#e5dac9]/60 p-5 space-y-3 flex flex-col justify-between"
+                    className="border border-[#0c0d14]/15 bg-[#e5dac9]/60 p-5 space-y-3 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.14em]">
-                        <span className="bg-[#26513d] text-[#f3eee4] px-2 py-0.5">{sk.status}</span>
+                        <span className="bg-[#c1a05b] text-[#f3eee4] px-2 py-0.5">{sk.status}</span>
                         <span className="text-[#9b7b3b]">{sk.category}</span>
                       </div>
                       <h3 className="mt-2 font-serif text-2xl font-light">{sk.name}</h3>
-                      <p className="mt-1 text-xs text-[#193b2c]/70 line-clamp-2">{sk.learningGoal}</p>
+                      <p className="mt-1 text-xs text-[#111318]/70 line-clamp-2">{sk.learningGoal}</p>
                       {sk.currentlyLearning && (
-                        <p className="mt-2 text-[11px] font-medium text-[#26513d] bg-[#26513d]/10 p-2">
+                        <p className="mt-2 text-[11px] font-medium text-[#c1a05b] bg-[#c1a05b]/10 p-2">
                           Focus: {sk.currentlyLearning}
                         </p>
                       )}
@@ -374,7 +374,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
                     <Link
                       href={`/skills/${sk.id}`}
-                      className="inline-flex items-center justify-between w-full border border-[#193b2c]/20 bg-[#f3eee4] px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#193b2c] hover:bg-[#193b2c] hover:text-[#f3eee4] transition-colors mt-2"
+                      className="inline-flex items-center justify-between w-full border border-[#0c0d14]/20 bg-[#f3eee4] px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#111318] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors mt-2"
                     >
                       <span>Open Skill Profile</span>
                       <ArrowUpRight size={12} />
@@ -383,15 +383,15 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 ))}
               </div>
             ) : (
-              <div className="bg-[#e5dac9]/40 border border-[#193b2c]/10 p-8 text-center space-y-3">
-                <GraduationCap className="mx-auto text-[#193b2c]/40" size={36} />
+              <div className="bg-[#e5dac9]/40 border border-[#0c0d14]/10 p-8 text-center space-y-3">
+                <GraduationCap className="mx-auto text-[#111318]/40" size={36} />
                 <h3 className="font-serif text-2xl font-light">No Skills Associated Yet</h3>
-                <p className="text-xs text-[#193b2c]/60 max-w-md mx-auto">
+                <p className="text-xs text-[#111318]/60 max-w-md mx-auto">
                   Log an activity for this project and select a Skill to automatically connect your learning journey to this project.
                 </p>
                 <button
                   onClick={() => setShowLogModal(true)}
-                  className="bg-[#193b2c] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                  className="bg-[#0c0d14] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                 >
                   + Log Activity with Skill
                 </button>
@@ -411,23 +411,23 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </button>
             </div>
 
-            <div className="space-y-6 border-l-2 border-[#193b2c]/15 pl-6">
+            <div className="space-y-6 border-l-2 border-[#0c0d14]/15 pl-6">
               {projectActivities.length ? (
                 projectActivities.map((act) => (
                   <div key={act.id} className="relative space-y-2">
                     <div className="absolute -left-[31px] top-1.5 h-3.5 w-3.5 rounded-full bg-[#9b7b3b] border-2 border-[#f3eee4]" />
                     <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.14em]">
                       <div className="flex items-center gap-2">
-                        <span className="bg-[#193b2c] text-[#f3eee4] px-2 py-0.5">{act.type}</span>
+                        <span className="bg-[#0c0d14] text-[#f3eee4] px-2 py-0.5">{act.type}</span>
                         {act.skillName && (
-                          <span className="text-[#26513d] bg-[#26513d]/10 px-2 py-0.5">Skill: {act.skillName}</span>
+                          <span className="text-[#c1a05b] bg-[#c1a05b]/10 px-2 py-0.5">Skill: {act.skillName}</span>
                         )}
                       </div>
-                      <span className="text-[#193b2c]/50">{act.date} · {act.time}</span>
+                      <span className="text-[#111318]/50">{act.date} · {act.time}</span>
                     </div>
                     <h3 className="font-serif text-2xl font-light">{act.work}</h3>
                     {act.learning && (
-                      <p className="text-xs text-[#26513d]">Learned: {act.learning}</p>
+                      <p className="text-xs text-[#c1a05b]">Learned: {act.learning}</p>
                     )}
                     {act.struggle && (
                       <p className="text-xs text-[#7c2634]">Struggle: {act.struggle}</p>
@@ -435,7 +435,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-[#193b2c]/60">No project timeline updates logged yet.</p>
+                <p className="text-xs text-[#111318]/60">No project timeline updates logged yet.</p>
               )}
             </div>
           </div>
@@ -446,7 +446,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <div className="lg:col-span-8 space-y-10">
               {/* Private Project Notes */}
               <div>
-                <div className="flex items-center justify-between border-b border-[#193b2c]/15 pb-2">
+                <div className="flex items-center justify-between border-b border-[#0c0d14]/15 pb-2">
                   <h2 className="font-serif text-3xl font-light">Project Overview & Notes</h2>
                   <button
                     onClick={() => setEditingNotes(!editingNotes)}
@@ -462,18 +462,18 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                       value={notesText}
                       onChange={(e) => setNotesText(e.target.value)}
                       rows={4}
-                      className="w-full border border-[#193b2c]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
+                      className="w-full border border-[#0c0d14]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
                       placeholder="Private technical notes, decisions, and constraints..."
                     />
                     <button
                       onClick={handleSaveNotes}
-                      className="bg-[#193b2c] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                      className="bg-[#0c0d14] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                     >
                       Save Notes
                     </button>
                   </div>
                 ) : (
-                  <p className="mt-3 text-sm leading-relaxed text-[#193b2c]/80 bg-[#e5dac9]/60 p-4 border border-[#193b2c]/10">
+                  <p className="mt-3 text-sm leading-relaxed text-[#111318]/80 bg-[#e5dac9]/60 p-4 border border-[#0c0d14]/10">
                     {project.notes ||
                       'This project turns a messy workflow into an understandable, useful system. The record keeps the implementation connected to its evidence instead of treating a project as a static thumbnail.'}
                   </p>
@@ -482,8 +482,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
               {/* WHAT I'M LEARNING WHILE BUILDING THIS */}
               {projectSkills.length > 0 && (
-                <div className="border border-[#26513d]/30 bg-[#26513d]/10 p-5 space-y-3">
-                  <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#26513d]">
+                <div className="border border-[#c1a05b]/30 bg-[#c1a05b]/10 p-5 space-y-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
                     WHAT I'M LEARNING WHILE BUILDING THIS
                   </span>
                   <div className="space-y-2">
@@ -492,7 +492,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                         <Link href={`/skills/${sk.id}`} className="font-serif text-lg font-light hover:underline">
                           {sk.name}
                         </Link>
-                        <span className="text-[10px] text-[#26513d] font-bold">→ {sk.currentlyLearning}</span>
+                        <span className="text-[10px] text-[#c1a05b] font-bold">→ {sk.currentlyLearning}</span>
                       </div>
                     ))}
                   </div>
@@ -501,7 +501,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
               {/* Implemented Resources */}
               <div>
-                <div className="flex items-center justify-between border-b border-[#193b2c]/15 pb-2">
+                <div className="flex items-center justify-between border-b border-[#0c0d14]/15 pb-2">
                   <div>
                     <span className="text-[9px] font-bold uppercase tracking-[.18em] text-[#9b7b3b]">
                       EXPLORE EXTENSIONS
@@ -510,7 +510,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                   <Link
                     href="/explore"
-                    className="text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c] hover:text-[#9b7b3b]"
+                    className="text-[10px] font-bold uppercase tracking-[.16em] text-[#111318] hover:text-[#9b7b3b]"
                   >
                     + Add from Explore
                   </Link>
@@ -521,26 +521,26 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     {projectImplementations.map((imp) => (
                       <div
                         key={imp.id}
-                        className="border border-[#193b2c]/15 bg-[#e5dac9] p-4 space-y-2"
+                        className="border border-[#0c0d14]/15 bg-[#e5dac9] p-4 space-y-2"
                       >
                         <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.14em] text-[#9b7b3b]">
                           <span>{imp.status}</span>
                           <span>v{imp.resourceVersion}</span>
                         </div>
                         <h4 className="font-serif text-xl font-light">{imp.resourceTitle}</h4>
-                        <span className="text-[9px] text-[#193b2c]/50 block">Implemented {imp.implementedAt}</span>
+                        <span className="text-[9px] text-[#111318]/50 block">Implemented {imp.implementedAt}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-3 text-xs text-[#193b2c]/60">No Explore resources implemented into this project yet.</p>
+                  <p className="mt-3 text-xs text-[#111318]/60">No Explore resources implemented into this project yet.</p>
                 )}
               </div>
             </div>
 
             {/* Right Column: Milestones */}
             <aside className="lg:col-span-4 space-y-6">
-              <div className="border border-[#193b2c]/15 bg-[#e5dac9] p-6 space-y-4">
+              <div className="border border-[#0c0d14]/15 bg-[#e5dac9] p-6 space-y-4">
                 <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[#9b7b3b]">
                   Project Milestones
                 </span>
@@ -549,7 +549,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   {(project.milestones || []).map((m, idx) => (
                     <label
                       key={idx}
-                      className="flex items-center gap-3 text-xs cursor-pointer border-b border-[#193b2c]/10 pb-2"
+                      className="flex items-center gap-3 text-xs cursor-pointer border-b border-[#0c0d14]/10 pb-2"
                     >
                       <input
                         type="checkbox"
@@ -569,11 +569,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                     value={newMilestoneText}
                     onChange={(e) => setNewMilestoneText(e.target.value)}
                     placeholder="Add milestone..."
-                    className="flex-1 border border-[#193b2c]/20 bg-transparent px-2.5 py-1.5 text-xs outline-none"
+                    className="flex-1 border border-[#0c0d14]/20 bg-transparent px-2.5 py-1.5 text-xs outline-none"
                   />
                   <button
                     type="submit"
-                    className="bg-[#193b2c] px-3 py-1.5 text-[10px] font-bold uppercase text-[#f3eee4]"
+                    className="bg-[#0c0d14] px-3 py-1.5 text-[10px] font-bold uppercase text-[#f3eee4]"
                   >
                     Add
                   </button>
@@ -586,61 +586,61 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
       {/* EDIT PROJECT MODAL */}
       {showEditModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#193b2c] shadow-2xl border border-[#193b2c]/20 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-[#193b2c]/15 pb-3 mb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#111318] shadow-2xl border border-[#0c0d14]/20 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-[#0c0d14]/15 pb-3 mb-4">
               <h2 className="font-serif text-3xl font-light">Edit Project</h2>
-              <button onClick={() => setShowEditModal(false)} className="text-[#193b2c]/50">
+              <button onClick={() => setShowEditModal(false)} className="text-[#111318]/50">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveEditProject} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Project Name
                 </label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Description
                 </label>
                 <textarea
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                   rows={3}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                     Category
                   </label>
                   <input
                     type="text"
                     value={editCategory}
                     onChange={(e) => setEditCategory(e.target.value)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                     Status
                   </label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as any)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                   >
                     <option value="Active">Active</option>
                     <option value="In progress">In progress</option>
@@ -653,40 +653,40 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Repository URL
                 </label>
                 <input
                   type="text"
                   value={editRepo}
                   onChange={(e) => setEditRepo(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-1.5 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-1.5 text-xs outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Live Demo URL
                 </label>
                 <input
                   type="text"
                   value={editLive}
                   onChange={(e) => setEditLive(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-1.5 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-1.5 text-xs outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#193b2c]/15">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#0c0d14]/15">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#193b2c]/60"
+                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#111318]/60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#193b2c] px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]"
+                  className="bg-[#0c0d14] px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]"
                 >
                   Save Changes
                 </button>
@@ -698,9 +698,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
       {/* DELETE PROJECT CONFIRMATION MODAL */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#193b2c] shadow-2xl border border-[#7c2634]/30 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start gap-3 border-b border-[#193b2c]/15 pb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-[#f3eee4] p-7 text-[#111318] shadow-2xl border border-[#7c2634]/30 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start gap-3 border-b border-[#0c0d14]/15 pb-4">
               <AlertTriangle className="text-[#7c2634] shrink-0 mt-1" size={24} />
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#7c2634]">
@@ -711,12 +711,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             <div className="mt-4 space-y-4 text-xs">
-              <p className="text-[#193b2c]/80">
-                You're about to delete <strong className="font-bold text-[#193b2c]">{project.name}</strong>.
+              <p className="text-[#111318]/80">
+                You're about to delete <strong className="font-bold text-[#111318]">{project.name}</strong>.
               </p>
 
               {/* Summary of affected records */}
-              <div className="bg-[#e5dac9]/60 border border-[#193b2c]/15 p-4 space-y-1 text-xs">
+              <div className="bg-[#e5dac9]/60 border border-[#0c0d14]/15 p-4 space-y-1 text-xs">
                 <div className="font-bold text-[10px] uppercase tracking-wider text-[#9b7b3b] mb-1">
                   PROJECT CONTAINS:
                 </div>
@@ -739,27 +739,27 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </div>
 
               <div className="space-y-2 pt-2">
-                <div className="font-bold text-[10px] uppercase tracking-wider text-[#193b2c]">
+                <div className="font-bold text-[10px] uppercase tracking-wider text-[#111318]">
                   WHAT SHOULD HAPPEN TO ASSOCIATED RECORDS?
                 </div>
 
-                <label className="flex items-start gap-3 p-3 border border-[#26513d]/40 bg-[#26513d]/10 cursor-pointer">
+                <label className="flex items-start gap-3 p-3 border border-[#c1a05b]/40 bg-[#c1a05b]/10 cursor-pointer">
                   <input
                     type="radio"
                     name="deleteOption"
                     checked={deleteOption === 'archive'}
                     onChange={() => setDeleteOption('archive')}
-                    className="mt-0.5 accent-[#26513d]"
+                    className="mt-0.5 accent-[#c1a05b]"
                   />
                   <div>
-                    <span className="font-bold text-[#26513d]">Archive project instead (Recommended)</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <span className="font-bold text-[#c1a05b]">Archive project instead (Recommended)</span>
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Keep all activities, evidence, and milestones intact. Project moves to Archived tab.
                     </p>
                   </div>
                 </label>
 
-                <label className="flex items-start gap-3 p-3 border border-[#193b2c]/20 bg-[#f3eee4] cursor-pointer">
+                <label className="flex items-start gap-3 p-3 border border-[#0c0d14]/20 bg-[#f3eee4] cursor-pointer">
                   <input
                     type="radio"
                     name="deleteOption"
@@ -769,7 +769,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   />
                   <div>
                     <span className="font-bold">Keep activities & evidence (Disassociate project)</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Delete project container but preserve historical work entries as independent logs.
                     </p>
                   </div>
@@ -785,7 +785,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   />
                   <div>
                     <span className="font-bold text-[#7c2634]">Permanently delete project and records</span>
-                    <p className="text-[11px] text-[#193b2c]/70 mt-0.5">
+                    <p className="text-[11px] text-[#111318]/70 mt-0.5">
                       Irreversibly delete project and all associated activity records.
                     </p>
                   </div>
@@ -808,11 +808,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               )}
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-[#193b2c]/15 mt-6">
+            <div className="flex justify-end gap-3 pt-6 border-t border-[#0c0d14]/15 mt-6">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#193b2c]/20"
+                className="px-4 py-2 text-xs font-bold uppercase tracking-wider border border-[#0c0d14]/20"
               >
                 Cancel
               </button>
@@ -820,7 +820,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 type="button"
                 onClick={handleConfirmDeleteAction}
                 className={`px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4] shadow-md ${
-                  deleteOption === 'delete_all' ? 'bg-[#7c2634] hover:bg-black' : 'bg-[#193b2c]'
+                  deleteOption === 'delete_all' ? 'bg-[#7c2634] hover:bg-black' : 'bg-[#0c0d14]'
                 }`}
               >
                 {deleteOption === 'archive' ? 'Archive Project' : deleteOption === 'keep_associated' ? 'Delete Project (Keep Records)' : 'Permanently Delete'}

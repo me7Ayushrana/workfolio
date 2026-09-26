@@ -295,7 +295,7 @@ export default function EvidencePage() {
     activeSpecificDate !== null
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-6xl px-5 py-8 md:px-10 md:py-10 space-y-8">
@@ -304,7 +304,7 @@ export default function EvidencePage() {
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] hover:text-[#193b2c] transition-colors"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] hover:text-[#111318] transition-colors"
           >
             <ArrowLeft size={14} /> Back to Dashboard
           </Link>
@@ -315,17 +315,17 @@ export default function EvidencePage() {
                 <Layers size={14} />
                 <span>WORKFOLIO EVIDENCE VAULT</span>
               </div>
-              <h1 className="mt-2 font-serif text-5xl font-light md:text-6xl text-[#12241b]">
+              <h1 className="mt-2 font-serif text-5xl font-light md:text-6xl text-[#0c0d14]">
                 Evidence Vault.
               </h1>
-              <p className="mt-2 text-sm text-[#193b2c]/75 max-w-xl leading-relaxed">
+              <p className="mt-2 text-sm text-[#111318]/75 max-w-xl leading-relaxed">
                 Raw, verifiable artifacts and daily logged work updates that support project claims and back your capability profile.
               </p>
             </div>
 
             <button
               onClick={() => setShowLogModal(true)}
-              className="inline-flex items-center gap-2 bg-[#c1a05b] px-5 py-3 text-[10px] font-bold uppercase tracking-[.16em] text-[#0c1612] hover:bg-[#12241b] hover:text-[#f3eee4] transition-colors shadow-sm cursor-pointer shrink-0 font-bold"
+              className="inline-flex items-center gap-2 bg-[#c1a05b] px-5 py-3 text-[10px] font-bold uppercase tracking-[.16em] text-[#08090f] hover:bg-[#0c0d14] hover:text-[#f3eee4] transition-colors shadow-sm cursor-pointer shrink-0 font-bold"
             >
               <Plus size={14} /> + LOG DAILY EVIDENCE
             </button>
@@ -335,7 +335,7 @@ export default function EvidencePage() {
         {/* ========================================================================= */}
         {/* FILTER SECTION: MANUAL SELECTION OF YEAR, MONTH, DATE & KEYWORD SEARCH */}
         {/* ========================================================================= */}
-        <section className="border border-[#c1a05b]/30 bg-[#12241b] p-5 text-[#f3eee4] shadow-xl space-y-4">
+        <section className="border border-[#c1a05b]/30 bg-[#0c0d14] p-5 text-[#f3eee4] shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-[#c1a05b]/20 pb-3">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
               <Search size={14} />
@@ -361,7 +361,7 @@ export default function EvidencePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by keyword, project, work or skill..."
-                className="w-full bg-[#0c1612] border border-[#c1a05b]/40 pl-10 pr-4 py-2 text-xs text-[#f3eee4] placeholder-[#f3eee4]/50 focus:border-[#c1a05b] focus:outline-none"
+                className="w-full bg-[#08090f] border border-[#c1a05b]/40 pl-10 pr-4 py-2 text-xs text-[#f3eee4] placeholder-[#f3eee4]/50 focus:border-[#c1a05b] focus:outline-none"
               />
             </div>
 
@@ -376,7 +376,7 @@ export default function EvidencePage() {
                   setSelectedYear(e.target.value)
                   setActiveSpecificDate(null)
                 }}
-                className="w-full bg-[#0c1612] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
+                className="w-full bg-[#08090f] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Years</option>
                 {availableYears.map((yr) => (
@@ -398,7 +398,7 @@ export default function EvidencePage() {
                   setSelectedMonth(e.target.value)
                   setActiveSpecificDate(null)
                 }}
-                className="w-full bg-[#0c1612] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
+                className="w-full bg-[#08090f] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Months</option>
                 {MONTH_NAMES.map((m) => (
@@ -420,7 +420,7 @@ export default function EvidencePage() {
                   setSelectedDay(e.target.value)
                   setActiveSpecificDate(null)
                 }}
-                className="w-full bg-[#0c1612] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
+                className="w-full bg-[#08090f] border border-[#c1a05b]/40 px-2.5 py-2 text-xs text-[#f3eee4] focus:border-[#c1a05b] focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Days</option>
                 {Array.from({ length: 31 }, (_, i) => {
@@ -448,8 +448,8 @@ export default function EvidencePage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
                     active
-                      ? 'bg-[#c1a05b] text-[#0c1612] border-[#c1a05b]'
-                      : 'bg-[#0c1612] text-[#f3eee4]/80 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:text-[#f3eee4]'
+                      ? 'bg-[#c1a05b] text-[#08090f] border-[#c1a05b]'
+                      : 'bg-[#08090f] text-[#f3eee4]/80 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:text-[#f3eee4]'
                   }`}
                 >
                   {cat}
@@ -462,7 +462,7 @@ export default function EvidencePage() {
         {/* ========================================================================= */}
         {/* WORK HISTORY BY DATE & DAY NAME (CLICKABLE DAY BUTTONS STRIP) */}
         {/* ========================================================================= */}
-        <section className="border border-[#c1a05b]/30 bg-[#12241b] p-5 text-[#f3eee4] shadow-xl space-y-3">
+        <section className="border border-[#c1a05b]/30 bg-[#0c0d14] p-5 text-[#f3eee4] shadow-xl space-y-3">
           <div className="flex items-center justify-between border-b border-[#c1a05b]/20 pb-2">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
               <Calendar size={14} />
@@ -478,8 +478,8 @@ export default function EvidencePage() {
               onClick={() => setActiveSpecificDate(null)}
               className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                 activeSpecificDate === null
-                  ? 'bg-[#c1a05b] text-[#0c1612] border-[#c1a05b] shadow-sm'
-                  : 'bg-[#0c1612] text-[#f3eee4]/80 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:text-[#f3eee4]'
+                  ? 'bg-[#c1a05b] text-[#08090f] border-[#c1a05b] shadow-sm'
+                  : 'bg-[#08090f] text-[#f3eee4]/80 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:text-[#f3eee4]'
               }`}
             >
               ALL DATES ({allEvidenceItems.length})
@@ -493,16 +493,16 @@ export default function EvidencePage() {
                   onClick={() => setActiveSpecificDate(isActive ? null : group.date)}
                   className={`flex items-center gap-2 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#c1a05b] text-[#0c1612] border-[#c1a05b] shadow-md scale-[1.02]'
-                      : 'bg-[#0c1612] text-[#f3eee4]/90 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:bg-[#193b2c] hover:text-[#f3eee4]'
+                      ? 'bg-[#c1a05b] text-[#08090f] border-[#c1a05b] shadow-md scale-[1.02]'
+                      : 'bg-[#08090f] text-[#f3eee4]/90 border-[#c1a05b]/30 hover:border-[#c1a05b] hover:bg-[#0c0d14] hover:text-[#f3eee4]'
                   }`}
                   title={`Click to view ${group.count} work item(s) logged on ${group.formatted}`}
                 >
-                  <Calendar size={12} className={isActive ? 'text-[#0c1612]' : 'text-[#c1a05b]'} />
+                  <Calendar size={12} className={isActive ? 'text-[#08090f]' : 'text-[#c1a05b]'} />
                   <span>{group.formatted}</span>
                   <span
                     className={`px-1.5 py-0.5 text-[8px] font-mono rounded ${
-                      isActive ? 'bg-[#0c1612] text-[#c1a05b]' : 'bg-[#c1a05b]/20 text-[#c1a05b]'
+                      isActive ? 'bg-[#08090f] text-[#c1a05b]' : 'bg-[#c1a05b]/20 text-[#c1a05b]'
                     }`}
                   >
                     {group.count}
@@ -516,13 +516,13 @@ export default function EvidencePage() {
         {/* ========================================================================= */}
         {/* EVIDENCE GRID DISPLAY */}
         {/* ========================================================================= */}
-        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#12241b]">
-          <span className="text-[#12241b] font-serif text-lg">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#0c0d14]">
+          <span className="text-[#0c0d14] font-serif text-lg">
             {activeSpecificDate
               ? `Works performed on ${formatFullDate(activeSpecificDate)}`
               : 'All Verifiable Proofs & Logs'}
           </span>
-          <span className="bg-[#12241b] text-[#c1a05b] px-3 py-1 font-mono">
+          <span className="bg-[#0c0d14] text-[#c1a05b] px-3 py-1 font-mono">
             {filteredItems.length} Entries Found
           </span>
         </div>
@@ -536,11 +536,11 @@ export default function EvidencePage() {
               return (
                 <div
                   key={item.id}
-                  className="group border border-[#c1a05b]/30 bg-[#12241b] text-[#f3eee4] p-6 flex flex-col justify-between shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#c1a05b] hover:shadow-[0_12px_30px_rgba(193,160,91,0.2)] rounded-xs"
+                  className="group border border-[#c1a05b]/30 bg-[#0c0d14] text-[#f3eee4] p-6 flex flex-col justify-between shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#c1a05b] hover:shadow-[0_12px_30px_rgba(193,160,91,0.2)] rounded-xs"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-[.18em]">
-                      <span className="bg-[#c1a05b] text-[#0c1612] px-2.5 py-0.5 font-bold">
+                      <span className="bg-[#c1a05b] text-[#08090f] px-2.5 py-0.5 font-bold">
                         {item.category}
                       </span>
                       <span className="text-[#c1a05b] font-mono">
@@ -556,7 +556,7 @@ export default function EvidencePage() {
                     <div className="flex flex-wrap items-center gap-2 text-[10px] text-[#f3eee4]/80 font-semibold border-b border-[#f3eee4]/10 pb-2">
                       <span className="text-[#c1a05b]">Project: {item.project}</span>
                       <span>•</span>
-                      <span className="flex items-center gap-1 font-mono text-[#c1a05b] bg-[#0c1612] px-2 py-0.5 border border-[#c1a05b]/30">
+                      <span className="flex items-center gap-1 font-mono text-[#c1a05b] bg-[#08090f] px-2 py-0.5 border border-[#c1a05b]/30">
                         <Calendar size={11} /> {fullDateDisplay}
                       </span>
                     </div>
@@ -579,7 +579,7 @@ export default function EvidencePage() {
                         {item.capabilities.map((cap) => (
                           <span
                             key={cap}
-                            className="bg-[#0c1612] text-[#c1a05b] border border-[#c1a05b]/30 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider"
+                            className="bg-[#08090f] text-[#c1a05b] border border-[#c1a05b]/30 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider"
                           >
                             {cap}
                           </span>
@@ -596,7 +596,7 @@ export default function EvidencePage() {
                         href={item.evidenceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 bg-[#c1a05b] text-[#0c1612] px-3.5 py-1.5 font-bold hover:bg-[#f3eee4] transition-colors shadow-sm rounded-xs cursor-pointer"
+                        className="inline-flex items-center gap-1.5 bg-[#c1a05b] text-[#08090f] px-3.5 py-1.5 font-bold hover:bg-[#f3eee4] transition-colors shadow-sm rounded-xs cursor-pointer"
                         title={`Open link: ${item.evidenceUrl}`}
                       >
                         View Source <ExternalLink size={12} />
@@ -608,7 +608,7 @@ export default function EvidencePage() {
             })}
           </div>
         ) : (
-          <div className="border border-dashed border-[#c1a05b]/40 bg-[#12241b] p-12 text-center text-[#f3eee4] flex flex-col items-center justify-center space-y-4 shadow-xl">
+          <div className="border border-dashed border-[#c1a05b]/40 bg-[#0c0d14] p-12 text-center text-[#f3eee4] flex flex-col items-center justify-center space-y-4 shadow-xl">
             <FileText size={36} className="text-[#c1a05b]/60" />
             <h3 className="font-serif text-3xl font-light">No evidence logs found.</h3>
             <p className="text-xs text-[#f3eee4]/70 max-w-md">
@@ -616,7 +616,7 @@ export default function EvidencePage() {
             </p>
             <button
               onClick={clearFilters}
-              className="bg-[#c1a05b] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#0c1612] hover:bg-[#f3eee4] transition-colors cursor-pointer"
+              className="bg-[#c1a05b] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#08090f] hover:bg-[#f3eee4] transition-colors cursor-pointer"
             >
               Reset All Filters
             </button>

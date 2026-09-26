@@ -163,7 +163,7 @@ export const SYSTEM_THEMES: Theme[] = [
     transitionEffect: 'fade',
     colors: {
       bg: '#0a100d',
-      surface: '#13221c',
+      surface: '#121420',
       primary: '#2ec4b6',
       primaryHover: '#20a396',
       text: '#e1eade',

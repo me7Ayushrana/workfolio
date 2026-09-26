@@ -212,12 +212,12 @@ export function QuickCaptureModal({
   }
 
   const activityTypes: { type: ActivityType; label: string; bg: string }[] = [
-    { type: 'BUILD', label: 'Build', bg: 'bg-[#c1a05b] text-[#0c1612]' },
-    { type: 'LEARN', label: 'Learn', bg: 'bg-[#2ec4b6] text-[#0c1612]' },
+    { type: 'BUILD', label: 'Build', bg: 'bg-[#c1a05b] text-[#08090f]' },
+    { type: 'LEARN', label: 'Learn', bg: 'bg-[#2ec4b6] text-[#08090f]' },
     { type: 'RESEARCH', label: 'Research', bg: 'bg-[#8e7cc3] text-[#ffffff]' },
     { type: 'DEBUG', label: 'Debug', bg: 'bg-[#e63946] text-[#ffffff]' },
-    { type: 'DESIGN', label: 'Design', bg: 'bg-[#ff9f1c] text-[#0c1612]' },
-    { type: 'TEST', label: 'Test', bg: 'bg-[#45a29e] text-[#0c1612]' },
+    { type: 'DESIGN', label: 'Design', bg: 'bg-[#ff9f1c] text-[#08090f]' },
+    { type: 'TEST', label: 'Test', bg: 'bg-[#45a29e] text-[#08090f]' },
     { type: 'MEETING', label: 'Meeting', bg: 'bg-[#6c757d] text-[#ffffff]' },
     { type: 'SHIP', label: 'Ship', bg: 'bg-[#38b000] text-[#ffffff]' },
     { type: 'PLAN', label: 'Plan', bg: 'bg-[#0077b6] text-[#ffffff]' },
@@ -230,7 +230,7 @@ export function QuickCaptureModal({
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-[#12241b] p-7 text-[#f3eee4] shadow-2xl border border-[#c1a05b]/40 rounded-xl max-h-[92vh] overflow-y-auto font-sans">
+      <div className="w-full max-w-2xl bg-[#0c0d14] p-7 text-[#f3eee4] shadow-2xl border border-[#c1a05b]/40 rounded-xl max-h-[92vh] overflow-y-auto font-sans">
         
         {/* Header */}
         <div className="flex items-start justify-between border-b border-[#f3eee4]/15 pb-4">
@@ -286,7 +286,7 @@ export function QuickCaptureModal({
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
             {/* NATURAL LANGUAGE AI CAPTURE BOX */}
             {!isEditing && (
-              <div className="border border-[#c1a05b]/40 bg-[#0c1612] p-4 space-y-3">
+              <div className="border border-[#c1a05b]/40 bg-[#08090f] p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
                     <Sparkles size={14} /> NATURAL LANGUAGE AI CAPTURE
@@ -298,7 +298,7 @@ export function QuickCaptureModal({
                   onChange={(e) => setNaturalInput(e.target.value)}
                   placeholder="e.g. Spent 2 hours fixing low-light receipt OCR threshold bugs on Expense Tracker project using Computer Vision skill..."
                   rows={2}
-                  className="w-full border border-[#f3eee4]/15 bg-[#12241b] p-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none"
+                  className="w-full border border-[#f3eee4]/15 bg-[#0c0d14] p-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-[#f3eee4]/40">
@@ -308,7 +308,7 @@ export function QuickCaptureModal({
                     type="button"
                     onClick={handleAIParse}
                     disabled={isParsingAI || !naturalInput.trim()}
-                    className="flex items-center gap-1.5 bg-[#c1a05b] px-3.5 py-1.5 text-xs font-bold text-[#0c1612] hover:bg-[#d4b46c] disabled:opacity-50 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 bg-[#c1a05b] px-3.5 py-1.5 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] disabled:opacity-50 transition-all cursor-pointer"
                   >
                     <Sparkles size={13} />
                     <span>{isParsingAI ? 'STRUCTURING...' : 'PARSE WITH AI'}</span>
@@ -321,7 +321,7 @@ export function QuickCaptureModal({
             {aiDraftStatus === 'DRAFT' && (
               <div className="border border-[#c1a05b] bg-[#1a2d23] p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="bg-[#c1a05b] text-[#0c1612] font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                  <span className="bg-[#c1a05b] text-[#08090f] font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
                     AI GENERATED DRAFT
                   </span>
                   <span className="text-[#f3eee4]/80">Please review structured fields before saving.</span>
@@ -352,9 +352,9 @@ export function QuickCaptureModal({
                         key={tmpl.label}
                         type="button"
                         onClick={() => applyTemplate(tmpl.text)}
-                        className="flex items-center gap-1.5 bg-[#0c1612] hover:bg-[#c1a05b] hover:text-[#0c1612] border border-[#c1a05b]/30 px-3 py-1 text-[10px] font-medium text-[#f3eee4]/80 transition-all rounded-full cursor-pointer group"
+                        className="flex items-center gap-1.5 bg-[#08090f] hover:bg-[#c1a05b] hover:text-[#08090f] border border-[#c1a05b]/30 px-3 py-1 text-[10px] font-medium text-[#f3eee4]/80 transition-all rounded-full cursor-pointer group"
                       >
-                        <Icon size={12} className="text-[#c1a05b] group-hover:text-[#0c1612]" />
+                        <Icon size={12} className="text-[#c1a05b] group-hover:text-[#08090f]" />
                         <span>{tmpl.label}</span>
                       </button>
                     )
@@ -377,7 +377,7 @@ export function QuickCaptureModal({
                     className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all rounded border cursor-pointer ${
                       activityType === t.type
                         ? `${t.bg} border-transparent shadow-md scale-105`
-                        : 'bg-[#0c1612] text-[#f3eee4]/70 border-[#f3eee4]/15 hover:border-[#c1a05b]/50'
+                        : 'bg-[#08090f] text-[#f3eee4]/70 border-[#f3eee4]/15 hover:border-[#c1a05b]/50'
                     }`}
                   >
                     {t.label}
@@ -402,7 +402,7 @@ export function QuickCaptureModal({
                 rows={3}
                 autoFocus
                 placeholder="e.g. Built OCR preprocessing module for low-light receipt handling & added validation rules..."
-                className="w-full border border-[#f3eee4]/20 bg-[#0c1612] p-3.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] rounded transition-all leading-relaxed"
+                className="w-full border border-[#f3eee4]/20 bg-[#08090f] p-3.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] rounded transition-all leading-relaxed"
                 required
               />
             </div>
@@ -431,7 +431,7 @@ export function QuickCaptureModal({
                     setShowProjectDropdown(!showProjectDropdown)
                     setShowSkillDropdown(false)
                   }}
-                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#0c1612] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#c1a05b] rounded transition-all cursor-pointer"
+                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#c1a05b] rounded transition-all cursor-pointer"
                 >
                   <span className="truncate font-medium">
                     {selectedProject ? `${selectedProject.name} (${selectedProject.category})` : 'No Project (General Entry)'}
@@ -440,7 +440,7 @@ export function QuickCaptureModal({
                 </button>
 
                 {showProjectDropdown && (
-                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#c1a05b]/40 bg-[#0c1612] p-2 shadow-2xl rounded">
+                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#c1a05b]/40 bg-[#08090f] p-2 shadow-2xl rounded">
                     <div className="relative mb-2">
                       <Search size={12} className="absolute left-2.5 top-2.5 text-[#f3eee4]/40" />
                       <input
@@ -448,7 +448,7 @@ export function QuickCaptureModal({
                         value={projectSearch}
                         onChange={(e) => setProjectSearch(e.target.value)}
                         placeholder="Search active projects..."
-                        className="w-full border border-[#f3eee4]/20 bg-[#12241b] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
+                        className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                       />
                     </div>
 
@@ -459,7 +459,7 @@ export function QuickCaptureModal({
                         setShowProjectDropdown(false)
                       }}
                       className={`w-full text-left px-2.5 py-2 text-xs transition-colors rounded ${
-                        !selectedProjectId ? 'bg-[#c1a05b] text-[#0c1612] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                        !selectedProjectId ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
                       }`}
                     >
                       No Project (Independent Entry)
@@ -476,7 +476,7 @@ export function QuickCaptureModal({
                           setShowProjectDropdown(false)
                         }}
                         className={`w-full text-left px-2.5 py-2 text-xs flex items-center justify-between transition-colors rounded ${
-                          selectedProjectId === p.id ? 'bg-[#c1a05b] text-[#0c1612] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                          selectedProjectId === p.id ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
                         }`}
                       >
                         <span className="truncate">{p.name}</span>
@@ -508,7 +508,7 @@ export function QuickCaptureModal({
                     setShowSkillDropdown(!showSkillDropdown)
                     setShowProjectDropdown(false)
                   }}
-                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#0c1612] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#2ec4b6] rounded transition-all cursor-pointer"
+                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#2ec4b6] rounded transition-all cursor-pointer"
                 >
                   <span className="truncate font-medium">
                     {selectedSkill ? `${selectedSkill.name} (${selectedSkill.category})` : 'No Skill (General Entry)'}
@@ -517,7 +517,7 @@ export function QuickCaptureModal({
                 </button>
 
                 {showSkillDropdown && (
-                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#2ec4b6]/40 bg-[#0c1612] p-2 shadow-2xl rounded">
+                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#2ec4b6]/40 bg-[#08090f] p-2 shadow-2xl rounded">
                     <div className="relative mb-2">
                       <Search size={12} className="absolute left-2.5 top-2.5 text-[#f3eee4]/40" />
                       <input
@@ -525,7 +525,7 @@ export function QuickCaptureModal({
                         value={skillSearch}
                         onChange={(e) => setSkillSearch(e.target.value)}
                         placeholder="Search skills..."
-                        className="w-full border border-[#f3eee4]/20 bg-[#12241b] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
+                        className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
                       />
                     </div>
 
@@ -536,7 +536,7 @@ export function QuickCaptureModal({
                         setShowSkillDropdown(false)
                       }}
                       className={`w-full text-left px-2.5 py-2 text-xs transition-colors rounded ${
-                        !selectedSkillId ? 'bg-[#2ec4b6] text-[#0c1612] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                        !selectedSkillId ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
                       }`}
                     >
                       No Skill (General Entry)
@@ -553,7 +553,7 @@ export function QuickCaptureModal({
                           setShowSkillDropdown(false)
                         }}
                         className={`w-full text-left px-2.5 py-2 text-xs flex items-center justify-between transition-colors rounded ${
-                          selectedSkillId === s.id ? 'bg-[#2ec4b6] text-[#0c1612] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                          selectedSkillId === s.id ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
                         }`}
                       >
                         <span className="truncate">{s.name}</span>
@@ -567,7 +567,7 @@ export function QuickCaptureModal({
 
             {/* Quick Inline Forms */}
             {showInlineNewProject && (
-              <div className="border border-[#c1a05b]/40 bg-[#0c1612] p-4 space-y-2.5 text-xs rounded">
+              <div className="border border-[#c1a05b]/40 bg-[#08090f] p-4 space-y-2.5 text-xs rounded">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[10px] uppercase tracking-wider text-[#c1a05b]">
                     QUICK CREATE PROJECT
@@ -581,7 +581,7 @@ export function QuickCaptureModal({
                   placeholder="Project Name *"
                   value={newProjName}
                   onChange={(e) => setNewProjName(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
+                  className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                 />
                 <div className="flex gap-2">
                   <input
@@ -589,12 +589,12 @@ export function QuickCaptureModal({
                     placeholder="Category (e.g. AI, Web)"
                     value={newProjCategory}
                     onChange={(e) => setNewProjCategory(e.target.value)}
-                    className="w-1/2 border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                    className="w-1/2 border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleCreateProjectInline}
-                    className="w-1/2 bg-[#c1a05b] text-[#0c1612] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
+                    className="w-1/2 bg-[#c1a05b] text-[#08090f] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
                   >
                     Create & Select
                   </button>
@@ -603,7 +603,7 @@ export function QuickCaptureModal({
             )}
 
             {showInlineNewSkill && (
-              <div className="border border-[#2ec4b6]/40 bg-[#0c1612] p-4 space-y-2.5 text-xs rounded">
+              <div className="border border-[#2ec4b6]/40 bg-[#08090f] p-4 space-y-2.5 text-xs rounded">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[10px] uppercase tracking-wider text-[#2ec4b6]">
                     QUICK CREATE SKILL
@@ -617,7 +617,7 @@ export function QuickCaptureModal({
                   placeholder="Skill Name (e.g. React, Computer Vision) *"
                   value={newSkillName}
                   onChange={(e) => setNewSkillName(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
+                  className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
                 />
                 <div className="flex gap-2">
                   <input
@@ -625,12 +625,12 @@ export function QuickCaptureModal({
                     placeholder="Learning Goal"
                     value={newSkillGoal}
                     onChange={(e) => setNewSkillGoal(e.target.value)}
-                    className="w-1/2 border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                    className="w-1/2 border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                   />
                   <button
                     type="button"
                     onClick={handleCreateSkillInline}
-                    className="w-1/2 bg-[#2ec4b6] text-[#0c1612] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
+                    className="w-1/2 bg-[#2ec4b6] text-[#08090f] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
                   >
                     Create & Select
                   </button>
@@ -647,7 +647,7 @@ export function QuickCaptureModal({
                 value={learning}
                 onChange={(e) => setLearning(e.target.value)}
                 placeholder="e.g. Learned thresholding technique for low-contrast images..."
-                className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#2ec4b6] rounded transition-all"
+                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#2ec4b6] rounded transition-all"
               />
             </div>
 
@@ -660,7 +660,7 @@ export function QuickCaptureModal({
                 value={struggle}
                 onChange={(e) => setStruggle(e.target.value)}
                 placeholder="e.g. Currency sign misclassification on degraded receipts..."
-                className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#ff6b6b] rounded transition-all"
+                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#ff6b6b] rounded transition-all"
               />
             </div>
 
@@ -673,7 +673,7 @@ export function QuickCaptureModal({
                 value={intention}
                 onChange={(e) => setIntention(e.target.value)}
                 placeholder="e.g. Add adaptive thresholding and bounding box validation..."
-                className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] rounded transition-all"
+                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] rounded transition-all"
               />
             </div>
 
@@ -688,7 +688,7 @@ export function QuickCaptureModal({
               </button>
 
               {showAdvanced && (
-                <div className="mt-3 space-y-3 border-t border-[#f3eee4]/15 pt-3 bg-[#0c1612] p-4 border border-[#f3eee4]/15 rounded">
+                <div className="mt-3 space-y-3 border-t border-[#f3eee4]/15 pt-3 bg-[#08090f] p-4 border border-[#f3eee4]/15 rounded">
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]/70 mb-1">
                       Evidence Title / Proof Artifact
@@ -697,7 +697,7 @@ export function QuickCaptureModal({
                       value={evidenceTitle}
                       onChange={(e) => setEvidenceTitle(e.target.value)}
                       placeholder="e.g. OCR Pipeline Test Screenshot & Benchmark Log"
-                      className="w-full border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                     />
                   </div>
                   <div>
@@ -708,7 +708,7 @@ export function QuickCaptureModal({
                       value={evidenceUrl}
                       onChange={(e) => setEvidenceUrl(e.target.value)}
                       placeholder="e.g. https://github.com/org/repo/pull/42"
-                      className="w-full border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                     />
                   </div>
                   <div>
@@ -719,7 +719,7 @@ export function QuickCaptureModal({
                       value={capabilitiesStr}
                       onChange={(e) => setCapabilitiesStr(e.target.value)}
                       placeholder="React, Computer Vision, API Design"
-                      className="w-full border border-[#f3eee4]/20 bg-[#12241b] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                     />
                   </div>
                 </div>
@@ -750,7 +750,7 @@ export function QuickCaptureModal({
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#c1a05b] text-[#0c1612] px-6 py-2.5 text-xs font-bold uppercase tracking-[.16em] shadow-lg hover:bg-[#f3eee4] transition-all rounded cursor-pointer"
+                  className="bg-[#c1a05b] text-[#08090f] px-6 py-2.5 text-xs font-bold uppercase tracking-[.16em] shadow-lg hover:bg-[#f3eee4] transition-all rounded cursor-pointer"
                 >
                   {isEditing ? 'Save Changes' : 'Save Activity'}
                 </button>

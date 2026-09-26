@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased bg-[#f3eee4] text-[#193b2c]">
+      <body className="font-sans antialiased bg-[#f3eee4] text-[#111318]">
         <WorkfolioProvider>
           {children}
           <CommandPalette />

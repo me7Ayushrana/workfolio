@@ -730,7 +730,7 @@ const INITIAL_PROJECTS: ProjectItem[] = [
     description: 'A resilient data layer for actionable conditions.',
     status: 'In progress',
     category: 'Development',
-    accent: 'bg-[#26513d]',
+    accent: 'bg-[#c1a05b]',
     date: '2026-09-18',
     repositoryUrl: 'https://github.com/workfolio/weather-api',
     liveUrl: 'https://weather.workfolio.app',
@@ -1253,7 +1253,7 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     liveUrl?: string,
     documentationUrl?: string
   ): ProjectItem => {
-    const accents = ['bg-[#9b7b3b]', 'bg-[#26513d]', 'bg-[#7c2634]', 'bg-[#d8c8ad]']
+    const accents = ['bg-[#9b7b3b]', 'bg-[#c1a05b]', 'bg-[#7c2634]', 'bg-[#d8c8ad]']
     const newProj: ProjectItem = {
       id: `proj-${Date.now()}`,
       name,

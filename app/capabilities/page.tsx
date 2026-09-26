@@ -28,7 +28,7 @@ export default function CapabilitiesPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-6xl px-5 py-10 md:px-10">
@@ -43,12 +43,12 @@ export default function CapabilitiesPage() {
           WORKFOLIO CAPABILITY INDEX
         </p>
         <h1 className="mt-4 font-serif text-6xl font-light md:text-7xl">What you can show.</h1>
-        <p className="mt-3 text-sm text-[#193b2c]/65 max-w-lg">
+        <p className="mt-3 text-sm text-[#111318]/65 max-w-lg">
           Capabilities are not self-asserted claims—they emerge directly from verified projects and evidence.
         </p>
 
         {/* Constellation Canvas Section */}
-        <section id="constellation" className="mt-12 border border-[#193b2c]/15 bg-[#193b2c] p-8 text-[#f3eee4]">
+        <section id="constellation" className="mt-12 border border-[#0c0d14]/15 bg-[#0c0d14] p-8 text-[#f3eee4]">
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-[#c1a05b]">
             <Sparkles size={14} /> CAPABILITY CONSTELLATION GRAPH
           </div>
@@ -102,7 +102,7 @@ export default function CapabilitiesPage() {
           {items.map((item, index) => (
             <div
               key={item}
-              className="flex items-center justify-between border-b border-[#193b2c]/15 py-6 font-serif text-2xl transition-colors hover:bg-[#e5dac9] px-3"
+              className="flex items-center justify-between border-b border-[#0c0d14]/15 py-6 font-serif text-2xl transition-colors hover:bg-[#e5dac9] px-3"
             >
               <span>
                 <small className="mr-5 font-sans text-[10px] font-bold tracking-[.15em] opacity-40">

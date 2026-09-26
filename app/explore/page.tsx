@@ -111,7 +111,7 @@ export default function ExplorePage() {
   const recentlyViewedResources = useMemo(() => resources.filter((r) => recentlyViewedIds.includes(r.id)), [resources, recentlyViewedIds])
 
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
 
       {/* Hero Banner */}
@@ -119,14 +119,14 @@ export default function ExplorePage() {
 
       <div className="mx-auto max-w-7xl px-5 py-10 md:px-10">
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#193b2c]/15 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#0c0d14]/15 pb-4">
           <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[.18em]">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-4 py-2 transition-all ${
                 activeTab === 'all'
-                  ? 'bg-[#193b2c] text-[#f3eee4]'
-                  : 'bg-[#e5dac9] text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#0c0d14] text-[#f3eee4]'
+                  : 'bg-[#e5dac9] text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
               All Resources ({resources.length})
@@ -135,8 +135,8 @@ export default function ExplorePage() {
               onClick={() => setActiveTab('featured')}
               className={`px-4 py-2 transition-all ${
                 activeTab === 'featured'
-                  ? 'bg-[#193b2c] text-[#f3eee4]'
-                  : 'bg-[#e5dac9] text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#0c0d14] text-[#f3eee4]'
+                  : 'bg-[#e5dac9] text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
               Featured ({featuredList.length})
@@ -145,8 +145,8 @@ export default function ExplorePage() {
               onClick={() => setActiveTab('saved')}
               className={`px-4 py-2 transition-all flex items-center gap-1.5 ${
                 activeTab === 'saved'
-                  ? 'bg-[#193b2c] text-[#f3eee4]'
-                  : 'bg-[#e5dac9] text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#0c0d14] text-[#f3eee4]'
+                  : 'bg-[#e5dac9] text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
               <Bookmark size={12} className={savedResourceIds.length ? 'fill-[#c1a05b] text-[#c1a05b]' : ''} />
@@ -156,19 +156,19 @@ export default function ExplorePage() {
               onClick={() => setActiveTab('implementations')}
               className={`px-4 py-2 transition-all flex items-center gap-1.5 ${
                 activeTab === 'implementations'
-                  ? 'bg-[#193b2c] text-[#f3eee4]'
-                  : 'bg-[#e5dac9] text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#0c0d14] text-[#f3eee4]'
+                  : 'bg-[#e5dac9] text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
-              <CheckCircle2 size={12} className="text-[#26513d]" />
+              <CheckCircle2 size={12} className="text-[#c1a05b]" />
               My Implementations ({implementations.length})
             </button>
             <button
               onClick={() => setActiveTab('collections')}
               className={`px-4 py-2 transition-all ${
                 activeTab === 'collections'
-                  ? 'bg-[#193b2c] text-[#f3eee4]'
-                  : 'bg-[#e5dac9] text-[#193b2c]/70 hover:text-[#193b2c]'
+                  ? 'bg-[#0c0d14] text-[#f3eee4]'
+                  : 'bg-[#e5dac9] text-[#111318]/70 hover:text-[#111318]'
               }`}
             >
               Collections ({collections.length})
@@ -177,25 +177,25 @@ export default function ExplorePage() {
 
           <button
             onClick={() => setShowRequestModal(true)}
-            className="inline-flex items-center gap-2 border border-[#193b2c]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.16em] hover:bg-[#e5dac9]"
+            className="inline-flex items-center gap-2 border border-[#0c0d14]/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.16em] hover:bg-[#e5dac9]"
           >
             <Sparkles size={12} className="text-[#9b7b3b]" /> Request Resource
           </button>
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="mt-8 flex flex-col gap-3 border-b border-[#193b2c]/15 pb-6 lg:flex-row lg:items-center">
+        <div className="mt-8 flex flex-col gap-3 border-b border-[#0c0d14]/15 pb-6 lg:flex-row lg:items-center">
           {/* Search Box */}
-          <div className="flex flex-1 items-center gap-3 border border-[#193b2c]/20 bg-[#e5dac9]/60 px-4 py-2.5">
+          <div className="flex flex-1 items-center gap-3 border border-[#0c0d14]/20 bg-[#e5dac9]/60 px-4 py-2.5">
             <Search size={15} className="text-[#9b7b3b]" />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources, technologies, creators..."
-              className="w-full bg-transparent text-xs text-[#193b2c] outline-none placeholder:text-[#193b2c]/40 font-sans"
+              className="w-full bg-transparent text-xs text-[#111318] outline-none placeholder:text-[#111318]/40 font-sans"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="text-[#193b2c]/40 hover:text-[#193b2c]">
+              <button onClick={() => setSearchQuery('')} className="text-[#111318]/40 hover:text-[#111318]">
                 <X size={14} />
               </button>
             )}
@@ -206,7 +206,7 @@ export default function ExplorePage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border border-[#193b2c]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+              className="border border-[#0c0d14]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
             >
               <option value="All">All Categories</option>
               <option value="AI & Machine Learning">AI & Machine Learning</option>
@@ -220,7 +220,7 @@ export default function ExplorePage() {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="border border-[#193b2c]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+              className="border border-[#0c0d14]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
             >
               <option value="All">All Resource Types</option>
               <option value="PROJECT">Project</option>
@@ -239,7 +239,7 @@ export default function ExplorePage() {
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="border border-[#193b2c]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+              className="border border-[#0c0d14]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
             >
               <option value="All">All Difficulties</option>
               <option value="Beginner">Beginner</option>
@@ -250,7 +250,7 @@ export default function ExplorePage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="border border-[#193b2c]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+              className="border border-[#0c0d14]/20 bg-[#e5dac9]/60 px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
             >
               <option value="Featured">Sort: Featured</option>
               <option value="Newest">Sort: Newest</option>
@@ -267,7 +267,7 @@ export default function ExplorePage() {
             {activeFilterChips.map((chip, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 border border-[#193b2c]/20 bg-[#e5dac9] px-2.5 py-1 text-[#193b2c]"
+                className="inline-flex items-center gap-1.5 border border-[#0c0d14]/20 bg-[#e5dac9] px-2.5 py-1 text-[#111318]"
               >
                 {chip.label}
                 <button onClick={chip.reset} className="hover:text-[#7c2634]">
@@ -298,7 +298,7 @@ export default function ExplorePage() {
               {collections.map((col) => (
                 <div
                   key={col.id}
-                  className="group border border-[#193b2c]/15 bg-[#e5dac9] p-6 flex flex-col justify-between"
+                  className="group border border-[#0c0d14]/15 bg-[#e5dac9] p-6 flex flex-col justify-between"
                 >
                   <div className="relative h-48 w-full overflow-hidden bg-[#122c21]">
                     <Image
@@ -307,17 +307,17 @@ export default function ExplorePage() {
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#193b2c]/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d14]/80 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-4">
-                      <span className="bg-[#9b7b3b] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.18em] text-[#193b2c]">
+                      <span className="bg-[#9b7b3b] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.18em] text-[#111318]">
                         COLLECTION
                       </span>
                       <h3 className="mt-1 font-serif text-3xl font-light text-[#f3eee4]">{col.title}</h3>
                     </div>
                   </div>
                   <div className="mt-4">
-                    <p className="text-xs text-[#193b2c]/70 leading-relaxed">{col.description}</p>
-                    <div className="mt-4 flex items-center justify-between border-t border-[#193b2c]/10 pt-3 text-[10px] font-bold uppercase tracking-[.16em]">
+                    <p className="text-xs text-[#111318]/70 leading-relaxed">{col.description}</p>
+                    <div className="mt-4 flex items-center justify-between border-t border-[#0c0d14]/10 pt-3 text-[10px] font-bold uppercase tracking-[.16em]">
                       <span>{col.resourceCount} Curated Resources</span>
                       <button
                         onClick={() => {
@@ -345,7 +345,7 @@ export default function ExplorePage() {
         ) : (
           /* Primary Resource Grid Section */
           <section className="mt-10">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.18em] text-[#193b2c]/60 mb-6">
+            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.18em] text-[#111318]/60 mb-6">
               <span>Showing {filteredResources.length} Resources</span>
               {activeTab === 'saved' && <span>Your Bookmarked Archive</span>}
               {activeTab === 'implementations' && <span>Your Implemented Work</span>}
@@ -358,9 +358,9 @@ export default function ExplorePage() {
                 ))}
               </div>
             ) : (
-              <div className="my-16 border border-dashed border-[#193b2c]/25 p-16 text-center bg-[#e5dac9]/40">
+              <div className="my-16 border border-dashed border-[#0c0d14]/25 p-16 text-center bg-[#e5dac9]/40">
                 <h3 className="font-serif text-4xl font-light">No resources found</h3>
-                <p className="mt-3 text-xs text-[#193b2c]/65 max-w-md mx-auto">
+                <p className="mt-3 text-xs text-[#111318]/65 max-w-md mx-auto">
                   {activeTab === 'saved'
                     ? "You haven't saved any resources to your bookmark archive yet."
                     : activeTab === 'implementations'
@@ -370,13 +370,13 @@ export default function ExplorePage() {
                 <div className="mt-6 flex justify-center gap-3">
                   <button
                     onClick={clearAllFilters}
-                    className="bg-[#193b2c] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                    className="bg-[#0c0d14] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                   >
                     Clear Filters
                   </button>
                   <button
                     onClick={() => setShowRequestModal(true)}
-                    className="border border-[#193b2c]/20 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em]"
+                    className="border border-[#0c0d14]/20 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em]"
                   >
                     Request a Resource
                   </button>
@@ -388,7 +388,7 @@ export default function ExplorePage() {
 
         {/* Recently Viewed Section */}
         {recentlyViewedResources.length > 0 && (
-          <section className="mt-20 border-t border-[#193b2c]/15 pt-10">
+          <section className="mt-20 border-t border-[#0c0d14]/15 pt-10">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#9b7b3b]">
               <Compass size={13} /> Recently Viewed Resources
             </div>
@@ -397,7 +397,7 @@ export default function ExplorePage() {
                 <Link
                   key={res.id}
                   href={`/explore/${res.slug || res.id}`}
-                  className="group border border-[#193b2c]/10 bg-[#e5dac9] p-4 transition-transform hover:-translate-y-1"
+                  className="group border border-[#0c0d14]/10 bg-[#e5dac9] p-4 transition-transform hover:-translate-y-1"
                 >
                   <div className="flex items-center justify-between text-[8px] font-bold uppercase tracking-[.14em] text-[#9b7b3b]">
                     <span>{res.type}</span>
@@ -406,7 +406,7 @@ export default function ExplorePage() {
                   <h4 className="mt-2 font-serif text-xl leading-snug line-clamp-1 group-hover:text-[#9b7b3b]">
                     {res.title}
                   </h4>
-                  <p className="mt-1 text-[11px] text-[#193b2c]/65 line-clamp-2">{res.description}</p>
+                  <p className="mt-1 text-[11px] text-[#111318]/65 line-clamp-2">{res.description}</p>
                 </Link>
               ))}
             </div>

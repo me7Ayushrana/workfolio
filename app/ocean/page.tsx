@@ -225,7 +225,7 @@ export default function OceanDigitalWorkspacePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0c1612] text-[#f3eee4]">
+    <main className="min-h-screen bg-[#08090f] text-[#f3eee4]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-7xl px-5 py-6 md:px-10 space-y-8">
@@ -246,16 +246,16 @@ export default function OceanDigitalWorkspacePage() {
             href="/digital-workspace"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-2 bg-gradient-to-r from-[#c1a05b] via-[#f3eee4] to-[#c1a05b] px-6 py-2.5 text-xs font-black uppercase tracking-[.22em] text-[#0c1612] border-2 border-[#c1a05b] shadow-[0_0_25px_rgba(193,160,91,0.6)] hover:shadow-[0_0_35px_rgba(243,238,228,0.9)] hover:scale-105 transition-all duration-300 cursor-pointer rounded-xs"
+            className="group flex items-center gap-2 bg-gradient-to-r from-[#c1a05b] via-[#f3eee4] to-[#c1a05b] px-6 py-2.5 text-xs font-black uppercase tracking-[.22em] text-[#08090f] border-2 border-[#c1a05b] shadow-[0_0_25px_rgba(193,160,91,0.6)] hover:shadow-[0_0_35px_rgba(243,238,228,0.9)] hover:scale-105 transition-all duration-300 cursor-pointer rounded-xs"
             title="Open Interactive Digital Workspace Studio in new tab"
           >
             <span>+ CREATE DIGITAL WORKSPACE</span>
-            <ArrowUpRight size={15} className="text-[#0c1612] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight size={15} className="text-[#08090f] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>
 
         {/* HERO FEATURED MEDIA PLAYER DISPLAY - CLEAN VIDEO ONLY (NO YOUTUBE BUTTONS) */}
-        <div className="border border-[#f3eee4]/20 bg-[#12241b] p-3 md:p-4 shadow-2xl space-y-3">
+        <div className="border border-[#f3eee4]/20 bg-[#0c0d14] p-3 md:p-4 shadow-2xl space-y-3">
           {/* Square/Aspect Video Container - Clicking Video Pauses & Redirects to Digital Workspace */}
           <div 
             onClick={handleVideoClick}
@@ -271,14 +271,14 @@ export default function OceanDigitalWorkspacePage() {
               allowFullScreen
             />
             {/* Overlay hint banner on hover */}
-            <div className="absolute top-3 right-3 z-10 bg-[#0c1612]/90 text-[#c1a05b] border border-[#c1a05b]/40 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-3 right-3 z-10 bg-[#08090f]/90 text-[#c1a05b] border border-[#c1a05b]/40 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
               Click Video to Open Digital Workspace Studio in New Tab →
             </div>
 
             {/* Click overlay layer with gold play indicator when paused */}
             {!isPlaying && (
               <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all flex items-center justify-center">
-                <div className="bg-[#c1a05b] text-[#0c1612] p-4 rounded-full shadow-2xl group-hover:scale-110 transition-transform flex items-center justify-center">
+                <div className="bg-[#c1a05b] text-[#08090f] p-4 rounded-full shadow-2xl group-hover:scale-110 transition-transform flex items-center justify-center">
                   <Play size={32} className="fill-current ml-1" />
                 </div>
               </div>
@@ -286,7 +286,7 @@ export default function OceanDigitalWorkspacePage() {
           </div>
 
           {/* DEDICATED PAUSE & PLAY CONTROL STRIP BELOW THE VIDEO */}
-          <div className="flex items-center gap-3 bg-[#0c1612] p-3.5 border border-[#c1a05b]/40 rounded shadow-md">
+          <div className="flex items-center gap-3 bg-[#08090f] p-3.5 border border-[#c1a05b]/40 rounded shadow-md">
             {/* Dedicated Direct Pause Button */}
             <button
               type="button"
@@ -294,8 +294,8 @@ export default function OceanDigitalWorkspacePage() {
               disabled={!isPlaying}
               className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
                 isPlaying
-                  ? 'bg-[#c1a05b] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
-                  : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
+                  ? 'bg-[#c1a05b] text-[#08090f] hover:bg-[#f3eee4] hover:shadow-lg'
+                  : 'bg-[#0c0d14] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
               }`}
               title="Directly Pause Video Playback"
             >
@@ -310,8 +310,8 @@ export default function OceanDigitalWorkspacePage() {
               disabled={isPlaying}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
                 !isPlaying
-                  ? 'bg-[#2ec4b6] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
-                  : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
+                  ? 'bg-[#2ec4b6] text-[#08090f] hover:bg-[#f3eee4] hover:shadow-lg'
+                  : 'bg-[#0c0d14] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
               }`}
               title="Resume Video Playback"
             >
@@ -328,7 +328,7 @@ export default function OceanDigitalWorkspacePage() {
       {/* CREATE DIGITAL WORKSPACE MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#12241b] p-7 text-[#f3eee4] shadow-2xl border border-[#c1a05b]/40 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-[#0c0d14] p-7 text-[#f3eee4] shadow-2xl border border-[#c1a05b]/40 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-[#f3eee4]/15 pb-3 mb-4">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
@@ -351,7 +351,7 @@ export default function OceanDigitalWorkspacePage() {
                   placeholder="e.g. OCR Parsing Engine & Receipt Reconciliation Showcase"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
+                  className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                   required
                 />
               </div>
@@ -365,7 +365,7 @@ export default function OceanDigitalWorkspacePage() {
                   placeholder="e.g. https://www.youtube.com/watch?v=L_LUpnjgPso"
                   value={newYoutubeUrl}
                   onChange={(e) => setNewYoutubeUrl(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                  className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                 />
               </div>
 
@@ -378,7 +378,7 @@ export default function OceanDigitalWorkspacePage() {
                     type="text"
                     value={newChannel}
                     onChange={(e) => setNewChannel(e.target.value)}
-                    className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                    className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                   />
                 </div>
                 <div>
@@ -388,7 +388,7 @@ export default function OceanDigitalWorkspacePage() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                    className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                   >
                     <option value="TECH & AI">TECH & AI</option>
                     <option value="WORKFLOW AUTOMATION">WORKFLOW AUTOMATION</option>
@@ -405,7 +405,7 @@ export default function OceanDigitalWorkspacePage() {
                 <select
                   value={newProjectId}
                   onChange={(e) => setNewProjectId(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                  className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                 >
                   <option value="">-- Independent Digital Workspace --</option>
                   {projects.map((p) => (
@@ -425,7 +425,7 @@ export default function OceanDigitalWorkspacePage() {
                   onChange={(e) => setNewDesc(e.target.value)}
                   rows={3}
                   placeholder="Key showcase points and technical demonstration notes..."
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c1612] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                  className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3 py-2 text-xs text-[#f3eee4] outline-none"
                 />
               </div>
 
@@ -439,7 +439,7 @@ export default function OceanDigitalWorkspacePage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#c1a05b] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-[#0c1612] font-semibold shadow-md"
+                  className="bg-[#c1a05b] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-[#08090f] font-semibold shadow-md"
                 >
                   Create Workspace
                 </button>

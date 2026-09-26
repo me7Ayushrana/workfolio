@@ -147,7 +147,7 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#193b2c] text-[#f3eee4]">
+    <main className="min-h-screen bg-[#0c0d14] text-[#f3eee4]">
       <WorkfolioHeader />
 
       <div className="mx-auto max-w-7xl px-5 py-10 md:px-10">
@@ -169,7 +169,7 @@ export default function AdminPage() {
               if (projects.length) handleSelectProjectToPublish(projects[0].id)
               setShowPublishModal(true)
             }}
-            className="flex items-center gap-2 bg-[#c1a05b] px-6 py-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#193b2c] transition-all hover:bg-[#f3eee4]"
+            className="flex items-center gap-2 bg-[#c1a05b] px-6 py-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#111318] transition-all hover:bg-[#f3eee4]"
           >
             <Plus size={14} /> PUBLISH PROJECT TO EXPLORE
           </button>
@@ -279,7 +279,7 @@ export default function AdminPage() {
                     <span>{res.status}</span>
                     <span>v{res.version}</span>
                   </div>
-                  <span className="mt-3 inline-block bg-[#193b2c] px-2 py-0.5 text-[8px] font-bold tracking-[.14em] text-[#f3eee4]">
+                  <span className="mt-3 inline-block bg-[#0c0d14] px-2 py-0.5 text-[8px] font-bold tracking-[.14em] text-[#f3eee4]">
                     {res.type}
                   </span>
                   <h3 className="mt-4 font-serif text-3xl font-light">{res.title}</h3>
@@ -314,15 +314,15 @@ export default function AdminPage() {
       {/* Publish Project to Explore Modal */}
       {showPublishModal && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#f3eee4] p-8 text-[#193b2c] shadow-2xl border border-[#193b2c]/20 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#193b2c]/15 pb-4">
+          <div className="w-full max-w-2xl bg-[#f3eee4] p-8 text-[#111318] shadow-2xl border border-[#0c0d14]/20 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#0c0d14]/15 pb-4">
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-[.2em] text-[#9b7b3b]">
                   ADMIN PUBLISH FLOW
                 </span>
                 <h2 className="mt-1 font-serif text-3xl font-light">Publish Project to Explore</h2>
               </div>
-              <button onClick={() => setShowPublishModal(false)} className="text-[#193b2c]/50 hover:text-[#193b2c]">
+              <button onClick={() => setShowPublishModal(false)} className="text-[#111318]/50 hover:text-[#111318]">
                 <X size={18} />
               </button>
             </div>
@@ -342,7 +342,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     onClick={handlePublishConfirm}
-                    className="bg-[#193b2c] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                    className="bg-[#0c0d14] px-6 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                   >
                     Confirm & Publish Now
                   </button>
@@ -352,13 +352,13 @@ export default function AdminPage() {
               <form onSubmit={(e) => { e.preventDefault(); setShowPreview(true) }} className="mt-6 space-y-4">
                 {/* Select Project */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                     Select Existing Project to Publish
                   </label>
                   <select
                     value={selectedProjectId}
                     onChange={(e) => handleSelectProjectToPublish(e.target.value)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2.5 text-xs outline-none focus:border-[#9b7b3b]"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2.5 text-xs outline-none focus:border-[#9b7b3b]"
                   >
                     <option value="">-- Standalone Explore Resource --</option>
                     {projects.map((p) => (
@@ -371,27 +371,27 @@ export default function AdminPage() {
 
                 {/* Explore Title */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                     Explore Resource Title
                   </label>
                   <input
                     value={exploreTitle}
                     onChange={(e) => setExploreTitle(e.target.value)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                     required
                   />
                 </div>
 
                 {/* Explore Description */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                     Explore Description
                   </label>
                   <textarea
                     value={exploreDescription}
                     onChange={(e) => setExploreDescription(e.target.value)}
                     rows={3}
-                    className="w-full border border-[#193b2c]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent p-3 text-xs outline-none focus:border-[#9b7b3b]"
                     required
                   />
                 </div>
@@ -399,13 +399,13 @@ export default function AdminPage() {
                 {/* Type & Category */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                       Resource Type
                     </label>
                     <select
                       value={exploreType}
                       onChange={(e) => setExploreType(e.target.value as any)}
-                      className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                      className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                     >
                       <option value="PROJECT">PROJECT</option>
                       <option value="TEMPLATE">TEMPLATE</option>
@@ -422,13 +422,13 @@ export default function AdminPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                       Category
                     </label>
                     <select
                       value={exploreCategory}
                       onChange={(e) => setExploreCategory(e.target.value as any)}
-                      className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                      className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                     >
                       <option value="AI & Machine Learning">AI & Machine Learning</option>
                       <option value="Frontend Systems">Frontend Systems</option>
@@ -443,36 +443,36 @@ export default function AdminPage() {
                 {/* Tech & Tags */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                       Technologies (comma separated)
                     </label>
                     <input
                       value={exploreTech}
                       onChange={(e) => setExploreTech(e.target.value)}
-                      className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                      className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                       Tags (comma separated)
                     </label>
                     <input
                       value={exploreTags}
                       onChange={(e) => setExploreTags(e.target.value)}
-                      className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                      className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                     />
                   </div>
                 </div>
 
                 {/* Cover Image Path */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/80 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/80 mb-1">
                     Cover Image Path
                   </label>
                   <select
                     value={exploreCover}
                     onChange={(e) => setExploreCover(e.target.value)}
-                    className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
+                    className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                   >
                     <option value="/images/mono-1.png">/images/mono-1.png (Expense UI)</option>
                     <option value="/images/mono-2.png">/images/mono-2.png (Analytics UI)</option>
@@ -483,7 +483,7 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-[#193b2c]/15">
+                <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-[#0c0d14]/15">
                   <button
                     type="button"
                     onClick={() => setShowPublishModal(false)}
@@ -493,7 +493,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-[#193b2c] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                    className="bg-[#0c0d14] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]"
                   >
                     Preview Card & Publish
                   </button>

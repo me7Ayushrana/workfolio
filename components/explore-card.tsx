@@ -29,7 +29,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
 
   if (layout === 'featured') {
     return (
-      <div className="group relative overflow-hidden border border-[#193b2c]/15 bg-[#e5dac9] transition-all duration-300 hover:border-[#9b7b3b]">
+      <div className="group relative overflow-hidden border border-[#0c0d14]/15 bg-[#e5dac9] transition-all duration-300 hover:border-[#9b7b3b]">
         <div className="grid gap-0 md:grid-cols-12">
           {/* Large Image Column */}
           <Link href={detailUrl} className="relative block overflow-hidden md:col-span-7 aspect-[16/10] bg-[#122c21]">
@@ -39,19 +39,19 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
               fill
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#193b2c]/80 via-[#193b2c]/20 to-transparent opacity-40 transition-opacity group-hover:opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d14]/80 via-[#193b2c]/20 to-transparent opacity-40 transition-opacity group-hover:opacity-60" />
             <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-              <span className="bg-[#193b2c] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
+              <span className="bg-[#0c0d14] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
                 {resource.type}
               </span>
               {resource.featured && (
-                <span className="bg-[#c1a05b] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-[#193b2c]">
+                <span className="bg-[#c1a05b] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-[#111318]">
                   FEATURED
                 </span>
               )}
             </div>
             <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <span className="inline-flex items-center gap-2 bg-[#f3eee4] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.18em] text-[#193b2c] shadow-md">
+              <span className="inline-flex items-center gap-2 bg-[#f3eee4] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.18em] text-[#111318] shadow-md">
                 VIEW DETAILS <ArrowUpRight size={13} />
               </span>
               <span className="text-[10px] font-medium text-[#f3eee4]">Click image to explore</span>
@@ -79,7 +79,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
                 </h3>
               </Link>
 
-              <p className="mt-3 text-xs leading-relaxed text-[#193b2c]/70 line-clamp-3">
+              <p className="mt-3 text-xs leading-relaxed text-[#111318]/70 line-clamp-3">
                 {resource.description}
               </p>
 
@@ -87,7 +87,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
                 {resource.technologies.slice(0, 4).map((tech) => (
                   <span
                     key={tech}
-                    className="border border-[#193b2c]/15 bg-[#f3eee4]/60 px-2 py-0.5 text-[9px] font-semibold text-[#193b2c]/80"
+                    className="border border-[#0c0d14]/15 bg-[#f3eee4]/60 px-2 py-0.5 text-[9px] font-semibold text-[#111318]/80"
                   >
                     {tech}
                   </span>
@@ -95,13 +95,13 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
               </div>
             </div>
 
-            <div className="mt-8 border-t border-[#193b2c]/10 pt-4 flex items-center justify-between text-[10px] font-medium text-[#193b2c]/60">
+            <div className="mt-8 border-t border-[#0c0d14]/10 pt-4 flex items-center justify-between text-[10px] font-medium text-[#111318]/60">
               <span>Created by {resource.createdBy}</span>
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
                   <Eye size={12} /> {resource.viewsCount}
                 </span>
-                <span className="flex items-center gap-1 text-[#26513d]">
+                <span className="flex items-center gap-1 text-[#c1a05b]">
                   <CheckCircle2 size={12} /> {resource.implementationsCount} used
                 </span>
               </div>
@@ -113,7 +113,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
   }
 
   return (
-    <div className="group flex flex-col justify-between border border-[#193b2c]/12 bg-[#e5dac9] transition-all duration-300 hover:-translate-y-1 hover:border-[#9b7b3b]">
+    <div className="group flex flex-col justify-between border border-[#0c0d14]/12 bg-[#e5dac9] transition-all duration-300 hover:-translate-y-1 hover:border-[#9b7b3b]">
       {/* Large Image Header */}
       <Link href={detailUrl} className="relative block aspect-[16/10] overflow-hidden bg-[#122c21]">
         <Image
@@ -122,16 +122,16 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
           fill
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-104"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#193b2c]/70 via-transparent to-transparent opacity-30 transition-opacity group-hover:opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d14]/70 via-transparent to-transparent opacity-30 transition-opacity group-hover:opacity-50" />
         
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-          <span className="bg-[#193b2c] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
+          <span className="bg-[#0c0d14] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
             {resource.type}
           </span>
           <button
             onClick={handleToggleSave}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f3eee4]/90 text-[#193b2c] shadow-sm transition-transform hover:scale-110"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f3eee4]/90 text-[#111318] shadow-sm transition-transform hover:scale-110"
             title={saved ? 'Saved' : 'Save for later'}
           >
             <Bookmark size={13} className={saved ? 'fill-[#7c2634] text-[#7c2634]' : ''} />
@@ -140,7 +140,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
 
         {/* Hover Overlay Hint */}
         <div className="absolute bottom-3 left-3 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <span className="inline-flex items-center gap-1.5 bg-[#f3eee4] px-2.5 py-1 text-[8px] font-bold uppercase tracking-[.16em] text-[#193b2c]">
+          <span className="inline-flex items-center gap-1.5 bg-[#f3eee4] px-2.5 py-1 text-[8px] font-bold uppercase tracking-[.16em] text-[#111318]">
             VIEW DETAILS <ArrowUpRight size={11} />
           </span>
         </div>
@@ -160,7 +160,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
             </h3>
           </Link>
 
-          <p className="mt-2 text-xs leading-relaxed text-[#193b2c]/65 line-clamp-2">
+          <p className="mt-2 text-xs leading-relaxed text-[#111318]/65 line-clamp-2">
             {resource.description}
           </p>
 
@@ -168,7 +168,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
             {resource.technologies.slice(0, 3).map((tech) => (
               <span
                 key={tech}
-                className="border border-[#193b2c]/15 bg-[#f3eee4]/70 px-1.5 py-0.5 text-[8px] font-semibold text-[#193b2c]/80"
+                className="border border-[#0c0d14]/15 bg-[#f3eee4]/70 px-1.5 py-0.5 text-[8px] font-semibold text-[#111318]/80"
               >
                 {tech}
               </span>
@@ -177,7 +177,7 @@ export function ExploreCard({ resource, layout = 'grid' }: ExploreCardProps) {
         </div>
 
         {/* Footer info */}
-        <div className="mt-6 border-t border-[#193b2c]/10 pt-3 flex items-center justify-between text-[9px] font-medium text-[#193b2c]/60">
+        <div className="mt-6 border-t border-[#0c0d14]/10 pt-3 flex items-center justify-between text-[9px] font-medium text-[#111318]/60">
           <span className="truncate max-w-[150px]">By {resource.createdBy}</span>
           <div className="flex items-center gap-2">
             <span title="Implementations">{resource.implementationsCount} implementations</span>

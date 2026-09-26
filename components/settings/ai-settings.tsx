@@ -145,7 +145,7 @@ export function AISettings() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowInfoModal(true)}
-              className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all shadow-lg cursor-pointer"
+              className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all shadow-lg cursor-pointer"
             >
               <Info size={16} />
               <span>KEY INTEGRATION GUIDE</span>
@@ -417,7 +417,7 @@ export function AISettings() {
               <button
                 onClick={handleTestGemini}
                 disabled={testingGemini}
-                className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer shadow-lg"
+                className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow-lg"
               >
                 {testingGemini ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
                 <span>TEST</span>
@@ -490,7 +490,7 @@ export function AISettings() {
               <button
                 onClick={handleTestGroq}
                 disabled={testingGroq}
-                className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer shadow-lg"
+                className="flex items-center gap-2 rounded-2xl border border-[#c1a05b] bg-[#c1a05b]/10 px-5 py-3 text-xs font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow-lg"
               >
                 {testingGroq ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
                 <span>TEST</span>
@@ -563,7 +563,7 @@ export function AISettings() {
             <button
               onClick={handleSyncGitHub}
               disabled={syncingGithub}
-              className="w-full rounded-2xl border border-[#c1a05b] bg-[#c1a05b] px-5 py-3 text-xs font-bold text-[#0c1612] hover:bg-[#d4b46c] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              className="w-full rounded-2xl border border-[#c1a05b] bg-[#c1a05b] px-5 py-3 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
             >
               {syncingGithub ? <RefreshCw size={15} className="animate-spin" /> : <RefreshCw size={15} />}
               <span>SYNC GITHUB ACTIVITY</span>
@@ -602,7 +602,7 @@ export function AISettings() {
 
                 <button
                   onClick={() => handleConvertGitHubToDraft(act)}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3.5 py-2 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer shadow-md"
+                  className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3.5 py-2 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow-md"
                 >
                   <Sparkles size={13} />
                   <span>ADD AS EVIDENCE</span>
@@ -619,7 +619,7 @@ export function AISettings() {
           <div className="w-full max-w-3xl rounded-3xl border border-[#c1a05b]/40 bg-[#0d0e15] p-7 text-[#f3eee4] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#c1a05b] text-[#0c1612] font-bold">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#c1a05b] text-[#08090f] font-bold">
                   <Info size={22} />
                 </div>
                 <div>
@@ -714,7 +714,7 @@ export function AISettings() {
             <div className="flex justify-end border-t border-white/10 pt-4">
               <button
                 onClick={() => setShowInfoModal(false)}
-                className="rounded-2xl bg-[#c1a05b] px-6 py-2.5 text-xs font-bold text-[#0c1612] hover:bg-[#d4b46c] cursor-pointer"
+                className="rounded-2xl bg-[#c1a05b] px-6 py-2.5 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] cursor-pointer"
               >
                 GOT IT, CLOSE GUIDE
               </button>

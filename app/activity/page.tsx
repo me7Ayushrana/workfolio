@@ -112,30 +112,30 @@ function ActivityContent() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-8 md:px-10 space-y-8">
       {/* Navigation Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between border-b border-[#193b2c]/10 pb-4 gap-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-[#0c0d14]/10 pb-4 gap-3">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#193b2c]/70 hover:text-[#193b2c]"
+          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#111318]/70 hover:text-[#111318]"
         >
           <ArrowLeft size={14} /> Back to Dashboard
         </Link>
 
         <button
           onClick={() => setShowLogModal(true)}
-          className="flex items-center gap-2 bg-[#193b2c] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4] hover:bg-[#9b7b3b] shadow-sm"
+          className="flex items-center gap-2 bg-[#0c0d14] px-4 py-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4] hover:bg-[#9b7b3b] shadow-sm"
         >
           <Plus size={13} /> + LOG ACTIVITY
         </button>
       </div>
 
       {/* Page Title Header */}
-      <div className="flex flex-col justify-between gap-6 border-b border-[#193b2c]/15 pb-8 md:flex-row md:items-end">
+      <div className="flex flex-col justify-between gap-6 border-b border-[#0c0d14]/15 pb-8 md:flex-row md:items-end">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-[.25em] text-[#9b7b3b]">
             WORKFOLIO WORK JOURNAL / PROOF LEDGER
           </span>
           <h1 className="mt-2 font-serif text-5xl font-light md:text-7xl">Work Journal.</h1>
-          <p className="mt-2 text-sm text-[#193b2c]/70 max-w-xl">
+          <p className="mt-2 text-sm text-[#111318]/70 max-w-xl">
             A continuous, chronological record of everything built, learned, solved, and shipped across projects and skills.
           </p>
         </div>
@@ -149,12 +149,12 @@ function ActivityContent() {
               FILTERED VIEW:
             </span>
             {selectedProject && (
-              <span className="bg-[#193b2c] text-[#f3eee4] px-2.5 py-1 text-[10px] font-bold uppercase">
+              <span className="bg-[#0c0d14] text-[#f3eee4] px-2.5 py-1 text-[10px] font-bold uppercase">
                 Project: {selectedProject.name}
               </span>
             )}
             {selectedSkill && (
-              <span className="bg-[#26513d] text-[#f3eee4] px-2.5 py-1 text-[10px] font-bold uppercase">
+              <span className="bg-[#c1a05b] text-[#f3eee4] px-2.5 py-1 text-[10px] font-bold uppercase">
                 Skill: {selectedSkill.name}
               </span>
             )}
@@ -179,17 +179,17 @@ function ActivityContent() {
       )}
 
       {/* SEARCH & MULTI-CRITERIA FILTERS BAR */}
-      <div className="bg-[#e5dac9] p-4 border border-[#193b2c]/15 space-y-3">
+      <div className="bg-[#e5dac9] p-4 border border-[#0c0d14]/15 space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           {/* Search Input */}
           <div className="relative md:col-span-1">
-            <Search size={14} className="absolute left-3 top-3 text-[#193b2c]/40" />
+            <Search size={14} className="absolute left-3 top-3 text-[#111318]/40" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search work journal..."
-              className="w-full border border-[#193b2c]/20 bg-[#f3eee4] pl-9 pr-3 py-2 text-xs outline-none"
+              className="w-full border border-[#0c0d14]/20 bg-[#f3eee4] pl-9 pr-3 py-2 text-xs outline-none"
             />
           </div>
 
@@ -198,7 +198,7 @@ function ActivityContent() {
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="w-full border border-[#193b2c]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
+              className="w-full border border-[#0c0d14]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
             >
               <option value="">All Projects</option>
               {projects.map((p) => (
@@ -214,7 +214,7 @@ function ActivityContent() {
             <select
               value={selectedSkillId}
               onChange={(e) => setSelectedSkillId(e.target.value)}
-              className="w-full border border-[#193b2c]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
+              className="w-full border border-[#0c0d14]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
             >
               <option value="">All Skills</option>
               {skills.map((s) => (
@@ -230,7 +230,7 @@ function ActivityContent() {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full border border-[#193b2c]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
+              className="w-full border border-[#0c0d14]/20 bg-[#f3eee4] px-3 py-2 text-xs outline-none"
             >
               <option value="">All Activity Types</option>
               {activityTypesList.map((t) => (
@@ -250,20 +250,20 @@ function ActivityContent() {
           <span>CHRONOLOGICAL STREAM</span>
         </div>
 
-        <div className="space-y-6 border-l-2 border-[#193b2c]/15 pl-6">
+        <div className="space-y-6 border-l-2 border-[#0c0d14]/15 pl-6">
           {filteredActivities.length ? (
             filteredActivities.map((act) => {
               const actProj = projects.find((p) => p.id === act.projectId)
               const actSkill = skills.find((s) => s.id === act.skillId)
 
               return (
-                <div key={act.id} className="relative bg-[#e5dac9]/40 border border-[#193b2c]/15 p-6 space-y-4 hover:border-[#193b2c]/40 transition-all">
-                  <div className="absolute -left-[31px] top-7 h-3.5 w-3.5 rounded-full bg-[#193b2c] border-2 border-[#f3eee4]" />
+                <div key={act.id} className="relative bg-[#e5dac9]/40 border border-[#0c0d14]/15 p-6 space-y-4 hover:border-[#0c0d14]/40 transition-all">
+                  <div className="absolute -left-[31px] top-7 h-3.5 w-3.5 rounded-full bg-[#0c0d14] border-2 border-[#f3eee4]" />
 
                   {/* Metadata Header */}
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-[.14em]">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="bg-[#193b2c] text-[#f3eee4] px-2.5 py-1">{act.type}</span>
+                      <span className="bg-[#0c0d14] text-[#f3eee4] px-2.5 py-1">{act.type}</span>
 
                       {/* Project Badge */}
                       {act.projectId && actProj ? (
@@ -274,27 +274,27 @@ function ActivityContent() {
                           <Folder size={10} /> {actProj.name} ↗
                         </Link>
                       ) : (
-                        <span className="text-[#193b2c]/40 italic">No Project</span>
+                        <span className="text-[#111318]/40 italic">No Project</span>
                       )}
 
                       {/* Skill Badge */}
                       {act.skillId && actSkill ? (
                         <Link
                           href={`/skills/${act.skillId}`}
-                          className="bg-[#26513d] text-[#f3eee4] px-2.5 py-1 flex items-center gap-1 hover:underline"
+                          className="bg-[#c1a05b] text-[#f3eee4] px-2.5 py-1 flex items-center gap-1 hover:underline"
                         >
                           <GraduationCap size={10} /> {actSkill.name} ↗
                         </Link>
                       ) : (
-                        <span className="text-[#193b2c]/40 italic">No Skill</span>
+                        <span className="text-[#111318]/40 italic">No Skill</span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-[#193b2c]/60">
+                    <div className="flex items-center gap-3 text-[#111318]/60">
                       <span>{act.date} · {act.time}</span>
                       <button
                         onClick={() => setEditingActivity(act)}
-                        className="bg-[#c1a05b]/20 hover:bg-[#c1a05b] text-[#c1a05b] hover:text-[#0c1612] border border-[#c1a05b]/40 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                        className="bg-[#c1a05b]/20 hover:bg-[#c1a05b] text-[#c1a05b] hover:text-[#08090f] border border-[#c1a05b]/40 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
                         title="Edit entry details"
                       >
                         Edit
@@ -325,7 +325,7 @@ function ActivityContent() {
                   {/* Learnings, Struggles, Intentions */}
                   <div className="grid gap-3 md:grid-cols-3 text-xs pt-1">
                     {act.learning && (
-                      <div className="bg-[#26513d]/10 border-l-2 border-[#26513d] p-3 text-[#26513d]">
+                      <div className="bg-[#c1a05b]/10 border-l-2 border-[#c1a05b] p-3 text-[#c1a05b]">
                         <span className="text-[9px] font-bold uppercase tracking-wider block mb-0.5 opacity-80">
                           WHAT WAS LEARNED
                         </span>
@@ -354,13 +354,13 @@ function ActivityContent() {
 
                   {/* Evidence & Capabilities */}
                   {(act.evidenceTitle || act.capabilities.length > 0) && (
-                    <div className="flex flex-wrap items-center justify-between border-t border-[#193b2c]/10 pt-3 text-xs gap-2">
+                    <div className="flex flex-wrap items-center justify-between border-t border-[#0c0d14]/10 pt-3 text-xs gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-[#193b2c]/50">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-[#111318]/50">
                           CAPABILITIES:
                         </span>
                         {act.capabilities.map((c, idx) => (
-                          <span key={idx} className="border border-[#193b2c]/20 bg-[#f3eee4] px-2 py-0.5 text-[10px]">
+                          <span key={idx} className="border border-[#0c0d14]/20 bg-[#f3eee4] px-2 py-0.5 text-[10px]">
                             {c}
                           </span>
                         ))}
@@ -370,7 +370,7 @@ function ActivityContent() {
                         <div className="text-[10px] font-bold uppercase text-[#9b7b3b] flex items-center gap-1">
                           <span>EVIDENCE: {act.evidenceTitle}</span>
                           {act.evidenceUrl && (
-                            <a href={act.evidenceUrl} target="_blank" rel="noreferrer" className="hover:underline text-[#26513d]">
+                            <a href={act.evidenceUrl} target="_blank" rel="noreferrer" className="hover:underline text-[#c1a05b]">
                               [ View ↗ ]
                             </a>
                           )}
@@ -382,15 +382,15 @@ function ActivityContent() {
               )
             })
           ) : (
-            <div className="bg-[#e5dac9]/40 border border-[#193b2c]/10 p-12 text-center space-y-3">
-              <BookOpen className="mx-auto text-[#193b2c]/40" size={36} />
+            <div className="bg-[#e5dac9]/40 border border-[#0c0d14]/10 p-12 text-center space-y-3">
+              <BookOpen className="mx-auto text-[#111318]/40" size={36} />
               <h3 className="font-serif text-3xl font-light">No Matching Work Entries</h3>
-              <p className="text-xs text-[#193b2c]/60 max-w-sm mx-auto">
+              <p className="text-xs text-[#111318]/60 max-w-sm mx-auto">
                 No work entries match the selected project, skill, or search criteria.
               </p>
               <button
                 onClick={() => setShowLogModal(true)}
-                className="bg-[#193b2c] px-6 py-2.5 text-xs font-bold uppercase tracking-[.16em] text-[#f3eee4]"
+                className="bg-[#0c0d14] px-6 py-2.5 text-xs font-bold uppercase tracking-[.16em] text-[#f3eee4]"
               >
                 + Log Activity Now
               </button>
@@ -401,24 +401,24 @@ function ActivityContent() {
 
       {/* RELINK MODAL */}
       {editingActivityId && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#193b2c]/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-[#f3eee4] p-6 text-[#193b2c] shadow-2xl border border-[#193b2c]/20">
-            <div className="flex justify-between items-center border-b border-[#193b2c]/15 pb-3 mb-4">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0c0d14]/75 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-[#f3eee4] p-6 text-[#111318] shadow-2xl border border-[#0c0d14]/20">
+            <div className="flex justify-between items-center border-b border-[#0c0d14]/15 pb-3 mb-4">
               <h2 className="font-serif text-2xl font-light">Change Activity Linkage</h2>
-              <button onClick={() => setEditingActivityId(null)} className="text-[#193b2c]/50">
+              <button onClick={() => setEditingActivityId(null)} className="text-[#111318]/50">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSaveRelink} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#193b2c]/70 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#111318]/70 mb-1">
                   Associated Project
                 </label>
                 <select
                   value={relinkProjectId}
                   onChange={(e) => setRelinkProjectId(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 >
                   <option value="">-- No Project (Independent Entry) --</option>
                   {projects.map((p) => (
@@ -430,13 +430,13 @@ function ActivityContent() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#26513d] mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] mb-1">
                   Associated Skill / Learning
                 </label>
                 <select
                   value={relinkSkillId}
                   onChange={(e) => setRelinkSkillId(e.target.value)}
-                  className="w-full border border-[#193b2c]/20 bg-transparent px-3 py-2 text-xs outline-none"
+                  className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none"
                 >
                   <option value="">-- No Skill (Independent Entry) --</option>
                   {skills.map((s) => (
@@ -447,17 +447,17 @@ function ActivityContent() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#193b2c]/15">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#0c0d14]/15">
                 <button
                   type="button"
                   onClick={() => setEditingActivityId(null)}
-                  className="px-4 py-2 text-xs font-bold uppercase text-[#193b2c]/60"
+                  className="px-4 py-2 text-xs font-bold uppercase text-[#111318]/60"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#193b2c] px-5 py-2 text-xs font-bold uppercase text-[#f3eee4]"
+                  className="bg-[#0c0d14] px-5 py-2 text-xs font-bold uppercase text-[#f3eee4]"
                 >
                   Save Linkage
                 </button>
@@ -480,7 +480,7 @@ function ActivityContent() {
 
 export default function ActivityPage() {
   return (
-    <main className="min-h-screen bg-[#f3eee4] text-[#193b2c]">
+    <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
       <Suspense fallback={<div className="p-10 text-center text-xs">Loading Work Journal...</div>}>
         <ActivityContent />

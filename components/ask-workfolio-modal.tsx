@@ -104,12 +104,12 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-6 backdrop-blur-md transition-all">
-      <div className="flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#c1a05b]/30 bg-[#0c1612]/95 text-[#f3eee4] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+      <div className="flex h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#c1a05b]/30 bg-[#08090f]/95 text-[#f3eee4] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-xl">
         
         {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-[#f3eee4]/10 bg-[#12241b]/90 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-[#f3eee4]/10 bg-[#0c0d14]/90 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#c1a05b] to-[#8c6b28] text-[#0c1612] shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#c1a05b] to-[#8c6b28] text-[#08090f] shadow-md">
               <Sparkles size={20} />
             </div>
             <div>
@@ -145,7 +145,7 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
             <Link
               href="/settings"
               onClick={onClose}
-              className="hidden sm:flex items-center gap-1.5 rounded-lg border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3 py-1.5 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all"
+              className="hidden sm:flex items-center gap-1.5 rounded-lg border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3 py-1.5 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all"
             >
               <Key size={13} />
               <span>Configure Keys</span>
@@ -191,8 +191,8 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
               <div
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-bold ${
                   msg.sender === 'user'
-                    ? 'bg-[#c1a05b] text-[#0c1612]'
-                    : 'bg-[#193b2c] border border-[#c1a05b]/40 text-[#c1a05b]'
+                    ? 'bg-[#c1a05b] text-[#08090f]'
+                    : 'bg-[#0c0d14] border border-[#c1a05b]/40 text-[#c1a05b]'
                 }`}
               >
                 {msg.sender === 'user' ? <User size={14} /> : <Bot size={15} />}
@@ -202,10 +202,10 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
               <div
                 className={`max-w-[82%] text-xs leading-relaxed transition-all ${
                   msg.sender === 'user'
-                    ? 'rounded-2xl rounded-tr-none border border-[#c1a05b]/30 bg-[#193b2c] text-[#f3eee4] p-4 shadow-md'
+                    ? 'rounded-2xl rounded-tr-none border border-[#c1a05b]/30 bg-[#0c0d14] text-[#f3eee4] p-4 shadow-md'
                     : msg.isError
                     ? 'rounded-2xl rounded-tl-none border border-red-500/40 bg-red-950/30 text-red-200 p-4 shadow-md'
-                    : 'rounded-2xl rounded-tl-none border border-[#f3eee4]/10 bg-[#12241b]/90 text-[#f3eee4] p-4 shadow-md'
+                    : 'rounded-2xl rounded-tl-none border border-[#f3eee4]/10 bg-[#0c0d14]/90 text-[#f3eee4] p-4 shadow-md'
                 }`}
               >
                 {msg.sender === 'ai' && !msg.isError && (
@@ -224,7 +224,7 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
                     <Link
                       href="/settings"
                       onClick={onClose}
-                      className="flex items-center gap-1 rounded bg-[#c1a05b] px-3 py-1 text-[10px] font-bold text-[#0c1612] hover:bg-[#d4b46c]"
+                      className="flex items-center gap-1 rounded bg-[#c1a05b] px-3 py-1 text-[10px] font-bold text-[#08090f] hover:bg-[#d4b46c]"
                     >
                       <Key size={12} />
                       <span>Configure API Key</span>
@@ -252,7 +252,7 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
           ))}
 
           {loading && (
-            <div className="flex items-center gap-3 text-xs text-[#c1a05b] bg-[#12241b]/60 border border-[#c1a05b]/20 p-3.5 rounded-2xl animate-pulse max-w-sm">
+            <div className="flex items-center gap-3 text-xs text-[#c1a05b] bg-[#0c0d14]/60 border border-[#c1a05b]/20 p-3.5 rounded-2xl animate-pulse max-w-sm">
               <Sparkles size={16} className="animate-spin text-[#c1a05b]" />
               <span>Analyzing Workfolio records & formulating answer...</span>
             </div>
@@ -270,7 +270,7 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
                 key={idx}
                 onClick={() => handleSend(p)}
                 disabled={loading}
-                className="rounded-xl border border-[#f3eee4]/15 bg-[#12241b] px-3 py-1.5 text-[11px] text-[#f3eee4]/80 hover:border-[#c1a05b] hover:bg-[#c1a05b]/10 hover:text-[#c1a05b] transition-all text-left"
+                className="rounded-xl border border-[#f3eee4]/15 bg-[#0c0d14] px-3 py-1.5 text-[11px] text-[#f3eee4]/80 hover:border-[#c1a05b] hover:bg-[#c1a05b]/10 hover:text-[#c1a05b] transition-all text-left"
               >
                 {p}
               </button>
@@ -279,7 +279,7 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
         </div>
 
         {/* INPUT FORM */}
-        <div className="border-t border-[#f3eee4]/10 bg-[#12241b] p-4">
+        <div className="border-t border-[#f3eee4]/10 bg-[#0c0d14] p-4">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -292,12 +292,12 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ask anything about your work, skills, or projects..."
-              className="flex-1 rounded-xl border border-[#f3eee4]/20 bg-[#0c1612] px-4 py-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none transition-all"
+              className="flex-1 rounded-xl border border-[#f3eee4]/20 bg-[#08090f] px-4 py-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none transition-all"
             />
             <button
               type="submit"
               disabled={loading || !query.trim()}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] px-5 py-3 text-xs font-bold text-[#0c1612] hover:opacity-90 disabled:opacity-40 transition-all shadow-md cursor-pointer"
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] px-5 py-3 text-xs font-bold text-[#08090f] hover:opacity-90 disabled:opacity-40 transition-all shadow-md cursor-pointer"
             >
               <span>SEND</span>
               <Send size={14} />

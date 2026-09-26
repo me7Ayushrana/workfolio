@@ -98,26 +98,26 @@ export function CommandPalette() {
   const isFilterActive = filterDate || filterMonth !== 'ALL' || filterYear !== 'ALL'
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-[#193b2c]/60 p-4 pt-12 backdrop-blur-sm">
-      <div className="w-full max-w-2xl overflow-hidden bg-[#f3eee4] text-[#193b2c] shadow-2xl border border-[#193b2c]/20 rounded-lg">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-[#0c0d14]/60 p-4 pt-12 backdrop-blur-sm">
+      <div className="w-full max-w-2xl overflow-hidden bg-[#f3eee4] text-[#111318] shadow-2xl border border-[#0c0d14]/20 rounded-lg">
         
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-[#193b2c]/15 px-5 py-3.5 bg-[#f8f5ee]">
+        <div className="flex items-center gap-3 border-b border-[#0c0d14]/15 px-5 py-3.5 bg-[#f8f5ee]">
           <Search size={18} className="text-[#9b7b3b]" />
           <input
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search projects, skills, work journal, evidence... (⌘K)"
-            className="w-full bg-transparent text-sm text-[#193b2c] outline-none placeholder:text-[#193b2c]/40 font-sans"
+            className="w-full bg-transparent text-sm text-[#111318] outline-none placeholder:text-[#111318]/40 font-sans"
           />
-          <button onClick={() => setOpen(false)} className="text-[#193b2c]/40 hover:text-[#193b2c]">
+          <button onClick={() => setOpen(false)} className="text-[#111318]/40 hover:text-[#111318]">
             <X size={18} />
           </button>
         </div>
 
         {/* DATE / MONTH / YEAR FILTER CONTROL BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#193b2c]/15 bg-[#ebd9c2]/50 px-5 py-2.5 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#0c0d14]/15 bg-[#ebd9c2]/50 px-5 py-2.5 text-xs">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider text-[#9b7b3b]">
               <Calendar size={13} /> Filter Work:
@@ -128,7 +128,7 @@ export function CommandPalette() {
               type="date"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
-              className="bg-[#f3eee4] border border-[#193b2c]/20 px-2 py-1 rounded text-xs text-[#193b2c] font-mono outline-none focus:border-[#9b7b3b]"
+              className="bg-[#f3eee4] border border-[#0c0d14]/20 px-2 py-1 rounded text-xs text-[#111318] font-mono outline-none focus:border-[#9b7b3b]"
               title="Filter by exact date"
             />
 
@@ -136,7 +136,7 @@ export function CommandPalette() {
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="bg-[#f3eee4] border border-[#193b2c]/20 px-2 py-1 rounded text-xs text-[#193b2c] font-sans outline-none focus:border-[#9b7b3b]"
+              className="bg-[#f3eee4] border border-[#0c0d14]/20 px-2 py-1 rounded text-xs text-[#111318] font-sans outline-none focus:border-[#9b7b3b]"
             >
               <option value="ALL">All Months</option>
               <option value="01">Jan</option>
@@ -157,7 +157,7 @@ export function CommandPalette() {
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(e.target.value)}
-              className="bg-[#f3eee4] border border-[#193b2c]/20 px-2 py-1 rounded text-xs text-[#193b2c] font-sans outline-none focus:border-[#9b7b3b]"
+              className="bg-[#f3eee4] border border-[#0c0d14]/20 px-2 py-1 rounded text-xs text-[#111318] font-sans outline-none focus:border-[#9b7b3b]"
             >
               <option value="ALL">All Years</option>
               <option value="2026">2026</option>
@@ -182,8 +182,8 @@ export function CommandPalette() {
           
           {/* WORK PERFORMED / ACTIVITY LOGS BY DATE */}
           <div>
-            <div className="flex items-center justify-between border-b border-[#193b2c]/10 pb-1.5 mb-2 px-2">
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#193b2c]">
+            <div className="flex items-center justify-between border-b border-[#0c0d14]/10 pb-1.5 mb-2 px-2">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#111318]">
                 <BookOpen size={12} className="text-[#9b7b3b]" />
                 <span>Work Performed Logged ({filteredActivities.length})</span>
               </div>
@@ -200,15 +200,15 @@ export function CommandPalette() {
                   <button
                     key={act.id}
                     onClick={() => handleSelect('/activity')}
-                    className="flex w-full flex-col p-3 text-left transition-colors hover:bg-[#e5dac9] border border-[#193b2c]/10 rounded bg-[#fcfaf5]"
+                    className="flex w-full flex-col p-3 text-left transition-colors hover:bg-[#e5dac9] border border-[#0c0d14]/10 rounded bg-[#fcfaf5]"
                   >
                     <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-[#9b7b3b] mb-1">
-                      <span className="bg-[#193b2c] text-[#f3eee4] px-1.5 py-0.5 font-mono">{act.date} · {act.time}</span>
-                      <span className="text-[#26513d]">{act.projectTitle || 'Work Journal Log'}</span>
+                      <span className="bg-[#0c0d14] text-[#f3eee4] px-1.5 py-0.5 font-mono">{act.date} · {act.time}</span>
+                      <span className="text-[#c1a05b]">{act.projectTitle || 'Work Journal Log'}</span>
                     </div>
-                    <strong className="font-serif text-sm font-normal text-[#193b2c] leading-snug">{act.work}</strong>
+                    <strong className="font-serif text-sm font-normal text-[#111318] leading-snug">{act.work}</strong>
                     {act.learning && (
-                      <p className="mt-1 text-xs text-[#26513d] line-clamp-1">
+                      <p className="mt-1 text-xs text-[#c1a05b] line-clamp-1">
                         <strong>Learned:</strong> {act.learning}
                       </p>
                     )}
@@ -216,7 +216,7 @@ export function CommandPalette() {
                 ))}
               </div>
             ) : (
-              <p className="px-2 text-xs text-[#193b2c]/50 py-2">
+              <p className="px-2 text-xs text-[#111318]/50 py-2">
                 No work performed matching the selected date, month, year or query.
               </p>
             )}
@@ -225,7 +225,7 @@ export function CommandPalette() {
           {/* User Skills */}
           {query.trim() && (
             <div>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#26513d] mb-2 px-2 border-b border-[#193b2c]/10 pb-1">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b] mb-2 px-2 border-b border-[#0c0d14]/10 pb-1">
                 <GraduationCap size={12} /> Skills ({filteredSkills.length})
               </div>
               {filteredSkills.length ? (
@@ -238,21 +238,21 @@ export function CommandPalette() {
                     >
                       <div>
                         <strong className="font-serif text-base font-normal">{s.name}</strong>
-                        <p className="mt-0.5 text-xs text-[#26513d] font-medium">Focus: "{s.currentlyLearning}"</p>
+                        <p className="mt-0.5 text-xs text-[#c1a05b] font-medium">Focus: "{s.currentlyLearning}"</p>
                       </div>
-                      <span className="text-[9px] uppercase tracking-[.12em] bg-[#26513d] text-[#f3eee4] px-2 py-0.5">{s.status}</span>
+                      <span className="text-[9px] uppercase tracking-[.12em] bg-[#c1a05b] text-[#f3eee4] px-2 py-0.5">{s.status}</span>
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="px-2 text-xs text-[#193b2c]/50">No matching skills.</p>
+                <p className="px-2 text-xs text-[#111318]/50">No matching skills.</p>
               )}
             </div>
           )}
 
           {/* User Projects */}
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b] mb-2 px-2 border-b border-[#193b2c]/10 pb-1">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b] mb-2 px-2 border-b border-[#0c0d14]/10 pb-1">
               <Folder size={12} /> My Projects ({filteredProjects.length})
             </div>
             {filteredProjects.length ? (
@@ -265,20 +265,20 @@ export function CommandPalette() {
                   >
                     <div>
                       <strong className="font-serif text-base font-normal">{p.name}</strong>
-                      <p className="mt-1 text-xs text-[#193b2c]/65 line-clamp-1">{p.description}</p>
+                      <p className="mt-1 text-xs text-[#111318]/65 line-clamp-1">{p.description}</p>
                     </div>
                     <span className="text-[10px] font-mono text-[#9b7b3b]">{p.date}</span>
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="px-2 text-xs text-[#193b2c]/50">No matching projects.</p>
+              <p className="px-2 text-xs text-[#111318]/50">No matching projects.</p>
             )}
           </div>
 
           {/* Explore Resources */}
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b] mb-2 px-2 border-b border-[#193b2c]/10 pb-1">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b] mb-2 px-2 border-b border-[#0c0d14]/10 pb-1">
               <Compass size={12} /> Explore Ecosystem ({filteredResources.length})
             </div>
             {filteredResources.length ? (
@@ -291,19 +291,19 @@ export function CommandPalette() {
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="border border-[#193b2c]/20 bg-[#193b2c]/5 px-1.5 py-0.5 text-[8px] font-bold tracking-[.1em]">
+                        <span className="border border-[#0c0d14]/20 bg-[#0c0d14]/5 px-1.5 py-0.5 text-[8px] font-bold tracking-[.1em]">
                           {r.type}
                         </span>
                         <strong className="font-serif text-base font-normal">{r.title}</strong>
                       </div>
-                      <p className="mt-1 text-xs text-[#193b2c]/65 line-clamp-1">{r.description}</p>
+                      <p className="mt-1 text-xs text-[#111318]/65 line-clamp-1">{r.description}</p>
                     </div>
                     <span className="text-[10px] font-semibold text-[#9b7b3b]">v{r.version}</span>
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="px-2 text-xs text-[#193b2c]/50">No matching explore resources.</p>
+              <p className="px-2 text-xs text-[#111318]/50">No matching explore resources.</p>
             )}
           </div>
 

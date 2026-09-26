@@ -147,7 +147,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={handleRedirectToApiSettings}
-              className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b] bg-[#c1a05b]/10 px-3 py-1.5 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b] bg-[#c1a05b]/10 px-3 py-1.5 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer"
             >
               <Key size={13} />
               <span>CONNECT API</span>
@@ -309,7 +309,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] py-3 text-xs font-bold uppercase tracking-[.18em] text-[#0c1612] hover:opacity-90 transition-all cursor-pointer shadow-md"
+                className="w-full rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] py-3 text-xs font-bold uppercase tracking-[.18em] text-[#08090f] hover:opacity-90 transition-all cursor-pointer shadow-md"
               >
                 Save Profile & Mascot Settings
               </button>
@@ -356,7 +356,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                   <button
                     onClick={handleGoogleLogin}
                     disabled={isSyncing}
-                    className="rounded-xl bg-[#c1a05b] text-[#0c1612] font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-[#f3eee4] transition-all cursor-pointer shadow"
+                    className="rounded-xl bg-[#c1a05b] text-[#08090f] font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-[#f3eee4] transition-all cursor-pointer shadow"
                   >
                     {isSyncing ? 'Connecting...' : 'Connect Google'}
                   </button>
@@ -444,7 +444,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
                 <button
                   onClick={handleRedirectToApiSettings}
-                  className="w-full rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] py-3 text-xs font-bold uppercase tracking-[.18em] text-[#0c1612] hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                  className="w-full rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] py-3 text-xs font-bold uppercase tracking-[.18em] text-[#08090f] hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
                 >
                   <Key size={14} />
                   <span>GO TO CONNECT API PAGE</span>

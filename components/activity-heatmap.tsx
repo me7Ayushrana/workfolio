@@ -58,7 +58,7 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
   return (
     <div className="space-y-6 text-[#f3eee4]">
       {/* Weekly Progress Bar (Mon-Sun) */}
-      <div className="border border-[#c1a05b]/30 bg-[#0c1612] p-5 shadow-inner">
+      <div className="border border-[#c1a05b]/30 bg-[#08090f] p-5 shadow-inner">
         <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.22em] text-[#c1a05b]">
           <span className="flex items-center gap-1.5"><Calendar size={13} /> THIS WEEK'S LOGGED DAYS</span>
           <span className="flex items-center gap-1 text-[#f3eee4]"><Flame size={13} className="text-[#c1a05b]" /> {currentStreak} Day Reflection Streak</span>
@@ -71,10 +71,10 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
               onClick={() => setSelectedDate(w.dateStr)}
               className={`p-3 text-center border transition-all cursor-pointer ${
                 selectedDate === w.dateStr
-                  ? 'border-[#c1a05b] bg-[#c1a05b] text-[#0c1612] font-bold shadow-md'
+                  ? 'border-[#c1a05b] bg-[#c1a05b] text-[#08090f] font-bold shadow-md'
                   : w.count > 0
                   ? 'border-[#2ec4b6]/40 bg-[#2ec4b6]/15 text-[#2ec4b6]'
-                  : 'border-[#f3eee4]/15 bg-[#12241b] text-[#f3eee4]/60 hover:border-[#c1a05b]/50 hover:text-[#f3eee4]'
+                  : 'border-[#f3eee4]/15 bg-[#0c0d14] text-[#f3eee4]/60 hover:border-[#c1a05b]/50 hover:text-[#f3eee4]'
               }`}
             >
               <span className="block text-[10px] font-bold tracking-[.1em]">{w.dayName}</span>
@@ -87,7 +87,7 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
       </div>
 
       {/* 365-Day Activity Heatmap Grid */}
-      <div className="border border-[#c1a05b]/30 bg-[#0c1612] p-6 text-[#f3eee4] shadow-inner">
+      <div className="border border-[#c1a05b]/30 bg-[#08090f] p-6 text-[#f3eee4] shadow-inner">
         <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.22em] text-[#c1a05b]">
           <span>WORKFOLIO 365-DAY WORK & LEARNING HEATMAP</span>
           <span>{activities.length} TOTAL ENTRIES LOGGED</span>
@@ -135,7 +135,7 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
 
       {/* Selected Day Inspector Detail */}
       {selectedEntries.length > 0 ? (
-        <div className="border border-[#c1a05b]/30 bg-[#0c1612] p-5 space-y-3 text-[#f3eee4]">
+        <div className="border border-[#c1a05b]/30 bg-[#08090f] p-5 space-y-3 text-[#f3eee4]">
           <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b]">
             <span>LOGGED ACTIVITY FOR {selectedDate}</span>
             <span>{selectedEntries.length} Update(s)</span>
@@ -145,7 +145,7 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
             {selectedEntries.map((act) => (
               <div key={act.id} className="border-b border-[#f3eee4]/10 pb-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="bg-[#c1a05b] text-[#0c1612] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.14em]">
+                  <span className="bg-[#c1a05b] text-[#08090f] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[.14em]">
                     {act.type}
                   </span>
                   <span className="text-[10px] font-bold text-[#f3eee4]/60">{act.time}</span>
@@ -165,7 +165,7 @@ export function ActivityHeatmap({ activities }: ActivityHeatmapProps) {
           </div>
         </div>
       ) : (
-        <div className="border border-dashed border-[#c1a05b]/30 bg-[#0c1612] p-4 text-center text-xs text-[#f3eee4]/60">
+        <div className="border border-dashed border-[#c1a05b]/30 bg-[#08090f] p-4 text-center text-xs text-[#f3eee4]/60">
           No entries recorded for {selectedDate}. Click "+ LOG ACTIVITY" to record your work.
         </div>
       )}
