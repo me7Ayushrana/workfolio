@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-[#070e0b] text-[#f3eee4]">
+    <div className="min-h-screen bg-[#08090f] text-[#f3eee4]">
       <WorkfolioHeader />
       <main className="mx-auto max-w-7xl px-5 py-8 md:px-10">
         <AISettings />
