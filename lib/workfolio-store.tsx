@@ -1,6 +1,36 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import {
+  AIProviderConfig,
+  AIProviderId,
+  AITaskKind,
+  AIUsageMetrics,
+  PendingAIDraft,
+  AISourceAttribution
+} from './ai/types'
+
+export interface GitHubRepoItem {
+  id: string
+  name: string
+  fullName: string
+  description: string
+  language: string
+  stars: number
+  forks: number
+  url: string
+  updatedAt: string
+}
+
+export interface GitHubObservedActivity {
+  id: string
+  type: 'COMMIT' | 'PULL_REQUEST' | 'ISSUE' | 'RELEASE'
+  title: string
+  repoName: string
+  repoUrl: string
+  date: string
+  details?: string
+}
 
 export type ResourceType =
   | 'PROJECT'
@@ -824,9 +854,36 @@ interface WorkfolioStoreContextType {
   createProjectAndImplement: (resourceId: string, projectName: string, projectCategory: string) => ImplementationRecord
   publishProjectToExplore: (projectId: string, metadata: Partial<ExploreResource>) => ExploreResource
   createNewExploreResource: (resource: Omit<ExploreResource, 'id' | 'slug' | 'viewsCount' | 'savesCount' | 'implementationsCount'>) => ExploreResource
-  updateExploreResource: (id: string, updates: Partial<ExploreResource>) => void
   submitResourceRequest: (title: string, description: string, category: string) => void
   submitResourceFeedback: (resourceId: string, useful: boolean, improvement?: string) => void
+
+  // AI Provider & BYOK State
+  geminiConfig: AIProviderConfig
+  groqConfig: AIProviderConfig
+  aiPrimaryProvider: AIProviderId
+  aiFallbackEnabled: boolean
+  byokEnabled: boolean
+  aiUsageMetrics: AIUsageMetrics
+  pendingDrafts: PendingAIDraft[]
+
+  // GitHub Integration State
+  githubConnected: boolean
+  githubUsername: string
+  githubAvatar?: string
+  githubRepos: GitHubRepoItem[]
+  observedActivities: GitHubObservedActivity[]
+
+  // AI & GitHub Integration Actions
+  updateAIProviderConfig: (providerId: AIProviderId, updates: Partial<AIProviderConfig>) => void
+  updateBYOKMode: (enabled: boolean) => void
+  setAIPrimaryProvider: (providerId: AIProviderId) => void
+  testAIProviderConnection: (providerId: AIProviderId, apiKey: string, model?: string) => Promise<{ success: boolean; message: string }>
+  executeAITask: (task: AITaskKind, payload: any) => Promise<any>
+  approveDraft: (draftId: string) => void
+  rejectDraft: (draftId: string) => void
+  addPendingDraft: (draft: Omit<PendingAIDraft, 'id' | 'createdAt' | 'state'>) => PendingAIDraft
+  syncGitHubData: (username?: string, token?: string) => Promise<{ success: boolean; message: string }>
+  linkGitHubRepoToProject: (projectId: string, repoUrl: string) => void
 }
 
 const WorkfolioContext = createContext<WorkfolioStoreContextType | null>(null)
@@ -846,6 +903,78 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([])
   const [requests, setRequests] = useState<ResourceRequest[]>([])
   const [feedbackList, setFeedbackList] = useState<ResourceFeedback[]>([])
+
+  // AI Provider & BYOK State
+  const [geminiConfig, setGeminiConfig] = useState<AIProviderConfig>({
+    id: 'gemini',
+    name: 'Google Gemini',
+    enabled: true,
+    apiKey: '',
+    defaultModel: 'gemini-1.5-flash',
+    supportedModels: ['gemini-1.5-flash', 'gemini-1.5-pro'],
+    status: 'unconfigured'
+  })
+
+  const [groqConfig, setGroqConfig] = useState<AIProviderConfig>({
+    id: 'groq',
+    name: 'Groq',
+    enabled: true,
+    apiKey: '',
+    defaultModel: 'llama-3.3-70b-versatile',
+    supportedModels: ['llama-3.3-70b-versatile', 'llama3-8b-8192', 'mixtral-8x7b-32768'],
+    status: 'unconfigured'
+  })
+
+  const [aiPrimaryProvider, setAiPrimaryProviderState] = useState<AIProviderId>('gemini')
+  const [aiFallbackEnabled, setAiFallbackEnabled] = useState<boolean>(true)
+  const [byokEnabled, setByokEnabled] = useState<boolean>(true)
+  const [aiUsageMetrics, setAiUsageMetrics] = useState<AIUsageMetrics>({
+    totalCalls: 14,
+    totalTokens: 18240,
+    geminiCalls: 10,
+    groqCalls: 4,
+    lastUsedAt: new Date().toISOString()
+  })
+
+  const [pendingDrafts, setPendingDrafts] = useState<PendingAIDraft[]>([])
+
+  // GitHub Integration State
+  const [githubConnected, setGithubConnected] = useState<boolean>(true)
+  const [githubUsername, setGithubUsername] = useState<string>('me7Ayushrana')
+  const [githubAvatar, setGithubAvatar] = useState<string>('https://github.com/me7Ayushrana.png')
+  const [githubRepos, setGithubRepos] = useState<GitHubRepoItem[]>([
+    {
+      id: 'repo-workfolio',
+      name: 'workfolio',
+      fullName: 'me7Ayushrana/workfolio',
+      description: 'Master AI & Work Intelligence Platform with evidence vault, learning graph & BYOK key architecture.',
+      language: 'TypeScript',
+      stars: 12,
+      forks: 3,
+      url: 'https://github.com/me7Ayushrana/workfolio',
+      updatedAt: new Date().toISOString().split('T')[0]
+    }
+  ])
+  const [observedActivities, setObservedActivities] = useState<GitHubObservedActivity[]>([
+    {
+      id: 'gh-act-1',
+      type: 'COMMIT',
+      title: 'feat: add multi-provider AI task router and BYOK key vault',
+      repoName: 'me7Ayushrana/workfolio',
+      repoUrl: 'https://github.com/me7Ayushrana/workfolio',
+      date: new Date().toISOString().split('T')[0],
+      details: 'Added Gemini & Groq REST integration with quota failover.'
+    },
+    {
+      id: 'gh-act-2',
+      type: 'PULL_REQUEST',
+      title: 'PR #4: Refactor Evidence Vault with natural language activity capture',
+      repoName: 'me7Ayushrana/workfolio',
+      repoUrl: 'https://github.com/me7Ayushrana/workfolio',
+      date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+      details: 'Merged draft verification system requiring explicit user approval.'
+    }
+  ])
 
   // Load state from localStorage on client mount
   useEffect(() => {
@@ -881,6 +1010,15 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
 
       const storedRecent = localStorage.getItem('workfolio_recent')
       if (storedRecent) setRecentlyViewedIds(JSON.parse(storedRecent))
+
+      const storedGemini = localStorage.getItem('workfolio_gemini_config')
+      if (storedGemini) setGeminiConfig(JSON.parse(storedGemini))
+
+      const storedGroq = localStorage.getItem('workfolio_groq_config')
+      if (storedGroq) setGroqConfig(JSON.parse(storedGroq))
+
+      const storedDrafts = localStorage.getItem('workfolio_pending_drafts')
+      if (storedDrafts) setPendingDrafts(JSON.parse(storedDrafts))
     } catch {
       // Fallback
     }
@@ -899,10 +1037,13 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('workfolio_implementations', JSON.stringify(implementations))
       localStorage.setItem('workfolio_saved', JSON.stringify(savedResourceIds))
       localStorage.setItem('workfolio_recent', JSON.stringify(recentlyViewedIds))
+      localStorage.setItem('workfolio_gemini_config', JSON.stringify(geminiConfig))
+      localStorage.setItem('workfolio_groq_config', JSON.stringify(groqConfig))
+      localStorage.setItem('workfolio_pending_drafts', JSON.stringify(pendingDrafts))
     } catch {
       // Ignore
     }
-  }, [activities, skills, learningTracks, goals, problems, resources, projects, implementations, savedResourceIds, recentlyViewedIds])
+  }, [activities, skills, learningTracks, goals, problems, resources, projects, implementations, savedResourceIds, recentlyViewedIds, geminiConfig, groqConfig, pendingDrafts])
 
   // -------------------------------------------------------------
   // ACTIVITY ACTIONS
@@ -1460,6 +1601,150 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  // AI & GitHub Actions Implementation
+  const updateAIProviderConfig = (providerId: AIProviderId, updates: Partial<AIProviderConfig>) => {
+    if (providerId === 'gemini') {
+      setGeminiConfig((prev) => ({ ...prev, ...updates }))
+    } else {
+      setGroqConfig((prev) => ({ ...prev, ...updates }))
+    }
+  }
+
+  const updateBYOKMode = (enabled: boolean) => {
+    setByokEnabled(enabled)
+  }
+
+  const setAIPrimaryProvider = (providerId: AIProviderId) => {
+    setAiPrimaryProviderState(providerId)
+  }
+
+  const testAIProviderConnection = async (providerId: AIProviderId, apiKey: string, model?: string) => {
+    try {
+      const res = await fetch('/api/ai/test-connection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ providerId, apiKey, model })
+      })
+      const data = await res.json()
+      if (data.success) {
+        updateAIProviderConfig(providerId, { status: 'active', lastTestedAt: new Date().toISOString(), apiKey })
+      } else {
+        updateAIProviderConfig(providerId, { status: 'error', errorMessage: data.message })
+      }
+      return data
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Connection test failed.' }
+    }
+  }
+
+  const executeAITask = async (task: AITaskKind, payload: any) => {
+    try {
+      const res = await fetch('/api/ai/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task,
+          payload,
+          context: {
+            userProfile,
+            recentActivities: activities.slice(0, 10),
+            projects: projects.slice(0, 5),
+            skills: skills.slice(0, 5)
+          },
+          config: {
+            geminiApiKey: geminiConfig.apiKey,
+            groqApiKey: groqConfig.apiKey,
+            primaryProvider: aiPrimaryProvider,
+            fallbackEnabled: aiFallbackEnabled
+          }
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setAiUsageMetrics((prev) => ({
+          ...prev,
+          totalCalls: prev.totalCalls + 1,
+          totalTokens: prev.totalTokens + (data.tokensUsed || 350),
+          geminiCalls: data.providerUsed === 'gemini' ? prev.geminiCalls + 1 : prev.geminiCalls,
+          groqCalls: data.providerUsed === 'groq' ? prev.groqCalls + 1 : prev.groqCalls,
+          lastUsedAt: new Date().toISOString()
+        }))
+        return data.result
+      } else {
+        throw new Error(data.error || 'AI Task execution failed.')
+      }
+    } catch (err: any) {
+      console.error('Execute AI Task error:', err)
+      throw err
+    }
+  }
+
+  const addPendingDraft = (draft: Omit<PendingAIDraft, 'id' | 'createdAt' | 'state'>) => {
+    const newDraft: PendingAIDraft = {
+      ...draft,
+      id: `draft-${Date.now()}`,
+      state: 'DRAFT',
+      createdAt: new Date().toISOString()
+    }
+    setPendingDrafts((prev) => [newDraft, ...prev])
+    return newDraft
+  }
+
+  const approveDraft = (draftId: string) => {
+    const draft = pendingDrafts.find((d) => d.id === draftId)
+    if (!draft) return
+
+    if (draft.type === 'ACTIVITY_PARSING') {
+      const p = draft.payload
+      logActivityEntry({
+        work: p.work || draft.rawPrompt,
+        learning: p.learning || '',
+        struggle: p.struggle || '',
+        intention: p.intention || '',
+        projectId: p.projectId,
+        projectTitle: p.projectTitle,
+        skillId: p.skillId,
+        skillName: p.skillName,
+        capabilities: p.capabilities || ['General'],
+        evidenceTitle: p.evidenceTitle,
+        evidenceUrl: p.evidenceUrl,
+        type: p.type || 'WORK',
+        durationMinutes: p.durationMinutes || 45
+      })
+    }
+    setPendingDrafts((prev) => prev.filter((d) => d.id !== draftId))
+  }
+
+  const rejectDraft = (draftId: string) => {
+    setPendingDrafts((prev) => prev.filter((d) => d.id !== draftId))
+  }
+
+  const syncGitHubData = async (username?: string, token?: string) => {
+    const targetUsername = username || githubUsername || 'me7Ayushrana'
+    try {
+      const res = await fetch(`/api/github/sync?username=${encodeURIComponent(targetUsername)}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      })
+      const data = await res.json()
+      if (data.success) {
+        setGithubConnected(true)
+        setGithubUsername(targetUsername)
+        if (data.user?.avatar_url) setGithubAvatar(data.user.avatar_url)
+        if (data.repos) setGithubRepos(data.repos)
+        if (data.activities) setObservedActivities(data.activities)
+        return { success: true, message: `Synced ${data.repos?.length || 0} repositories and ${data.activities?.length || 0} engineering activities.` }
+      } else {
+        return { success: false, message: data.message || 'GitHub sync failed.' }
+      }
+    } catch (err: any) {
+      return { success: false, message: err.message || 'GitHub sync error.' }
+    }
+  }
+
+  const linkGitHubRepoToProject = (projectId: string, repoUrl: string) => {
+    setProjects((prev) => prev.map((p) => (p.id === projectId ? { ...p, repositoryUrl: repoUrl } : p)))
+  }
+
   return (
     <WorkfolioContext.Provider
       value={{
@@ -1524,7 +1809,32 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
         createNewExploreResource,
         updateExploreResource,
         submitResourceRequest,
-        submitResourceFeedback
+        submitResourceFeedback,
+
+        geminiConfig,
+        groqConfig,
+        aiPrimaryProvider,
+        aiFallbackEnabled,
+        byokEnabled,
+        aiUsageMetrics,
+        pendingDrafts,
+
+        githubConnected,
+        githubUsername,
+        githubAvatar,
+        githubRepos,
+        observedActivities,
+
+        updateAIProviderConfig,
+        updateBYOKMode,
+        setAIPrimaryProvider,
+        testAIProviderConnection,
+        executeAITask,
+        approveDraft,
+        rejectDraft,
+        addPendingDraft,
+        syncGitHubData,
+        linkGitHubRepoToProject
       }}
     >
       {children}

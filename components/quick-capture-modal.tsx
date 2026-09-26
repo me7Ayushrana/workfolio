@@ -22,9 +22,13 @@ export function QuickCaptureModal({
   defaultSkillId,
   activityToEdit
 }: QuickCaptureModalProps) {
-  const { projects, skills, logActivityEntry, updateActivityEntry, deleteActivity, createProject, createSkill } = useWorkfolio()
+  const { projects, skills, logActivityEntry, updateActivityEntry, deleteActivity, createProject, createSkill, executeAITask } = useWorkfolio()
 
   const isEditing = !!activityToEdit
+
+  const [naturalInput, setNaturalInput] = useState('')
+  const [isParsingAI, setIsParsingAI] = useState(false)
+  const [aiDraftStatus, setAiDraftStatus] = useState<'IDLE' | 'DRAFT' | 'APPROVED'>('IDLE')
 
   const [work, setWork] = useState(activityToEdit?.work || '')
   const [learning, setLearning] = useState(activityToEdit?.learning || '')
@@ -39,6 +43,27 @@ export function QuickCaptureModal({
   const [showAdvanced, setShowAdvanced] = useState(!!activityToEdit?.evidenceTitle || !!activityToEdit?.evidenceUrl)
   const [isSaved, setIsSaved] = useState(false)
   const [savedAction, setSavedAction] = useState<'created' | 'updated' | 'deleted'>('created')
+
+  const handleAIParse = async () => {
+    if (!naturalInput.trim() || isParsingAI) return
+    setIsParsingAI(true)
+    try {
+      const parsed = await executeAITask('ACTIVITY_STRUCTURING', { description: naturalInput })
+      if (parsed) {
+        setWork(parsed.work || naturalInput)
+        if (parsed.learning) setLearning(parsed.learning)
+        if (parsed.struggle) setStruggle(parsed.struggle)
+        if (parsed.intention) setIntention(parsed.intention)
+        if (parsed.type) setActivityType(parsed.type)
+        if (parsed.capabilities && parsed.capabilities.length) setCapabilitiesStr(parsed.capabilities.join(', '))
+        setAiDraftStatus('DRAFT')
+      }
+    } catch (err: any) {
+      alert(`AI Parsing error: ${err.message || 'Check your API Key settings.'}`)
+    } finally {
+      setIsParsingAI(false)
+    }
+  }
 
   // Search states for dropdowns
   const [projectSearch, setProjectSearch] = useState('')
@@ -259,6 +284,59 @@ export function QuickCaptureModal({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+            {/* NATURAL LANGUAGE AI CAPTURE BOX */}
+            {!isEditing && (
+              <div className="border border-[#c1a05b]/40 bg-[#0c1612] p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
+                    <Sparkles size={14} /> NATURAL LANGUAGE AI CAPTURE
+                  </span>
+                  <span className="text-[10px] text-[#f3eee4]/50">Describe your work in plain text</span>
+                </div>
+                <textarea
+                  value={naturalInput}
+                  onChange={(e) => setNaturalInput(e.target.value)}
+                  placeholder="e.g. Spent 2 hours fixing low-light receipt OCR threshold bugs on Expense Tracker project using Computer Vision skill..."
+                  rows={2}
+                  className="w-full border border-[#f3eee4]/15 bg-[#12241b] p-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none"
+                />
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-[#f3eee4]/40">
+                    AI structures your input into Work, Learning, Struggle, and Skill tags.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleAIParse}
+                    disabled={isParsingAI || !naturalInput.trim()}
+                    className="flex items-center gap-1.5 bg-[#c1a05b] px-3.5 py-1.5 text-xs font-bold text-[#0c1612] hover:bg-[#d4b46c] disabled:opacity-50 transition-all cursor-pointer"
+                  >
+                    <Sparkles size={13} />
+                    <span>{isParsingAI ? 'STRUCTURING...' : 'PARSE WITH AI'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* AI GENERATED DRAFT STATUS BANNER */}
+            {aiDraftStatus === 'DRAFT' && (
+              <div className="border border-[#c1a05b] bg-[#1a2d23] p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="bg-[#c1a05b] text-[#0c1612] font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                    AI GENERATED DRAFT
+                  </span>
+                  <span className="text-[#f3eee4]/80">Please review structured fields before saving.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAiDraftStatus('IDLE')}
+                    className="text-[10px] text-[#f3eee4]/60 hover:text-[#f3eee4] underline"
+                  >
+                    Discard Draft
+                  </button>
+                </div>
+              </div>
+            )}
             
             {/* 1. Quick Starter Preset Chips */}
             {!isEditing && (

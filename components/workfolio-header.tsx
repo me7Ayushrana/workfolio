@@ -14,17 +14,21 @@ import {
   Plus,
   Radio,
   Search,
+  Sparkles,
   Sun,
   Tv,
   Waves,
-  X
+  X,
+  Settings
 } from 'lucide-react'
 import { QuickCaptureModal } from './quick-capture-modal'
+import { AskWorkfolioModal } from './ask-workfolio-modal'
 
 export function WorkfolioHeader() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLogModal, setShowLogModal] = useState(false)
+  const [showAskModal, setShowAskModal] = useState(false)
   const [proofDropdownOpen, setProofDropdownOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
 
@@ -183,6 +187,13 @@ export function WorkfolioHeader() {
                   >
                     Admin Console
                   </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setProofDropdownOpen(false)}
+                    className="block px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#193b2c]"
+                  >
+                    AI & GitHub Settings
+                  </Link>
                 </div>
               )}
             </div>
@@ -191,6 +202,16 @@ export function WorkfolioHeader() {
           {/* ACTIONS & UTILITIES */}
           <div className="flex items-center gap-2.5">
             
+            {/* ASK WORKFOLIO AI ASSISTANT BUTTON */}
+            <button
+              onClick={() => setShowAskModal(true)}
+              className="flex items-center gap-1.5 border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-all cursor-pointer"
+              title="Ask Workfolio AI Assistant"
+            >
+              <Sparkles size={13} />
+              <span className="hidden sm:inline">ASK AI</span>
+            </button>
+
             {/* GLOBAL SEARCH BUTTON */}
             <button
               onClick={handleOpenCommandPalette}
@@ -278,6 +299,7 @@ export function WorkfolioHeader() {
       </header>
 
       {showLogModal && <QuickCaptureModal onClose={() => setShowLogModal(false)} />}
+      <AskWorkfolioModal isOpen={showAskModal} onClose={() => setShowAskModal(false)} />
     </>
   )
 }
