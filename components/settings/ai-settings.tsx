@@ -158,14 +158,14 @@ export function AISettings() {
       {!hasActiveKey && (
         <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-[#121422] to-[#0d0e15] p-6 shadow-2xl space-y-4">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 font-bold text-xl border border-amber-500/30">
-              ⚡
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
+              <Zap size={22} className="text-amber-400" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <h3 className="font-bold text-amber-100 text-base">Action Required: Integrate Your API Key Right Now</h3>
-                <span className="rounded-full bg-red-500/20 border border-red-500/30 px-3 py-0.5 text-[11px] font-bold text-red-400 animate-pulse">
-                  🔴 AI Features Disconnected
+                <span className="flex items-center gap-1.5 rounded-full bg-red-500/20 border border-red-500/30 px-3 py-0.5 text-[11px] font-bold text-red-400 animate-pulse">
+                  <AlertCircle size={12} /> AI Features Disconnected
                 </span>
               </div>
               <p className="text-xs text-[#f3eee4]/85 mt-1.5 leading-relaxed">
@@ -325,8 +325,8 @@ export function AISettings() {
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white">KEY EXPIRATION & AUTOMATIC FAILOVER PROTECTION</h3>
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[10px] font-bold text-emerald-400">
-                🛡️ Continuous Uptime Safeguard
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[10px] font-bold text-emerald-400">
+                <ShieldCheck size={12} /> Continuous Uptime Safeguard
               </span>
             </div>
             <p className="text-xs text-[#f3eee4]/80 mt-1.5 leading-relaxed">

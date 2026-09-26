@@ -271,7 +271,7 @@ export function WorkfolioHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="block py-1.5 text-[#9b7b3b] dark:text-[#c1a05b]"
             >
-              🌊 OCEAN (Digital Workspace)
+              OCEAN (Digital Workspace)
             </Link>
             <Link
               href="/evidence"

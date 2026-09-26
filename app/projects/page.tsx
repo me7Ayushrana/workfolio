@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -113,21 +114,39 @@ export default function ProjectsPage() {
           <ArrowLeft size={14} /> Back to Workspace Dashboard
         </Link>
 
-        {/* Workspace Page Header */}
-        <div className="flex flex-col justify-between gap-6 border-b border-[#193b2c]/15 pb-8 md:flex-row md:items-end">
-          <div>
-            <h1 className="mt-1 font-serif text-5xl font-light md:text-7xl text-[#193b2c]">Your Projects.</h1>
-            <p className="mt-3 text-sm text-[#193b2c]/80 max-w-xl leading-relaxed">
-              Everything you are building, maintaining, and shipping. Long-lived containers connecting daily updates to verifiable evidence.
-            </p>
-          </div>
+        {/* VISUAL HERO BANNER WITH REAL ARTWORK */}
+        <div className="relative overflow-hidden rounded-3xl border border-[#193b2c]/20 bg-[#12241b] text-[#f3eee4] shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+            <div className="p-8 md:p-12 md:col-span-8 space-y-4">
+              <span className="text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
+                WORKSPACE PORTFOLIO
+              </span>
+              <h1 className="font-serif text-4xl font-light md:text-6xl text-[#f3eee4] leading-tight">
+                Engineering Projects & Systems.
+              </h1>
+              <p className="text-xs md:text-sm text-[#f3eee4]/80 max-w-xl leading-relaxed">
+                Everything you are building, maintaining, and shipping. Long-lived containers connecting daily updates, verifiable proof logs, and technical case studies.
+              </p>
+              <div className="pt-2">
+                <button
+                  onClick={() => setShowNewModal(true)}
+                  className="flex items-center gap-2 bg-[#c1a05b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#0c1612] shadow-lg transition-all hover:bg-[#f3eee4] cursor-pointer"
+                >
+                  <Plus size={14} /> + CREATE DIGITAL PROJECT
+                </button>
+              </div>
+            </div>
 
-          <button
-            onClick={() => setShowNewModal(true)}
-            className="flex items-center gap-2 bg-[#12241b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] border border-[#c1a05b]/40 shadow-lg transition-all hover:bg-[#c1a05b] hover:text-[#0c1612] cursor-pointer"
-          >
-            <Plus size={14} /> + NEW PROJECT
-          </button>
+            <div className="relative h-48 md:h-full md:col-span-4 min-h-[220px]">
+              <Image
+                src="/images/mono-1.png"
+                alt="Projects Showcase Artwork"
+                fill
+                className="object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#12241b] via-transparent to-transparent hidden md:block" />
+            </div>
+          </div>
         </div>
 
         {/* Status Tabs */}

@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -159,7 +160,40 @@ function LearningContent() {
         </div>
       </div>
 
-      {/* Page Header */}
+      {/* VISUAL HERO BANNER WITH REAL ARTWORK */}
+      <div className="relative overflow-hidden rounded-3xl border border-[#193b2c]/20 bg-[#12241b] text-[#f3eee4] shadow-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-center">
+          <div className="p-8 md:p-12 md:col-span-8 space-y-4">
+            <span className="text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
+              KNOWLEDGE & CAPABILITIES GRAPH
+            </span>
+            <h1 className="font-serif text-4xl font-light md:text-6xl text-[#f3eee4] leading-tight">
+              Learning & Skill Intelligence.
+            </h1>
+            <p className="text-xs md:text-sm text-[#f3eee4]/80 max-w-xl leading-relaxed">
+              Track active skill acquisition, learning roadmaps, and problem-solving logs. Ground your technical growth with verifiable practice evidence.
+            </p>
+            <div className="pt-2 flex items-center gap-3">
+              <button
+                onClick={() => setShowCreateSkillModal(true)}
+                className="flex items-center gap-2 bg-[#c1a05b] px-5 py-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#0c1612] shadow-lg transition-all hover:bg-[#f3eee4] cursor-pointer font-bold"
+              >
+                <Plus size={14} /> + ADD NEW SKILL
+              </button>
+            </div>
+          </div>
+
+          <div className="relative h-48 md:h-full md:col-span-4 min-h-[220px]">
+            <Image
+              src="/images/mono-2.png"
+              alt="Learning & Skills Artwork"
+              fill
+              className="object-cover opacity-80"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#12241b] via-transparent to-transparent hidden md:block" />
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col justify-between gap-6 border-b border-[#193b2c]/15 pb-8 md:flex-row md:items-end">
         <div>
           <h1 className="mt-1 font-serif text-5xl font-light md:text-7xl text-[#193b2c]">
