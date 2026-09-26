@@ -108,7 +108,7 @@ export default function OceanDigitalWorkspacePage() {
   const [isPlaying, setIsPlaying] = useState(true)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  // Clicking directly on video pauses playback and redirects to Digital Workspace studio page
+  // Clicking directly on video pauses playback and opens Digital Workspace in a new window/tab
   const handleVideoClick = () => {
     if (iframeRef.current && iframeRef.current.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
@@ -117,7 +117,7 @@ export default function OceanDigitalWorkspacePage() {
       )
     }
     setIsPlaying(false)
-    router.push('/digital-workspace')
+    window.open('/digital-workspace', '_blank')
   }
 
   const togglePlayPause = () => {
@@ -238,28 +238,20 @@ export default function OceanDigitalWorkspacePage() {
             </Link>
             <span>/</span>
             <span className="text-[#f3eee4] font-bold flex items-center gap-1">
-              🌊 OCEAN · DIGITAL WORKSPACE
+              OCEAN · DIGITAL WORKSPACE
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 border border-[#c1a05b]/60 bg-[#12241b] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#0c1612] transition-colors cursor-pointer"
-            >
-              <Plus size={13} /> Quick Add Stream
-            </button>
-
-            <Link
-              href="/digital-workspace"
-              className="group flex items-center gap-2 bg-gradient-to-r from-[#c1a05b] via-[#f3eee4] to-[#c1a05b] px-6 py-2.5 text-xs font-black uppercase tracking-[.22em] text-[#0c1612] border-2 border-[#c1a05b] shadow-[0_0_25px_rgba(193,160,91,0.6)] hover:shadow-[0_0_35px_rgba(243,238,228,0.9)] hover:scale-105 transition-all duration-300 cursor-pointer rounded-xs"
-              title="Open Interactive Digital Workspace Studio"
-            >
-              <Sparkles size={16} className="text-[#0c1612] animate-pulse" />
-              <span>+ CREATE DIGITAL WORKSPACE</span>
-              <ArrowUpRight size={15} className="text-[#0c1612] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-          </div>
+          <a
+            href="/digital-workspace"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-2 bg-gradient-to-r from-[#c1a05b] via-[#f3eee4] to-[#c1a05b] px-6 py-2.5 text-xs font-black uppercase tracking-[.22em] text-[#0c1612] border-2 border-[#c1a05b] shadow-[0_0_25px_rgba(193,160,91,0.6)] hover:shadow-[0_0_35px_rgba(243,238,228,0.9)] hover:scale-105 transition-all duration-300 cursor-pointer rounded-xs"
+            title="Open Interactive Digital Workspace Studio in new tab"
+          >
+            <span>+ CREATE DIGITAL WORKSPACE</span>
+            <ArrowUpRight size={15} className="text-[#0c1612] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
         </div>
 
         {/* HERO FEATURED MEDIA PLAYER DISPLAY - CLEAN VIDEO ONLY (NO YOUTUBE BUTTONS) */}
@@ -268,7 +260,7 @@ export default function OceanDigitalWorkspacePage() {
           <div 
             onClick={handleVideoClick}
             className="relative aspect-video w-full overflow-hidden border border-[#f3eee4]/20 bg-black shadow-lg cursor-pointer group"
-            title="Click to pause video and open full Digital Workspace Studio"
+            title="Click to pause video and open full Digital Workspace Studio in new window"
           >
             <iframe
               ref={iframeRef}
@@ -280,7 +272,7 @@ export default function OceanDigitalWorkspacePage() {
             />
             {/* Overlay hint banner on hover */}
             <div className="absolute top-3 right-3 z-10 bg-[#0c1612]/90 text-[#c1a05b] border border-[#c1a05b]/40 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
-              Click Video to Open Digital Workspace Studio →
+              Click Video to Open Digital Workspace Studio in New Tab →
             </div>
 
             {/* Click overlay layer with gold play indicator when paused */}
@@ -294,50 +286,38 @@ export default function OceanDigitalWorkspacePage() {
           </div>
 
           {/* DEDICATED PAUSE & PLAY CONTROL STRIP BELOW THE VIDEO */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0c1612] p-3.5 border border-[#c1a05b]/40 rounded shadow-md">
-            <div className="flex items-center gap-3">
-              {/* Dedicated Direct Pause Button */}
-              <button
-                type="button"
-                onClick={handlePauseDirectly}
-                disabled={!isPlaying}
-                className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
-                  isPlaying
-                    ? 'bg-[#c1a05b] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
-                    : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
-                }`}
-                title="Directly Pause Video Playback"
-              >
-                <Pause size={15} className="fill-current" />
-                <span>Pause Video</span>
-              </button>
+          <div className="flex items-center gap-3 bg-[#0c1612] p-3.5 border border-[#c1a05b]/40 rounded shadow-md">
+            {/* Dedicated Direct Pause Button */}
+            <button
+              type="button"
+              onClick={handlePauseDirectly}
+              disabled={!isPlaying}
+              className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
+                isPlaying
+                  ? 'bg-[#c1a05b] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
+                  : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
+              }`}
+              title="Directly Pause Video Playback"
+            >
+              <Pause size={15} className="fill-current" />
+              <span>Pause Video</span>
+            </button>
 
-              {/* Dedicated Play Button */}
-              <button
-                type="button"
-                onClick={handlePlayDirectly}
-                disabled={isPlaying}
-                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
-                  !isPlaying
-                    ? 'bg-[#2ec4b6] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
-                    : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
-                }`}
-                title="Resume Video Playback"
-              >
-                <Play size={15} className="fill-current" />
-                <span>Play Video</span>
-              </button>
-            </div>
-
-            {/* Stream Details & Status */}
-            <div className="text-right">
-              <span className="block text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
-                {activeMedia.channel} · {isPlaying ? '● LIVE PLAYING' : '❚❚ PAUSED'}
-              </span>
-              <h3 className="text-xs font-semibold text-[#f3eee4] truncate max-w-md">
-                {activeMedia.title}
-              </h3>
-            </div>
+            {/* Dedicated Play Button */}
+            <button
+              type="button"
+              onClick={handlePlayDirectly}
+              disabled={isPlaying}
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-[.18em] transition-all shadow-md cursor-pointer ${
+                !isPlaying
+                  ? 'bg-[#2ec4b6] text-[#0c1612] hover:bg-[#f3eee4] hover:shadow-lg'
+                  : 'bg-[#12241b] text-[#f3eee4]/40 border border-[#f3eee4]/10 cursor-not-allowed'
+              }`}
+              title="Resume Video Playback"
+            >
+              <Play size={15} className="fill-current" />
+              <span>Play Video</span>
+            </button>
           </div>
         </div>
 
