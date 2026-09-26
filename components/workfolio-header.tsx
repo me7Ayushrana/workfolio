@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   ChevronDown,
@@ -77,9 +78,15 @@ export function WorkfolioHeader() {
           
           {/* LOGO & BRAND */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <span className="flex h-8 w-8 items-center justify-center bg-[#c1a05b] text-xs font-bold text-[#0c1612] transition-transform group-hover:scale-105 shadow-sm">
-              WF
-            </span>
+            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-[#c1a05b]/50 shadow-md transition-transform group-hover:scale-105 shrink-0 bg-[#0c1612]">
+              <Image
+                src="/images/workfolio-logo.jpg"
+                alt="Workfolio Emblem Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
             <div>
               <span className="text-xs font-bold tracking-[.22em] text-[#f3eee4] block leading-none">
                 WORKFOLIO

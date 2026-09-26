@@ -398,11 +398,21 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-20 flex flex-col justify-between gap-8 bg-[#7c2634] px-6 py-10 text-[#f3eee4] md:flex-row md:items-end md:px-10">
-        <div>
-          <p className="font-serif text-3xl">WORKFOLIO</p>
-          <p className="mt-1 text-[10px] uppercase tracking-[.18em] text-[#f3eee4]/70">
-            TRACE THE TASK · Personal Work Operating System
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-[#f3eee4]/30 shadow-md shrink-0 bg-[#0c1612]">
+            <Image
+              src="/images/workfolio-logo.jpg"
+              alt="Workfolio Emblem Logo"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <p className="font-serif text-3xl font-light">WORKFOLIO</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[.18em] text-[#f3eee4]/70">
+              TRACE THE TASK · Personal Work Operating System
+            </p>
+          </div>
         </div>
         <p className="text-[10px] uppercase tracking-[.18em] text-[#f3eee4]/60">
           Your work. Your proof. Your profile.
