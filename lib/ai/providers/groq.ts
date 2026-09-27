@@ -195,4 +195,12 @@ export class GroqProvider extends BaseAIProvider {
     const text = data?.choices?.[0]?.message?.content || ''
     return { text, sources: options.contextSources }
   }
+
+  async analyzeImage(imageUrl: string, prompt: string, apiKey?: string): Promise<string> {
+    throw new Error('Groq provider does not support direct image multimodal input.')
+  }
+
+  async analyzeDocument(documentText: string, prompt: string, apiKey?: string): Promise<string> {
+    return this.generateText({ prompt: `${prompt}\n\nDocument Content:\n${documentText}`, apiKey })
+  }
 }

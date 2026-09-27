@@ -1,0 +1,122 @@
+-- WORKFOLIO SUPABASE POSTGRESQL SCHEMA WITH ROW LEVEL SECURITY (RLS)
+-- Enables strict multi-tenant isolation per authenticated Firebase user_id
+
+-- 1. USERS TABLE
+CREATE TABLE IF NOT EXISTS public.users (
+  id VARCHAR(255) PRIMARY KEY,
+  email VARCHAR(255),
+  display_name VARCHAR(255),
+  photo_url TEXT,
+  github_username VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. PROJECTS TABLE
+CREATE TABLE IF NOT EXISTS public.projects (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  status VARCHAR(100) DEFAULT 'Active',
+  category VARCHAR(100) DEFAULT 'General',
+  repository_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. ACTIVITIES TABLE
+CREATE TABLE IF NOT EXISTS public.activities (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  work TEXT NOT NULL,
+  learning TEXT,
+  struggle TEXT,
+  intention TEXT,
+  project_id VARCHAR(255),
+  skill_id VARCHAR(255),
+  date VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. SKILLS TABLE
+CREATE TABLE IF NOT EXISTS public.skills (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(100) DEFAULT 'Technical',
+  status VARCHAR(100) DEFAULT 'ACTIVE',
+  goal TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 5. LEARNING TRACKS TABLE
+CREATE TABLE IF NOT EXISTS public.learning_tracks (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  status VARCHAR(100) DEFAULT 'IN_PROGRESS',
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 6. GOALS TABLE
+CREATE TABLE IF NOT EXISTS public.goals (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  target_date VARCHAR(50),
+  status VARCHAR(100) DEFAULT 'ACTIVE',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 7. EVIDENCE TABLE
+CREATE TABLE IF NOT EXISTS public.evidence (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  category VARCHAR(100) DEFAULT 'Code Repository',
+  url TEXT,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 8. CAPABILITIES TABLE
+CREATE TABLE IF NOT EXISTS public.capabilities (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  level VARCHAR(100) DEFAULT 'Competent',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 9. PROBLEMS TABLE
+CREATE TABLE IF NOT EXISTS public.problems (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  status VARCHAR(100) DEFAULT 'OPEN',
+  resolution TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. GITHUB SYNC LOGS TABLE
+CREATE TABLE IF NOT EXISTS public.github_sync_logs (
+  id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  github_username VARCHAR(255) NOT NULL,
+  synced_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  payload JSONB
+);
+
+-- Enable RLS on all tables
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.learning_tracks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.evidence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.capabilities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.problems ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.github_sync_logs ENABLE ROW LEVEL SECURITY;

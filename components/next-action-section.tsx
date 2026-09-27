@@ -27,6 +27,7 @@ export function NextActionSection() {
     goals,
     problems,
     learningTracks,
+    evidence,
     logActivityEntry
   } = useWorkfolio()
 

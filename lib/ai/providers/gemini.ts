@@ -5,7 +5,7 @@ import { AIProviderStatus } from '../credential-vault'
 export class GeminiProvider extends BaseAIProvider {
   id: AIProviderId = 'gemini'
   name = 'Google Gemini'
-  defaultModel = 'gemini-1.5-flash'
+  defaultModel = 'gemini-2.0-flash'
   supportsMultimodal = true
 
   async testConnection(
@@ -99,6 +99,14 @@ export class GeminiProvider extends BaseAIProvider {
     }
   }
 
+  private candidateModels = [
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-latest',
+    'gemini-2.5-flash',
+    'gemini-1.5-pro'
+  ]
+
   async generateText(options: AIGenerateOptions): Promise<string> {
     const key = options.apiKey?.trim()
     if (!key) {
@@ -107,46 +115,66 @@ export class GeminiProvider extends BaseAIProvider {
       throw err
     }
 
-    const modelName = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
+    const requestedModel = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
+    const modelsToTry = Array.from(new Set([requestedModel, ...this.candidateModels]))
 
-    const contents = []
-    if (options.systemInstruction) {
+    let lastError: any = null
+
+    for (const modelName of modelsToTry) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
+
+      const contents = []
+      if (options.systemInstruction) {
+        contents.push({
+          role: 'user',
+          parts: [{ text: `SYSTEM INSTRUCTION:\n${options.systemInstruction}` }]
+        })
+      }
       contents.push({
         role: 'user',
-        parts: [{ text: `SYSTEM INSTRUCTION:\n${options.systemInstruction}` }]
+        parts: [{ text: options.prompt }]
       })
+
+      const body: any = { contents }
+      if (options.jsonMode) {
+        body.generationConfig = { responseMimeType: 'application/json' }
+      }
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          const msg = errData?.error?.message || `Gemini API returned HTTP ${res.status}`
+          
+          // If model not found / unsupported on this API version or key, try next candidate model
+          if (res.status === 404 || msg.includes('not found for API version') || msg.includes('is not supported for generateContent')) {
+            lastError = new Error(msg)
+            continue
+          }
+
+          const err: any = new Error(msg)
+          if (res.status === 401 || res.status === 400) err.code = 'INVALID'
+          else if (res.status === 429) err.code = 'RATE_LIMITED'
+          else if (res.status === 403) err.code = 'PERMISSION_ERROR'
+          else if (res.status >= 500) err.code = 'PROVIDER_ERROR'
+          throw err
+        }
+
+        const data = await res.json()
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+        return text
+      } catch (err: any) {
+        if (err.code) throw err // Rethrow explicit category errors like INVALID or RATE_LIMITED
+        lastError = err
+      }
     }
-    contents.push({
-      role: 'user',
-      parts: [{ text: options.prompt }]
-    })
 
-    const body: any = { contents }
-    if (options.jsonMode) {
-      body.generationConfig = { responseMimeType: 'application/json' }
-    }
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      const msg = errData?.error?.message || `Gemini API returned HTTP ${res.status}`
-      const err: any = new Error(msg)
-      if (res.status === 401 || res.status === 400) err.code = 'INVALID'
-      else if (res.status === 429) err.code = 'RATE_LIMITED'
-      else if (res.status === 403) err.code = 'PERMISSION_ERROR'
-      else if (res.status >= 500) err.code = 'PROVIDER_ERROR'
-      throw err
-    }
-
-    const data = await res.json()
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
-    return text
+    throw lastError || new Error('All Gemini candidate models failed to respond.')
   }
 
   async generateStructuredOutput<T = any>(options: AIGenerateOptions): Promise<T> {
@@ -169,8 +197,8 @@ export class GeminiProvider extends BaseAIProvider {
       throw err
     }
 
-    const modelName = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
+    const requestedModel = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
+    const modelsToTry = Array.from(new Set([requestedModel, ...this.candidateModels]))
 
     const contents = options.messages.map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
@@ -184,20 +212,37 @@ export class GeminiProvider extends BaseAIProvider {
       })
     }
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents })
-    })
+    let lastError: any = null
 
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      throw new Error(errData?.error?.message || `Gemini API returned HTTP ${res.status}`)
+    for (const modelName of modelsToTry) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents })
+        })
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          const msg = errData?.error?.message || `Gemini API returned HTTP ${res.status}`
+          if (res.status === 404 || msg.includes('not found for API version') || msg.includes('is not supported for generateContent')) {
+            lastError = new Error(msg)
+            continue
+          }
+          throw new Error(msg)
+        }
+
+        const data = await res.json()
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
+        return { text, sources: options.contextSources }
+      } catch (err: any) {
+        lastError = err
+      }
     }
 
-    const data = await res.json()
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
-    return { text, sources: options.contextSources }
+    throw lastError || new Error('All Gemini candidate models failed to respond.')
   }
 
   async analyzeImage(imageUrl: string, prompt: string, apiKey?: string): Promise<string> {

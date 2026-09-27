@@ -20,9 +20,7 @@ export function GitHubIssuesList({ issues }: GitHubIssuesListProps) {
     createProblem(
       `[GitHub #${issue.number}] ${issue.title}`,
       `Imported from GitHub Issue #${issue.number} in ${issue.repoName}.\nURL: ${issue.url}\n\n${issue.body || 'No description provided.'}`,
-      'Pending resolution plan',
-      'HIGH',
-      issue.repoName
+      'Pending resolution plan'
     )
     setCreatedIds((prev) => [...prev, issue.id])
   }

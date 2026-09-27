@@ -119,7 +119,7 @@ export function getEffectiveProviderConfig(providerId: 'gemini' | 'groq'): {
     if (byokKey) {
       return {
         apiKey: byokKey,
-        model: vault.geminiModel || process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+        model: vault.geminiModel || process.env.GEMINI_MODEL || 'gemini-2.0-flash',
         mode: 'byok',
         isConfigured: true
       }
@@ -129,7 +129,7 @@ export function getEffectiveProviderConfig(providerId: 'gemini' | 'groq'): {
     const platformKey = process.env.GEMINI_API_KEY?.trim() || ''
     return {
       apiKey: platformKey,
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
       mode: 'platform',
       isConfigured: Boolean(platformKey)
     }

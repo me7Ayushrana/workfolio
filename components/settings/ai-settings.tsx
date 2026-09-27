@@ -163,6 +163,25 @@ export function AISettings() {
     }
   }
 
+  const handleClearKey = async (providerId: 'gemini' | 'groq') => {
+    try {
+      const res = await fetch('/api/ai/providers/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ providerId })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setStatusMessage({ type: 'success', text: data.message })
+        refreshAIStatus()
+      } else {
+        setStatusMessage({ type: 'error', text: data.message || 'Failed to disconnect key.' })
+      }
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: `Failed to disconnect key: ${err?.message}` })
+    }
+  }
+
   const handleUpdatePreferences = async (newPrimary: 'gemini' | 'groq', newFallback: boolean) => {
     setAIPrimaryProvider(newPrimary)
     setFallbackEnabled(newFallback)
@@ -392,6 +411,14 @@ export function AISettings() {
                     >
                       {testingGemini ? 'Verifying...' : 'Validate'}
                     </button>
+                    {geminiStatus.mode === 'byok' && geminiStatus.configured && (
+                      <button
+                        onClick={() => handleClearKey('gemini')}
+                        className="px-3 py-2 rounded bg-[#381818] border border-[#5C2626] text-[#E07A7A] text-xs font-medium hover:bg-[#4D2020] transition-colors cursor-pointer"
+                      >
+                        Disconnect
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -402,7 +429,8 @@ export function AISettings() {
                     onChange={(e) => setGeminiStatus((prev) => ({ ...prev, model: e.target.value }))}
                     className="w-full rounded border border-[#29302A] bg-[#111311] px-3 py-2 text-xs text-[#F5F2EB] focus:border-[#C1A05B] focus:outline-none"
                   >
-                    <option value="gemini-1.5-flash">gemini-1.5-flash (Fast & Recommended)</option>
+                    <option value="gemini-2.0-flash">gemini-2.0-flash (Fast & Recommended)</option>
+                    <option value="gemini-1.5-flash">gemini-1.5-flash (Legacy Flash)</option>
                     <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning)</option>
                   </select>
                 </div>
@@ -465,6 +493,14 @@ export function AISettings() {
                     >
                       {testingGroq ? 'Verifying...' : 'Validate'}
                     </button>
+                    {groqStatus.mode === 'byok' && groqStatus.configured && (
+                      <button
+                        onClick={() => handleClearKey('groq')}
+                        className="px-3 py-2 rounded bg-[#381818] border border-[#5C2626] text-[#E07A7A] text-xs font-medium hover:bg-[#4D2020] transition-colors cursor-pointer"
+                      >
+                        Disconnect
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -524,7 +560,7 @@ export function AISettings() {
                 <input
                   type="checkbox"
                   checked={fallbackEnabled}
-                  onChange={(e) => handleUpdatePreferences(aiPrimaryProvider, e.target.checked)}
+                  onChange={(e) => handleUpdatePreferences(aiPrimaryProvider === 'groq' ? 'groq' : 'gemini', e.target.checked)}
                   className="rounded border-[#29302A] bg-[#111311] text-[#C1A05B] focus:ring-0 cursor-pointer"
                 />
               </div>

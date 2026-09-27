@@ -408,6 +408,9 @@ interface WorkfolioStoreContextType {
   recentlyViewedIds: string[]
   requests: ResourceRequest[]
   feedbackList: ResourceFeedback[]
+  evidence: any[]
+  createProblem: (problem: string, attempts?: string, solution?: string) => ProblemSolution
+  updateExploreResource: (id: string, updates: Partial<ExploreResource>) => void
 
   // Activity Actions
   logActivityEntry: (entry: Omit<ActivityLogEntry, 'id' | 'date' | 'time'>) => ActivityLogEntry
@@ -525,9 +528,11 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     name: 'Google Gemini',
     enabled: true,
     apiKey: '',
-    defaultModel: 'gemini-1.5-flash',
-    supportedModels: ['gemini-1.5-flash', 'gemini-1.5-pro'],
-    status: 'unconfigured'
+    model: 'gemini-2.0-flash',
+    defaultModel: 'gemini-2.0-flash',
+    supportedModels: ['gemini-2.0-flash', 'gemini-1.5-pro'],
+    status: 'NOT_CONFIGURED',
+    byok: true
   })
 
   const [groqConfig, setGroqConfig] = useState<AIProviderConfig>({
@@ -535,9 +540,11 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     name: 'Groq',
     enabled: true,
     apiKey: '',
+    model: 'llama-3.3-70b-versatile',
     defaultModel: 'llama-3.3-70b-versatile',
-    supportedModels: ['llama-3.3-70b-versatile', 'llama3-8b-8192', 'mixtral-8x7b-32768'],
-    status: 'unconfigured'
+    supportedModels: ['llama-3.3-70b-versatile', 'llama3-8b-8192'],
+    status: 'NOT_CONFIGURED',
+    byok: true
   })
 
   const [aiPrimaryProvider, setAiPrimaryProviderState] = useState<AIProviderId>('gemini')
@@ -1072,6 +1079,19 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     return implementResource(resourceId, newProj.id)
   }
 
+  const createProblem = (problemText: string, attempts?: string, solution?: string): ProblemSolution => {
+    const newProb: ProblemSolution = {
+      id: `prob-${Date.now()}`,
+      problem: problemText,
+      attempts: attempts || 'Reported from GitHub issue sync',
+      solution: solution,
+      resolved: Boolean(solution),
+      date: new Date().toISOString().split('T')[0]
+    }
+    setProblems((prev) => [newProb, ...prev])
+    return newProb
+  }
+
   const publishProjectToExplore = (projectId: string, metadata: Partial<ExploreResource>) => {
     const project = projects.find((p) => p.id === projectId)
     const slug = (metadata.title || project?.name || 'project').toLowerCase().replaceAll(' ', '-').replaceAll(/[^a-z0-9-]/g, '')
@@ -1231,7 +1251,7 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
         const next = { ...prev, ...updates }
         if (!next.apiKey || !next.apiKey.trim()) {
           next.apiKey = ''
-          next.status = 'unconfigured'
+          next.status = 'NOT_CONFIGURED'
         }
         return next
       })
@@ -1240,7 +1260,7 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
         const next = { ...prev, ...updates }
         if (!next.apiKey || !next.apiKey.trim()) {
           next.apiKey = ''
-          next.status = 'unconfigured'
+          next.status = 'NOT_CONFIGURED'
         }
         return next
       })
@@ -1264,9 +1284,9 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       })
       const data = await res.json()
       if (data.success) {
-        updateAIProviderConfig(providerId, { status: 'active', lastTestedAt: new Date().toISOString(), apiKey })
+        updateAIProviderConfig(providerId, { status: 'CONNECTED', lastTestedAt: new Date().toISOString(), apiKey })
       } else {
-        updateAIProviderConfig(providerId, { status: 'error', errorMessage: data.message })
+        updateAIProviderConfig(providerId, { status: 'ERROR', errorMessage: data.message })
       }
       return data
     } catch (err: any) {
@@ -1300,10 +1320,10 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       if (data.success) {
         setAiUsageMetrics((prev) => ({
           ...prev,
-          totalCalls: prev.totalCalls + 1,
-          totalTokens: prev.totalTokens + (data.tokensUsed || 350),
-          geminiCalls: data.providerUsed === 'gemini' ? prev.geminiCalls + 1 : prev.geminiCalls,
-          groqCalls: data.providerUsed === 'groq' ? prev.groqCalls + 1 : prev.groqCalls,
+          totalCalls: (prev.totalCalls || 0) + 1,
+          totalTokens: (prev.totalTokens || 0) + (data.tokensUsed || 350),
+          geminiCalls: data.providerUsed === 'gemini' ? (prev.geminiCalls || 0) + 1 : (prev.geminiCalls || 0),
+          groqCalls: data.providerUsed === 'groq' ? (prev.groqCalls || 0) + 1 : (prev.groqCalls || 0),
           lastUsedAt: new Date().toISOString()
         }))
         return data.result
@@ -1399,6 +1419,8 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
         learningTracks,
         goals,
         problems,
+        evidence: [],
+        createProblem,
         resources,
         collections,
         projects,

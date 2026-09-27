@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { WorkfolioHeader } from '@/components/workfolio-header'
 import { QuickCaptureModal } from '@/components/quick-capture-modal'
-import { ActivityType, useWorkfolio } from '@/lib/workfolio-store'
+import { ActivityLogEntry, ActivityType, useWorkfolio } from '@/lib/workfolio-store'
 
 function ActivityContent() {
   const searchParams = useSearchParams()

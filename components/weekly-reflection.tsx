@@ -9,7 +9,9 @@ export function WeeklyReflectionSection() {
     activities,
     projects,
     learningTracks,
-    problems
+    problems,
+    goals,
+    evidence
   } = useWorkfolio()
 
   const [timeframe, setTimeframe] = useState<'current' | 'previous' | 'custom'>('current')

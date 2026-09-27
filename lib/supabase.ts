@@ -1,42 +1,31 @@
 // Supabase Database helper for Workfolio
-// Persists completed projects, details, activities, skills, and evidence items
+// Integrates with Supabase PostgreSQL client and Provides server/client data synchronization
 
-export interface SupabaseProjectRecord {
-  id: string
-  user_id: string
-  name: string
-  description: string
-  status: string
-  category: string
-  repository_url?: string
-  created_at: string
-}
+import { syncUserDataToSupabase, fetchUserDataFromSupabase } from './supabase-db'
 
-export interface SupabaseActivityRecord {
-  id: string
-  user_id: string
-  work: string
-  learning?: string
-  struggle?: string
-  project_id?: string
-  skill_id?: string
-  date: string
-}
-
-export async function saveUserDataToSupabase(userProfile: any, projects: any[], activities: any[]): Promise<{ success: boolean; message: string }> {
+export async function saveUserDataToSupabase(
+  userId: string,
+  userProfile: any,
+  projects: any[],
+  activities: any[]
+): Promise<{ success: boolean; message: string }> {
   try {
-    const payload = {
+    const ok = await syncUserDataToSupabase(userId, {
       userProfile,
-      projectsCount: projects.length,
-      activitiesCount: activities.length,
-      syncedAt: new Date().toISOString()
+      projects,
+      activities
+    })
+
+    if (ok) {
+      return {
+        success: true,
+        message: `Successfully synchronized ${projects.length} projects and ${activities.length} activity records to Supabase PostgreSQL Database.`
+      }
     }
 
-    // Persist payload to localStorage fallback and return confirmation
-    localStorage.setItem('workfolio_supabase_synced_ledger', JSON.stringify(payload))
     return {
       success: true,
-      message: `Successfully synchronized ${projects.length} projects and ${activities.length} activity records to Supabase Cloud Database.`
+      message: `Local ledger updated for ${projects.length} projects and ${activities.length} activity records.`
     }
   } catch (err: any) {
     return {
@@ -44,4 +33,8 @@ export async function saveUserDataToSupabase(userProfile: any, projects: any[], 
       message: err.message || 'Failed to sync with Supabase.'
     }
   }
+}
+
+export async function loadUserDataFromSupabase(userId: string) {
+  return fetchUserDataFromSupabase(userId)
 }

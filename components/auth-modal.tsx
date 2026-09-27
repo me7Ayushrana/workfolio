@@ -31,7 +31,7 @@ interface AuthModalProps {
 
 export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
   const router = useRouter()
-  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider, projects, activityLog } = useWorkfolio()
+  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider, projects, activities } = useWorkfolio()
 
   const [activeTab, setActiveTab] = useState<'profile' | 'auth' | 'apikeys'>(initialTab)
 
@@ -87,9 +87,10 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
       if (lName) setLastName(lName)
 
       const syncRes = await saveUserDataToSupabase(
+        session.uid,
         { ...userProfile, google_connected: true, email: session.email },
         projects || [],
-        activityLog || []
+        activities || []
       )
 
       setSyncStatus(`Firebase Auth Verified (${session.email})! ${syncRes.message}`)
@@ -115,9 +116,10 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
       setGithubUser(ghName)
 
       const syncRes = await saveUserDataToSupabase(
+        session.uid,
         { ...userProfile, github_connected: true, github_username: ghName },
         projects || [],
-        activityLog || []
+        activities || []
       )
 
       setSyncStatus(`GitHub Connected (@${ghName})! ${syncRes.message}`)

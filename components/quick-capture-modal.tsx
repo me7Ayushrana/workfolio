@@ -45,7 +45,9 @@ export function QuickCaptureModal({
     skills,
     logActivityEntry,
     updateActivityEntry,
-    createProject
+    deleteActivity,
+    createProject,
+    createSkill
   } = useWorkfolio()
 
   const isEditing = !!activityToEdit

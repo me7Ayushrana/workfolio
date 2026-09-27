@@ -27,6 +27,7 @@ export function GitHubReleasesList({ releases, projectId }: GitHubReleasesListPr
       work: `[GitHub Release ${rel.tagName}] ${rel.name}`,
       evidenceTitle: `Release ${rel.tagName}: ${rel.name}`,
       evidenceUrl: rel.url,
+      capabilities: ['GitHub'],
       type: 'SHIP'
     })
     setConvertedEvidence((prev) => [...prev, rel.id])

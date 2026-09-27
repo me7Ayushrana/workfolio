@@ -15,5 +15,5 @@ export async function callGemini(options: GeminiOptions): Promise<string> {
 }
 
 export async function callGeminiStructured<T = any>(options: GeminiOptions): Promise<T> {
-  return (aiService as any).executeStructuredAI<T>(options.prompt, options, options.systemInstruction)
+  return (aiService as any).executeStructuredAI(options.prompt, options, options.systemInstruction) as Promise<T>
 }

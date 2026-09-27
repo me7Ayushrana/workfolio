@@ -158,7 +158,7 @@ export function ImplementModal({ resource, onClose, onSuccess }: ImplementModalP
                   </label>
                   <input
                     value={newProjectCategory}
-                    onChange={(e) => setNewProjectCategory(e.target.value)}
+                    onChange={(e) => setNewProjectCategory(e.target.value as any)}
                     placeholder="e.g. AI / Development"
                     className="w-full border border-[#0c0d14]/20 bg-transparent px-3 py-2 text-xs outline-none focus:border-[#9b7b3b]"
                   />

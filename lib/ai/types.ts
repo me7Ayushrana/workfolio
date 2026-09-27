@@ -18,12 +18,15 @@ export interface AIProviderConfig {
   id: AIProviderId
   name: string
   enabled: boolean
-  apiKey?: string // Encrypted or masked on client
+  apiKey?: string
   model: string
-  status: 'NOT_CONFIGURED' | 'CONNECTED' | 'ERROR'
+  defaultModel?: string
+  supportedModels?: string[]
+  status: 'NOT_CONFIGURED' | 'CONNECTED' | 'ERROR' | 'unconfigured' | 'active' | 'error' | 'VALID' | 'INVALID' | 'NOT_TESTED'
   errorMessage?: string
   lastTestedAt?: string
-  byok: boolean // Bring Your Own Key mode
+  lastTested?: string
+  byok?: boolean
 }
 
 export interface AITaskRouteConfig {
@@ -34,12 +37,17 @@ export interface AITaskRouteConfig {
 }
 
 export interface AIUsageMetrics {
-  requestsToday: number
-  requestsMonth: number
-  geminiRequests: number
-  groqRequests: number
+  totalCalls?: number
+  totalTokens?: number
+  geminiCalls?: number
+  groqCalls?: number
+  lastUsedAt?: string
+  requestsToday?: number
+  requestsMonth?: number
+  geminiRequests?: number
+  groqRequests?: number
   lastRequestTime?: string
-  errorCount: number
+  errorCount?: number
   lastErrorMessage?: string
   tokenUsageApprox?: number
 }
@@ -100,9 +108,12 @@ export type AIDraftState = 'DRAFT' | 'APPROVED' | 'REJECTED'
 
 export interface PendingAIDraft<T = any> {
   id: string
-  kind: AITaskKind
+  kind?: AITaskKind
+  type?: string
   createdAt: string
-  state: AIDraftState
-  data: T
+  state?: AIDraftState
+  data?: T
+  payload?: any
+  rawPrompt?: string
   sources?: AISourceAttribution[]
 }
