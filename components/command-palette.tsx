@@ -179,8 +179,54 @@ export function CommandPalette() {
 
         {/* Results Body */}
         <div className="max-h-[60vh] overflow-y-auto p-4 space-y-6">
-          
-          {/* WORK PERFORMED / ACTIVITY LOGS BY DATE */}
+
+          {/* AI COMMAND SHORTCUTS */}
+          {!query && (
+            <div>
+              <div className="flex items-center gap-2 border-b border-[#0c0d14]/10 pb-1.5 mb-2 px-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b]">
+                <Sparkles size={12} />
+                <span>AI Actions & Shortcuts</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleSelect('/?action=log_activity')}
+                  className="flex items-center gap-2.5 rounded border border-[#0c0d14]/10 bg-[#f8f5ee] p-2.5 text-left text-xs font-medium text-[#111318] hover:bg-[#9b7b3b]/15"
+                >
+                  <BookOpen size={14} className="text-[#9b7b3b]" /> Log Activity
+                </button>
+                <button
+                  onClick={() => handleSelect('/?action=log_ai')}
+                  className="flex items-center gap-2.5 rounded border border-[#c1a05b]/30 bg-[#9b7b3b]/10 p-2.5 text-left text-xs font-semibold text-[#111318] hover:bg-[#9b7b3b]/20"
+                >
+                  <Sparkles size={14} className="text-[#9b7b3b]" /> Log with AI Text
+                </button>
+                <button
+                  onClick={() => handleSelect('/?action=log_voice')}
+                  className="flex items-center gap-2.5 rounded border border-[#c1a05b]/30 bg-[#9b7b3b]/10 p-2.5 text-left text-xs font-semibold text-[#111318] hover:bg-[#9b7b3b]/20"
+                >
+                  <Sparkles size={14} className="text-[#9b7b3b]" /> Log with Voice
+                </button>
+                <button
+                  onClick={() => handleSelect('/?action=ask')}
+                  className="flex items-center gap-2.5 rounded border border-[#0c0d14]/10 bg-[#f8f5ee] p-2.5 text-left text-xs font-medium text-[#111318] hover:bg-[#9b7b3b]/15"
+                >
+                  <Sparkles size={14} className="text-[#9b7b3b]" /> Ask Workfolio Assistant
+                </button>
+                <button
+                  onClick={() => handleSelect('/#reflection')}
+                  className="flex items-center gap-2.5 rounded border border-[#0c0d14]/10 bg-[#f8f5ee] p-2.5 text-left text-xs font-medium text-[#111318] hover:bg-[#9b7b3b]/15"
+                >
+                  <Calendar size={14} className="text-[#9b7b3b]" /> Generate Weekly Reflection
+                </button>
+                <button
+                  onClick={() => handleSelect('/#next-action')}
+                  className="flex items-center gap-2.5 rounded border border-[#0c0d14]/10 bg-[#f8f5ee] p-2.5 text-left text-xs font-medium text-[#111318] hover:bg-[#9b7b3b]/15"
+                >
+                  <Compass size={14} className="text-[#9b7b3b]" /> What Should I Work On?
+                </button>
+              </div>
+            </div>
+          )}
           <div>
             <div className="flex items-center justify-between border-b border-[#0c0d14]/10 pb-1.5 mb-2 px-2">
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#111318]">

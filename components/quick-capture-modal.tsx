@@ -14,9 +14,12 @@ import {
   Trash2,
   CheckCircle2,
   ArrowRight,
-  Layers,
-  Link as LinkIcon,
-  HelpCircle
+  Mic,
+  MicOff,
+  AlertCircle,
+  RefreshCw,
+  Save,
+  RotateCcw
 } from 'lucide-react'
 import { ActivityLogEntry, ActivityType, useWorkfolio } from '@/lib/workfolio-store'
 
@@ -26,6 +29,7 @@ interface QuickCaptureModalProps {
   defaultProjectId?: string
   defaultSkillId?: string
   activityToEdit?: ActivityLogEntry
+  initialMode?: 'direct' | 'ai' | 'voice'
 }
 
 export function QuickCaptureModal({
@@ -33,19 +37,39 @@ export function QuickCaptureModal({
   onSuccess,
   defaultProjectId,
   defaultSkillId,
-  activityToEdit
+  activityToEdit,
+  initialMode = 'direct'
 }: QuickCaptureModalProps) {
-  const { projects, skills, logActivityEntry, updateActivityEntry, deleteActivity, createProject, createSkill, executeAITask } = useWorkfolio()
+  const { projects, skills, logActivityEntry, updateActivityEntry, deleteActivity, createProject, createSkill } = useWorkfolio()
 
   const isEditing = !!activityToEdit
 
-  // Mode Selection: 'direct' or 'ai'
-  const [entryMode, setEntryMode] = useState<'direct' | 'ai'>('direct')
+  // Mode Selection: 'direct' | 'ai' | 'voice'
+  const [entryMode, setEntryMode] = useState<'direct' | 'ai' | 'voice'>(initialMode)
 
-  // AI Prompt State
+  // AI & Voice State
   const [naturalInput, setNaturalInput] = useState('')
   const [isParsingAI, setIsParsingAI] = useState(false)
   const [aiError, setAiError] = useState<string | null>(null)
+  const [aiStatus, setAiStatus] = useState<'IDLE' | 'LOADING' | 'REVIEW' | 'NOT_CONFIGURED' | 'ERROR'>('IDLE')
+
+  // Voice recording
+  const [isRecording, setIsRecording] = useState(false)
+  const [voiceSupported, setVoiceSupported] = useState(true)
+  const [recognition, setRecognition] = useState<any>(null)
+
+  // AI Draft Review state
+  const [aiDraft, setAiDraft] = useState<{
+    type: ActivityType
+    work: string
+    learning?: string
+    struggle?: string
+    nextStep?: string
+    projectId?: string | null
+    projectTitle?: string | null
+    suggestedSkills?: string[]
+    suggestedTags?: string[]
+  } | null>(null)
 
   // Core Form State
   const [work, setWork] = useState(activityToEdit?.work || '')
@@ -86,6 +110,15 @@ export function QuickCaptureModal({
   const [newSkillGoal, setNewSkillGoal] = useState('')
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      if (!SpeechRecognition) {
+        setVoiceSupported(false)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (!activityToEdit) {
       if (defaultProjectId) setSelectedProjectId(defaultProjectId)
       if (defaultSkillId) setSelectedSkillId(defaultSkillId)
@@ -117,27 +150,142 @@ export function QuickCaptureModal({
     setWork((prev) => (prev.trim() ? `${prefix}${prev}` : prefix))
   }
 
+  // Voice recording toggle
+  const toggleVoiceRecording = () => {
+    if (typeof window === 'undefined') return
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      setVoiceSupported(false)
+      return
+    }
+
+    if (isRecording) {
+      if (recognition) recognition.stop()
+      setIsRecording(false)
+      return
+    }
+
+    try {
+      const rec = new SpeechRecognition()
+      rec.continuous = true
+      rec.interimResults = true
+      rec.lang = 'en-US'
+
+      rec.onresult = (event: any) => {
+        let currentTranscript = ''
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          currentTranscript += event.results[i][0].transcript
+        }
+        setNaturalInput(currentTranscript)
+      }
+
+      rec.onerror = (err: any) => {
+        console.warn('Voice error', err)
+        setIsRecording(false)
+      }
+
+      rec.onend = () => {
+        setIsRecording(false)
+      }
+
+      rec.start()
+      setRecognition(rec)
+      setIsRecording(true)
+    } catch (err: any) {
+      setVoiceSupported(false)
+    }
+  }
+
   const handleAIParse = async () => {
     if (!naturalInput.trim() || isParsingAI) return
     setIsParsingAI(true)
     setAiError(null)
+    setAiStatus('LOADING')
+
     try {
-      const parsed = await executeAITask('ACTIVITY_STRUCTURING', { description: naturalInput })
-      if (parsed) {
-        setWork(parsed.work || naturalInput)
-        if (parsed.learning) setLearning(parsed.learning)
-        if (parsed.struggle) setStruggle(parsed.struggle)
-        if (parsed.intention) setIntention(parsed.intention)
-        if (parsed.type) setActivityType(parsed.type)
-        if (parsed.capabilities?.length) setCapabilitiesStr(parsed.capabilities.join(', '))
-        setEntryMode('direct')
-        setShowReflections(!!parsed.learning || !!parsed.struggle || !!parsed.intention)
+      const res = await fetch('/api/ai/activity/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: naturalInput,
+          projects: projects.map((p) => ({ id: p.id, name: p.name })),
+          skills: skills.map((s) => ({ id: s.id, name: s.name }))
+        })
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        if (data.status === 'unconfigured') {
+          setAiStatus('NOT_CONFIGURED')
+          setAiError('AI is not configured yet. Please set GEMINI_API_KEY on your server.')
+        } else {
+          setAiStatus('ERROR')
+          setAiError(data.message || 'Failed to parse natural language activity.')
+        }
+        return
       }
+
+      const draft = data.draft
+      setAiDraft({
+        type: draft.type || 'BUILD',
+        work: draft.work || naturalInput,
+        learning: draft.learning,
+        struggle: draft.struggle,
+        nextStep: draft.nextStep,
+        projectTitle: draft.projectTitle || 'No matching project found',
+        projectId: draft.projectId || null,
+        suggestedSkills: draft.suggestedSkills,
+        suggestedTags: draft.suggestedTags
+      })
+      setAiStatus('REVIEW')
     } catch (err: any) {
-      setAiError(err.message || 'Failed to parse text. Please ensure your AI API key is configured.')
+      setAiStatus('ERROR')
+      setAiError(err.message || 'Failed to parse text with AI.')
     } finally {
       setIsParsingAI(false)
     }
+  }
+
+  const handleAcceptAIDraft = () => {
+    if (!aiDraft) return
+    logActivityEntry({
+      work: aiDraft.work,
+      learning: aiDraft.learning,
+      struggle: aiDraft.struggle,
+      intention: aiDraft.nextStep,
+      projectId: aiDraft.projectId || undefined,
+      type: aiDraft.type,
+      capabilities: aiDraft.suggestedTags || []
+    })
+
+    setSavedAction('created')
+    setIsSaved(true)
+    setTimeout(() => {
+      onSuccess?.()
+      onClose()
+    }, 600)
+  }
+
+  const handleEditAIDraft = () => {
+    if (!aiDraft) return
+    setWork(aiDraft.work)
+    if (aiDraft.learning) setLearning(aiDraft.learning)
+    if (aiDraft.struggle) setStruggle(aiDraft.struggle)
+    if (aiDraft.nextStep) setIntention(aiDraft.nextStep)
+    if (aiDraft.type) setActivityType(aiDraft.type)
+    if (aiDraft.projectId) setSelectedProjectId(aiDraft.projectId)
+    if (aiDraft.suggestedTags?.length) setCapabilitiesStr(aiDraft.suggestedTags.join(', '))
+    
+    setEntryMode('direct')
+    setAiStatus('IDLE')
+    setAiDraft(null)
+    setShowReflections(!!aiDraft.learning || !!aiDraft.struggle || !!aiDraft.nextStep)
+  }
+
+  const handleRejectAIDraft = () => {
+    setAiDraft(null)
+    setAiStatus('IDLE')
   }
 
   const handleCreateProjectInline = (e: React.FormEvent) => {
@@ -243,60 +391,67 @@ export function QuickCaptureModal({
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 p-4 backdrop-blur-xl">
       <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-[#c1a05b]/30 bg-[#0c0d14] text-[#f3eee4] shadow-[0_30px_90px_rgba(0,0,0,0.9)] backdrop-blur-2xl transition-all">
         
-        {/* ========================================================================= */}
-        {/* MODAL HEADER: CLEAN, ELEGANT ARCHITECTURE */}
-        {/* ========================================================================= */}
+        {/* HEADER */}
         <div className="flex items-center justify-between border-b border-white/10 bg-[#090a10] px-8 py-5">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
-              <span>WORKFOLIO LOG CONSOLE</span>
+              <Sparkles size={14} />
+              <span>{isEditing ? 'UPDATE ACTIVITY ENTRY' : 'LOG DAILY ENGINEERING ACTIVITY'}</span>
             </div>
-            <h2 className="font-serif text-2xl font-light text-[#f3eee4] mt-0.5">
-              {isEditing ? 'Edit Activity Entry' : 'Log Daily Activity'}
+            <h2 className="mt-1 font-serif text-2xl font-light text-[#f3eee4]">
+              {isEditing ? 'Refine Work Record' : 'Record Verified Activity'}
             </h2>
           </div>
 
           <div className="flex items-center gap-3">
             {!isEditing && (
-              <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
+              <div className="flex items-center rounded-xl border border-white/15 bg-white/5 p-1 text-xs">
                 <button
                   type="button"
                   onClick={() => setEntryMode('direct')}
-                  className={`rounded-lg px-3 py-1 text-[11px] font-semibold transition-all cursor-pointer ${
+                  className={`rounded-lg px-3 py-1.5 font-semibold transition-all ${
                     entryMode === 'direct'
                       ? 'bg-[#c1a05b] text-[#08090f] shadow-sm'
-                      : 'text-[#f3eee4]/60 hover:text-white'
+                      : 'text-[#f3eee4]/70 hover:text-white'
                   }`}
                 >
-                  Direct Entry
+                  Form
                 </button>
                 <button
                   type="button"
                   onClick={() => setEntryMode('ai')}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-[11px] font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all ${
                     entryMode === 'ai'
                       ? 'bg-[#c1a05b] text-[#08090f] shadow-sm'
-                      : 'text-[#f3eee4]/60 hover:text-white'
+                      : 'text-[#f3eee4]/70 hover:text-white'
                   }`}
                 >
-                  <Sparkles size={12} />
-                  <span>AI Smart Log</span>
+                  <Sparkles size={12} /> AI Text
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEntryMode('voice')}
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all ${
+                    entryMode === 'voice'
+                      ? 'bg-[#c1a05b] text-[#08090f] shadow-sm'
+                      : 'text-[#f3eee4]/70 hover:text-white'
+                  }`}
+                >
+                  <Mic size={12} /> Voice
                 </button>
               </div>
             )}
 
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[#f3eee4]/60 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              className="rounded-full p-2 text-[#f3eee4]/60 hover:bg-white/10 hover:text-white transition-all"
             >
               <X size={18} />
             </button>
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* CONTENT BODY */}
-        {/* ========================================================================= */}
+        {/* MODAL BODY */}
         {isSaved ? (
           <div className="my-14 text-center space-y-4 px-8">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#c1a05b]/10 border border-[#c1a05b]/40 text-[#c1a05b]">
@@ -316,35 +471,131 @@ export function QuickCaptureModal({
         ) : (
           <div className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
 
-            {/* AI SMART LOG MODE */}
-            {entryMode === 'ai' && !isEditing && (
+            {/* AI REVIEW SCREEN (FEATURE 1 & 2 DRAFT REVIEW) */}
+            {aiStatus === 'REVIEW' && aiDraft && (
+              <div className="space-y-5 rounded-2xl border border-[#c1a05b]/40 bg-[#121420] p-6 text-xs">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded bg-[#c1a05b] px-2.5 py-0.5 text-[10px] font-bold text-[#08090f]">
+                      AI DRAFT REVIEW
+                    </span>
+                    <span className="text-[10px] font-bold text-[#c1a05b] uppercase">
+                      TYPE: {aiDraft.type}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-[#f3eee4]/50">Verify before saving to Workfolio</span>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Matched Project</label>
+                    <p className="mt-0.5 font-semibold text-white">
+                      {aiDraft.projectTitle || 'No matching project found'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Work Accomplished</label>
+                    <p className="mt-0.5 text-sm text-[#f3eee4] leading-relaxed">{aiDraft.work}</p>
+                  </div>
+
+                  {aiDraft.learning && (
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Learning Concept</label>
+                      <p className="mt-0.5 text-[#f3eee4]/80">{aiDraft.learning}</p>
+                    </div>
+                  )}
+
+                  {aiDraft.struggle && (
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Challenge / Problem</label>
+                      <p className="mt-0.5 text-amber-300/90">{aiDraft.struggle}</p>
+                    </div>
+                  )}
+
+                  {aiDraft.nextStep && (
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Planned Next Step</label>
+                      <p className="mt-0.5 text-[#f3eee4]/80">{aiDraft.nextStep}</p>
+                    </div>
+                  )}
+
+                  {aiDraft.suggestedTags?.length ? (
+                    <div>
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Suggested Tags</label>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {aiDraft.suggestedTags.map((tag) => (
+                          <span key={tag} className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-white">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleRejectAIDraft}
+                    className="rounded-xl border border-white/20 px-4 py-2 text-xs font-semibold text-[#f3eee4]/70 hover:text-white"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleEditAIDraft}
+                    className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-4 py-2 text-xs font-semibold text-[#c1a05b] hover:bg-[#c1a05b]/20"
+                  >
+                    <Edit3 size={13} /> Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAcceptAIDraft}
+                    className="flex items-center gap-1.5 rounded-xl bg-[#c1a05b] px-5 py-2 text-xs font-bold text-[#08090f] hover:bg-white transition-all shadow-md"
+                  >
+                    <Save size={13} /> Save Activity
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* AI TEXT LOG MODE */}
+            {entryMode === 'ai' && !isEditing && aiStatus !== 'REVIEW' && (
               <div className="space-y-4 rounded-2xl border border-[#c1a05b]/30 bg-[#121420] p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
                     <Sparkles size={15} />
                     <span>AI NATURAL LANGUAGE PARSER</span>
                   </div>
-                  <span className="text-[11px] text-[#f3eee4]/50">Describe what you did in plain English</span>
+                  <span className="text-[11px] text-[#f3eee4]/50">Describe what you worked on</span>
                 </div>
 
                 <textarea
                   value={naturalInput}
                   onChange={(e) => setNaturalInput(e.target.value)}
                   placeholder="e.g. Spent 2 hours refactoring database queries and adding automated unit tests for API endpoints..."
-                  rows={3}
+                  rows={4}
                   className="w-full rounded-xl border border-white/10 bg-[#0c0d14] p-4 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] transition-all leading-relaxed"
                   autoFocus
                 />
 
-                {aiError && (
-                  <p className="text-xs text-[#ff6b6b] bg-[#ff6b6b]/10 p-3 rounded-xl border border-[#ff6b6b]/20">
+                {aiStatus === 'NOT_CONFIGURED' && (
+                  <div className="rounded-xl border border-[#c1a05b]/30 bg-[#c1a05b]/10 p-4 text-xs text-[#f3eee4]/80">
+                    <p className="font-bold text-[#c1a05b] flex items-center gap-1.5"><AlertCircle size={15} /> AI is not configured yet.</p>
+                    <p className="mt-1">{aiError}</p>
+                  </div>
+                )}
+
+                {aiStatus === 'ERROR' && (
+                  <div className="rounded-xl border border-[#ff6b6b]/30 bg-[#ff6b6b]/10 p-3 text-xs text-[#ff6b6b]">
                     {aiError}
-                  </p>
+                  </div>
                 )}
 
                 <div className="flex items-center justify-between pt-1">
                   <p className="text-[11px] text-[#f3eee4]/40">
-                    Gemini AI will automatically extract work, learning, struggles, and tags.
+                    Matches existing projects and creates a review draft before saving.
                   </p>
                   <button
                     type="button"
@@ -352,8 +603,75 @@ export function QuickCaptureModal({
                     disabled={isParsingAI || !naturalInput.trim()}
                     className="flex items-center gap-2 rounded-xl bg-[#c1a05b] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#08090f] hover:bg-white transition-all disabled:opacity-40 cursor-pointer shadow-md"
                   >
-                    <Sparkles size={14} />
-                    <span>{isParsingAI ? 'Processing...' : 'Structure with AI'}</span>
+                    {isParsingAI ? <RefreshCw className="animate-spin" size={14} /> : <Sparkles size={14} />}
+                    <span>{isParsingAI ? 'Structuring...' : 'Structure with AI'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* VOICE LOGGING MODE (FEATURE 2) */}
+            {entryMode === 'voice' && !isEditing && aiStatus !== 'REVIEW' && (
+              <div className="space-y-4 rounded-2xl border border-[#c1a05b]/30 bg-[#121420] p-6 text-center">
+                <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
+                  <Mic size={16} />
+                  <span>AI VOICE LOGGING</span>
+                </div>
+
+                {!voiceSupported && (
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-200">
+                    <AlertCircle size={16} className="mx-auto mb-1 text-amber-400" />
+                    Voice input is not supported in this browser. You can paste or type your activity instead.
+                  </div>
+                )}
+
+                {voiceSupported && (
+                  <div className="py-4 space-y-3">
+                    <button
+                      type="button"
+                      onClick={toggleVoiceRecording}
+                      className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 transition-all cursor-pointer shadow-lg ${
+                        isRecording
+                          ? 'animate-pulse border-red-500 bg-red-500/20 text-red-400 scale-105'
+                          : 'border-[#c1a05b] bg-[#c1a05b]/10 text-[#c1a05b] hover:scale-105 hover:bg-[#c1a05b]/20'
+                      }`}
+                    >
+                      {isRecording ? <MicOff size={32} /> : <Mic size={32} />}
+                    </button>
+                    <p className="text-xs font-semibold text-[#f3eee4]">
+                      {isRecording ? 'Listening... speak clearly about what you worked on' : 'Click to start recording voice input'}
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-left space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">
+                    Editable Voice Transcript
+                  </label>
+                  <textarea
+                    value={naturalInput}
+                    onChange={(e) => setNaturalInput(e.target.value)}
+                    placeholder="Transcript will appear here as you speak..."
+                    rows={3}
+                    className="w-full rounded-xl border border-white/10 bg-[#0c0d14] p-4 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b]"
+                  />
+                </div>
+
+                {aiStatus === 'NOT_CONFIGURED' && (
+                  <div className="rounded-xl border border-[#c1a05b]/30 bg-[#c1a05b]/10 p-3 text-xs text-[#f3eee4]/80 text-left">
+                    {aiError}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={handleAIParse}
+                    disabled={isParsingAI || !naturalInput.trim()}
+                    className="flex items-center gap-2 rounded-xl bg-[#c1a05b] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#08090f] hover:bg-white transition-all disabled:opacity-40"
+                  >
+                    {isParsingAI ? <RefreshCw className="animate-spin" size={14} /> : <Sparkles size={14} />}
+                    <span>Structure Transcript with AI</span>
                   </button>
                 </div>
               </div>
@@ -427,352 +745,80 @@ export function QuickCaptureModal({
                   />
                 </div>
 
-                {/* PROJECT & SKILL CONNECTORS */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                  {/* PROJECT SELECTOR */}
-                  <div className="relative space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] flex items-center gap-1.5">
-                        <Folder size={13} /> Project Association
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowInlineProject(!showInlineProject)}
-                        className="text-[10px] font-bold text-[#c1a05b] hover:underline flex items-center gap-0.5 cursor-pointer"
-                      >
-                        <Plus size={10} /> New
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowProjectDropdown(!showProjectDropdown)
-                        setShowSkillDropdown(false)
-                      }}
-                      className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#121420] px-4 py-3 text-left text-xs text-[#f3eee4] outline-none hover:border-[#c1a05b]/50 transition-all cursor-pointer"
-                    >
-                      <span className="truncate font-medium">
-                        {selectedProject ? selectedProject.name : 'No Project (General Entry)'}
-                      </span>
-                      <ChevronDown size={14} className="text-[#c1a05b]" />
-                    </button>
-
-                    {showProjectDropdown && (
-                      <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#c1a05b]/30 bg-[#121420] p-2 shadow-2xl backdrop-blur-xl">
-                        <div className="relative mb-2">
-                          <Search size={12} className="absolute left-3 top-3 text-[#f3eee4]/40" />
-                          <input
-                            type="text"
-                            value={projectSearch}
-                            onChange={(e) => setProjectSearch(e.target.value)}
-                            placeholder="Filter projects..."
-                            className="w-full rounded-lg border border-white/10 bg-[#0c0d14] pl-8 pr-3 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
-                          />
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedProjectId('')
-                            setShowProjectDropdown(false)
-                          }}
-                          className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${
-                            !selectedProjectId ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                          }`}
-                        >
-                          No Project (General Entry)
-                        </button>
-
-                        <div className="my-1 border-t border-white/10" />
-
-                        {filteredProjects.map((p) => (
-                          <button
-                            key={p.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedProjectId(p.id)
-                              setShowProjectDropdown(false)
-                            }}
-                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between rounded-lg transition-colors ${
-                              selectedProjectId === p.id ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                            }`}
-                          >
-                            <span className="truncate">{p.name}</span>
-                            <span className="text-[9px] uppercase font-mono opacity-70">{p.category}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* SKILL SELECTOR */}
-                  <div className="relative space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#2ec4b6] flex items-center gap-1.5">
-                        <GraduationCap size={13} /> Skill Association
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowInlineSkill(!showInlineSkill)}
-                        className="text-[10px] font-bold text-[#2ec4b6] hover:underline flex items-center gap-0.5 cursor-pointer"
-                      >
-                        <Plus size={10} /> New
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowSkillDropdown(!showSkillDropdown)
-                        setShowProjectDropdown(false)
-                      }}
-                      className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#121420] px-4 py-3 text-left text-xs text-[#f3eee4] outline-none hover:border-[#2ec4b6]/50 transition-all cursor-pointer"
-                    >
-                      <span className="truncate font-medium">
-                        {selectedSkill ? selectedSkill.name : 'No Skill (General Entry)'}
-                      </span>
-                      <ChevronDown size={14} className="text-[#2ec4b6]" />
-                    </button>
-
-                    {showSkillDropdown && (
-                      <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#2ec4b6]/30 bg-[#121420] p-2 shadow-2xl backdrop-blur-xl">
-                        <div className="relative mb-2">
-                          <Search size={12} className="absolute left-3 top-3 text-[#f3eee4]/40" />
-                          <input
-                            type="text"
-                            value={skillSearch}
-                            onChange={(e) => setSkillSearch(e.target.value)}
-                            placeholder="Filter skills..."
-                            className="w-full rounded-lg border border-white/10 bg-[#0c0d14] pl-8 pr-3 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
-                          />
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedSkillId('')
-                            setShowSkillDropdown(false)
-                          }}
-                          className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${
-                            !selectedSkillId ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                          }`}
-                        >
-                          No Skill (General Entry)
-                        </button>
-
-                        <div className="my-1 border-t border-white/10" />
-
-                        {filteredSkills.map((s) => (
-                          <button
-                            key={s.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedSkillId(s.id)
-                              setShowSkillDropdown(false)
-                            }}
-                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between rounded-lg transition-colors ${
-                              selectedSkillId === s.id ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                            }`}
-                          >
-                            <span className="truncate">{s.name}</span>
-                            <span className="text-[9px] uppercase font-mono opacity-70">{s.status}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* INLINE PROJECT CREATION */}
-                {showInlineProject && (
-                  <div className="rounded-2xl border border-[#c1a05b]/30 bg-[#121420] p-4 space-y-3">
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
-                      <span>Create New Project</span>
-                      <button type="button" onClick={() => setShowInlineProject(false)} className="text-white/40 hover:text-white">
-                        <X size={14} />
-                      </button>
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Project Name *"
-                        value={newProjName}
-                        onChange={(e) => setNewProjName(e.target.value)}
-                        className="flex-1 rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCreateProjectInline}
-                        className="rounded-xl bg-[#c1a05b] px-4 py-2 text-xs font-bold text-[#08090f] hover:bg-white transition-all cursor-pointer"
-                      >
-                        Create
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* INLINE SKILL CREATION */}
-                {showInlineSkill && (
-                  <div className="rounded-2xl border border-[#2ec4b6]/30 bg-[#121420] p-4 space-y-3">
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#2ec4b6]">
-                      <span>Create New Skill</span>
-                      <button type="button" onClick={() => setShowInlineSkill(false)} className="text-white/40 hover:text-white">
-                        <X size={14} />
-                      </button>
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Skill Name *"
-                        value={newSkillName}
-                        onChange={(e) => setNewSkillName(e.target.value)}
-                        className="flex-1 rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCreateSkillInline}
-                        className="rounded-xl bg-[#2ec4b6] px-4 py-2 text-xs font-bold text-[#08090f] hover:bg-white transition-all cursor-pointer"
-                      >
-                        Create
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* COLLAPSIBLE REFLECTIONS & INTENTIONS */}
-                <div className="border-t border-white/10 pt-4">
+                {/* REFLECTIONS EXPANDER */}
+                <div className="space-y-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowReflections(!showReflections)}
-                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#c1a05b] hover:text-white transition-all cursor-pointer"
+                    className="flex items-center gap-2 text-xs font-semibold text-[#c1a05b] hover:underline"
                   >
-                    <span>{showReflections ? '− Hide Learning & Intentions' : '+ Add Learning, Struggles & Next Intentions'}</span>
+                    <span>{showReflections ? '− Hide Learning & Struggles' : '+ Add Learning, Struggles & Next Intention'}</span>
                   </button>
 
                   {showReflections && (
-                    <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-[#121420] p-5">
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#2ec4b6]">
-                          What did you learn? (Key Takeaway)
-                        </label>
+                    <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-3">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Concept Learned</label>
                         <input
+                          type="text"
                           value={learning}
                           onChange={(e) => setLearning(e.target.value)}
-                          placeholder="e.g. Mastered adaptive thresholding for receipt OCR..."
-                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#2ec4b6]"
+                          placeholder="e.g. Adaptive thresholding"
+                          className="mt-1 w-full rounded-xl border border-white/10 bg-[#0c0d14] p-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                         />
                       </div>
-
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#ff6b6b]">
-                          Struggles / Blockers
-                        </label>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Struggle / Blocker</label>
                         <input
+                          type="text"
                           value={struggle}
                           onChange={(e) => setStruggle(e.target.value)}
-                          placeholder="e.g. Low contrast receipt image noise..."
-                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#ff6b6b]"
+                          placeholder="e.g. Low-light recognition"
+                          className="mt-1 w-full rounded-xl border border-white/10 bg-[#0c0d14] p-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                         />
                       </div>
-
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">
-                          What's Next? (Next Intention)
-                        </label>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">Next Intention</label>
                         <input
+                          type="text"
                           value={intention}
                           onChange={(e) => setIntention(e.target.value)}
-                          placeholder="e.g. Implement cross-validation benchmark suite..."
-                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b]"
+                          placeholder="e.g. Test CLAHE"
+                          className="mt-1 w-full rounded-xl border border-white/10 bg-[#0c0d14] p-2.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
                         />
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* COLLAPSIBLE EVIDENCE ARTIFACTS */}
-                <div className="border-t border-white/10 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowEvidence(!showEvidence)}
-                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]/70 hover:text-white transition-all cursor-pointer"
-                  >
-                    <span>{showEvidence ? '− Hide Proof & Evidence Links' : '+ Attach Proof Artifact & Capabilities'}</span>
-                  </button>
-
-                  {showEvidence && (
-                    <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-[#121420] p-5">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
-                            Evidence Title / Proof Name
-                          </label>
-                          <input
-                            value={evidenceTitle}
-                            onChange={(e) => setEvidenceTitle(e.target.value)}
-                            placeholder="e.g. OCR Benchmark Test Screenshot"
-                            className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
-                            Evidence URL / PR Link
-                          </label>
-                          <input
-                            value={evidenceUrl}
-                            onChange={(e) => setEvidenceUrl(e.target.value)}
-                            placeholder="e.g. https://github.com/org/repo/pull/42"
-                            className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
-                          Capabilities Used (Comma Separated)
-                        </label>
-                        <input
-                          value={capabilitiesStr}
-                          onChange={(e) => setCapabilitiesStr(e.target.value)}
-                          placeholder="React, Computer Vision, API Design"
-                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
-                        />
-                      </div>
-                    </div>
+                {/* FORM BUTTONS */}
+                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                  {isEditing ? (
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      className="flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-xs font-semibold text-red-400 hover:bg-red-500/20"
+                    >
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  ) : (
+                    <div />
                   )}
-                </div>
-
-                {/* MODAL ACTION FOOTER */}
-                <div className="flex items-center justify-between border-t border-white/10 pt-6">
-                  <div>
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={handleDelete}
-                        className="flex items-center gap-1.5 rounded-xl border border-[#ff6b6b]/30 bg-[#ff6b6b]/10 px-4 py-2 text-xs font-bold text-[#ff6b6b] hover:bg-[#ff6b6b] hover:text-white transition-all cursor-pointer"
-                      >
-                        <Trash2 size={13} /> Delete Entry
-                      </button>
-                    )}
-                  </div>
 
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="rounded-xl border border-white/10 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#f3eee4]/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                      className="rounded-xl border border-white/20 px-5 py-2.5 text-xs font-semibold text-[#f3eee4]/70 hover:text-white"
                     >
                       Cancel
                     </button>
-
                     <button
                       type="submit"
-                      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] px-7 py-2.5 text-xs font-bold uppercase tracking-[.18em] text-[#08090f] hover:opacity-95 transition-all cursor-pointer shadow-lg"
+                      className="flex items-center gap-2 rounded-xl bg-[#c1a05b] px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-[#08090f] hover:bg-white transition-all shadow-md cursor-pointer"
                     >
-                      <span>{isEditing ? 'Save Changes' : 'Publish Activity Log'}</span>
+                      <Check size={14} />
+                      <span>{isEditing ? 'Save Updates' : 'Log Activity'}</span>
                     </button>
                   </div>
                 </div>

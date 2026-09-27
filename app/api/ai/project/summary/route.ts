@@ -1,0 +1,45 @@
+import { NextResponse } from 'next/server'
+import { aiService } from '@/lib/ai/ai-service'
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json().catch(() => ({}))
+    const { project, projectActivities, milestones, apiKey, model } = body
+
+    if (!project || typeof project !== 'object') {
+      return NextResponse.json(
+        { success: false, status: 'error', message: 'Project data is required.' },
+        { status: 400 }
+      )
+    }
+
+    const summary = await aiService.generateProjectSummary(
+      project,
+      projectActivities || [],
+      milestones || [],
+      { apiKey, model }
+    )
+
+    return NextResponse.json({ success: true, status: 'success', summary })
+  } catch (err: any) {
+    if (err?.code === 'NOT_CONFIGURED') {
+      return NextResponse.json(
+        {
+          success: false,
+          status: 'unconfigured',
+          message: 'AI is not configured yet. Please set GEMINI_API_KEY on the server or connect your key.'
+        },
+        { status: 200 }
+      )
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        status: 'error',
+        message: err?.message || 'Failed to generate project summary.'
+      },
+      { status: 500 }
+    )
+  }
+}

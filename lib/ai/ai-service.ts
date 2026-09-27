@@ -1,213 +1,305 @@
-import { GeminiProvider } from './providers/gemini'
-import { GroqProvider } from './providers/groq'
-import { TaskRouter } from './task-router'
-import { PROMPT_TEMPLATES } from './prompt-templates'
+import { callGeminiStructured } from './gemini'
+import { PROMPTS } from './prompts'
 import {
-  AIProviderId,
-  AITaskKind,
-  AIStructuredActivityDraft,
-  AIWeeklyReflectionDraft,
-  AIProjectCaseStudyDraft,
-  AISourceAttribution
-} from './types'
+  AIActivityParseResult,
+  AIWeeklyReflectionResult,
+  AINextActionResult,
+  AskWorkfolioResult,
+  AIProjectSummaryResult,
+  validateActivityParseResult,
+  validateWeeklyReflectionResult,
+  validateNextActionResult,
+  validateAskWorkfolioResult,
+  validateProjectSummaryResult
+} from './schemas'
+import { WORKFOLIO_TOOLS, WorkfolioContextData } from './tools'
 
 export class AIService {
-  private geminiProvider = new GeminiProvider()
-  private groqProvider = new GroqProvider()
-  private taskRouter = new TaskRouter()
-
-  private getProvider(id: AIProviderId) {
-    if (id === 'groq') return this.groqProvider
-    return this.geminiProvider
-  }
-
-  async testConnection(providerId: AIProviderId, apiKey: string, model?: string) {
-    const provider = this.getProvider(providerId)
-    return provider.testConnection(apiKey, model)
-  }
-
+  /**
+   * FEATURE 1: AI Activity Parser
+   */
   async parseActivity(
     rawText: string,
-    projects: { id: string; name: string }[],
-    config: { provider?: AIProviderId; apiKey?: string; model?: string } = {}
-  ): Promise<AIStructuredActivityDraft> {
-    const route = this.taskRouter.getRoute('ACTIVITY_STRUCTURING')
-    const providerId = config.provider || route.primaryProvider
-    const provider = this.getProvider(providerId)
+    projects: { id: string; name: string }[] = [],
+    skills: { id: string; name: string }[] = [],
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AIActivityParseResult> {
+    const projectsContext =
+      projects.length > 0
+        ? projects.map((p) => `- Project Name: "${p.name}" (ID: ${p.id})`).join('\n')
+        : 'No existing projects found.'
 
-    const projectsContext = projects.map((p) => `- ${p.name} (ID: ${p.id})`).join('\n') || 'None'
-    const prompt = PROMPT_TEMPLATES.ACTIVITY_PARSER_V1
+    const skillsContext =
+      skills.length > 0 ? skills.map((s) => `- ${s.name}`).join('\n') : 'No custom skills pre-registered.'
+
+    const prompt = PROMPTS.ACTIVITY_PARSER
       .replace('{userRawText}', rawText)
       .replace('{projectsContext}', projectsContext)
+      .replace('{skillsContext}', skillsContext)
 
-    try {
-      return await provider.generateStructuredOutput<AIStructuredActivityDraft>({
-        prompt,
-        apiKey: config.apiKey,
-        model: config.model,
-        jsonMode: true
-      })
-    } catch (err: any) {
-      if (this.taskRouter.shouldFallback('ACTIVITY_STRUCTURING', err) && route.fallbackProvider) {
-        const fallback = this.getProvider(route.fallbackProvider)
-        return await fallback.generateStructuredOutput<AIStructuredActivityDraft>({
-          prompt,
-          apiKey: config.apiKey,
-          jsonMode: true
-        })
+    const rawResult = await callGeminiStructured({
+      prompt,
+      apiKey: options.apiKey,
+      model: options.model
+    })
+
+    const validated = validateActivityParseResult(rawResult)
+
+    // Match matched project name to real project object if found
+    if (validated.projectTitle && validated.projectTitle !== 'No matching project found' && projects.length > 0) {
+      const match = projects.find(
+        (p) => p.name.toLowerCase().trim() === validated.projectTitle?.toLowerCase().trim()
+      )
+      if (match) {
+        validated.projectId = match.id
+        validated.projectTitle = match.name
+      } else {
+        // Double check fuzzy match
+        const fuzzy = projects.find((p) =>
+          rawText.toLowerCase().includes(p.name.toLowerCase())
+        )
+        if (fuzzy) {
+          validated.projectId = fuzzy.id
+          validated.projectTitle = fuzzy.name
+        } else {
+          validated.projectId = null
+          validated.projectTitle = 'No matching project found'
+        }
       }
-      throw err
+    } else {
+      validated.projectId = null
+      validated.projectTitle = 'No matching project found'
+    }
+
+    return validated
+  }
+
+  /**
+   * FEATURE 2: AI Voice Logging (reuses Activity Parser with transcript)
+   */
+  async parseVoiceTranscript(
+    transcript: string,
+    projects: { id: string; name: string }[] = [],
+    skills: { id: string; name: string }[] = [],
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AIActivityParseResult> {
+    return this.parseActivity(transcript, projects, skills, options)
+  }
+
+  /**
+   * FEATURE 3: AI Weekly Reflection
+   */
+  async generateWeeklyReflection(
+    dateRange: string,
+    context: WorkfolioContextData,
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AIWeeklyReflectionResult> {
+    const activities = context.activities || []
+    const projects = context.projects || []
+    const problems = context.problems || []
+    const learningTracks = context.learningTracks || []
+
+    if (activities.length === 0 && projects.length === 0) {
+      return {
+        summary: 'Not enough activity has been recorded for a meaningful weekly reflection.',
+        workedOn: [],
+        learned: [],
+        problemsEncountered: [],
+        problemsSolved: [],
+        importantProgress: [],
+        unfinishedIntentions: [],
+        projectsMovedForward: [],
+        repeatedFocusAreas: [],
+        suggestedFocusNextWeek: ['Log your daily activities to start building weekly insights.'],
+        supportingRecordIds: []
+      }
+    }
+
+    const activitiesContext =
+      activities
+        .map(
+          (a) =>
+            `- [${a.date || 'Recent'}] Work: ${a.work} | Learned: ${a.learning || 'N/A'} | Struggle: ${a.struggle || 'N/A'}`
+        )
+        .join('\n') || 'None recorded'
+
+    const projectsContext =
+      projects.map((p) => `- Project: ${p.name} (Status: ${p.status || 'Active'})`).join('\n') || 'None'
+
+    const problemsContext =
+      problems
+        .map((pr) => `- Problem: ${pr.title} (Status: ${pr.status || 'Open'})`)
+        .join('\n') || 'None'
+
+    const learningContext =
+      learningTracks.map((l) => `- Learning Track: ${l.title}`).join('\n') || 'None'
+
+    const prompt = PROMPTS.WEEKLY_REFLECTION
+      .replace('{dateRange}', dateRange)
+      .replace('{recordCount}', activities.length.toString())
+      .replace('{activitiesContext}', activitiesContext)
+      .replace('{projectsContext}', projectsContext)
+      .replace('{problemsContext}', problemsContext)
+      .replace('{learningContext}', learningContext)
+
+    const rawResult = await callGeminiStructured({
+      prompt,
+      apiKey: options.apiKey,
+      model: options.model
+    })
+
+    const validated = validateWeeklyReflectionResult(rawResult)
+    validated.supportingRecordIds = activities.map((a) => a.id).slice(0, 10)
+    return validated
+  }
+
+  /**
+   * FEATURE 4: AI Next Action
+   */
+  async generateNextActions(
+    context: WorkfolioContextData,
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AINextActionResult> {
+    const activities = context.activities || []
+    const projects = context.projects || []
+    const problems = context.problems || []
+    const goals = context.goals || []
+
+    const intentionsContext = activities
+      .filter((a) => a.intention || a.struggle)
+      .map((a) => `- [${a.date || 'Recent'}] Next Step: "${a.intention || 'N/A'}" | Challenge: "${a.struggle || 'N/A'}"`)
+      .join('\n') || 'No explicit next steps logged in recent activities.'
+
+    const projectsContext =
+      projects.map((p) => `- Project ID "${p.id}": ${p.name} (Category: ${p.category}, Status: ${p.status})`).join('\n') ||
+      'No active projects.'
+
+    const problemsContext =
+      problems.filter((pr) => pr.status !== 'SOLVED').map((pr) => `- Unresolved Problem ID "${pr.id}": ${pr.title}`).join('\n') ||
+      'No open problems.'
+
+    const goalsContext =
+      goals.map((g) => `- Goal ID "${g.id}": ${g.title} (Target Date: ${g.targetDate || 'Ongoing'})`).join('\n') ||
+      'No specific goals defined.'
+
+    const prompt = PROMPTS.NEXT_ACTION
+      .replace('{intentionsContext}', intentionsContext)
+      .replace('{projectsContext}', projectsContext)
+      .replace('{problemsContext}', problemsContext)
+      .replace('{goalsContext}', goalsContext)
+
+    const rawResult = await callGeminiStructured({
+      prompt,
+      apiKey: options.apiKey,
+      model: options.model
+    })
+
+    return validateNextActionResult(rawResult)
+  }
+
+  /**
+   * FEATURE 5: Ask Workfolio (Controlled Tool-Calling Query)
+   */
+  async askWorkfolio(
+    userQuestion: string,
+    context: WorkfolioContextData,
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AskWorkfolioResult> {
+    // 1. Perform controlled tool queries over Workfolio data
+    const matchedActivities = WORKFOLIO_TOOLS.searchActivities(context, userQuestion)
+    const matchedProjects = WORKFOLIO_TOOLS.searchProjects(context, userQuestion)
+    const matchedEvidence = WORKFOLIO_TOOLS.searchEvidence(context, userQuestion)
+    const matchedProblems = WORKFOLIO_TOOLS.searchProblems(context, userQuestion)
+
+    const databaseContext = `
+ACTIVITIES MATCHED (${matchedActivities.length}):
+${matchedActivities.slice(0, 6).map((a) => `- [Activity ID ${a.id} on ${a.date}]: Work: "${a.work}" | Project: "${a.projectTitle || 'N/A'}"`).join('\n') || 'No direct activity matches.'}
+
+PROJECTS MATCHED (${matchedProjects.length}):
+${matchedProjects.slice(0, 4).map((p) => `- [Project ID ${p.id}]: Name: "${p.name}" | Status: ${p.status} | Tech: ${p.technologies?.join(', ') || 'N/A'}`).join('\n') || 'No direct project matches.'}
+
+EVIDENCE MATCHED (${matchedEvidence.length}):
+${matchedEvidence.slice(0, 4).map((e) => `- [Evidence ID ${e.id}]: Title: "${e.title}" | Category: ${e.category}`).join('\n') || 'No direct evidence matches.'}
+
+PROBLEMS MATCHED (${matchedProblems.length}):
+${matchedProblems.slice(0, 4).map((pr) => `- [Problem ID ${pr.id}]: Title: "${pr.title}" | Status: ${pr.status}`).join('\n') || 'No direct problem matches.'}
+`
+
+    const prompt = PROMPTS.ASK_WORKFOLIO
+      .replace('{userQuestion}', userQuestion)
+      .replace('{databaseContext}', databaseContext)
+
+    const rawResult = await callGeminiStructured({
+      prompt,
+      apiKey: options.apiKey,
+      model: options.model
+    })
+
+    const validated = validateAskWorkfolioResult(rawResult)
+
+    // Build verified source list from matched records
+    const sources: AskWorkfolioResult['sources'] = []
+    matchedActivities.slice(0, 3).forEach((a) => {
+      sources.push({ id: a.id, type: 'activity', title: a.work, date: a.date })
+    })
+    matchedProjects.slice(0, 2).forEach((p) => {
+      sources.push({ id: p.id, type: 'project', title: p.name })
+    })
+    matchedEvidence.slice(0, 2).forEach((e) => {
+      sources.push({ id: e.id, type: 'evidence', title: e.title })
+    })
+
+    return {
+      ...validated,
+      sources
     }
   }
 
-  async generateWeeklyReflection(
-    activities: any[],
-    githubEvents: any[],
-    config: { provider?: AIProviderId; apiKey?: string; model?: string } = {}
-  ): Promise<AIWeeklyReflectionDraft> {
-    const route = this.taskRouter.getRoute('WEEKLY_REFLECTION')
-    const providerId = config.provider || route.primaryProvider
-    const provider = this.getProvider(providerId)
+  /**
+   * FEATURE 6: AI Project Summary
+   */
+  async generateProjectSummary(
+    project: any,
+    projectActivities: any[] = [],
+    milestones: any[] = [],
+    options: { apiKey?: string; model?: string } = {}
+  ): Promise<AIProjectSummaryResult> {
+    const projectLogsContext =
+      projectActivities
+        .map(
+          (a) =>
+            `- [${a.date || 'Recent'}] ${a.work} (Learned: ${a.learning || 'None'}, Blocker: ${a.struggle || 'None'})`
+        )
+        .join('\n') || 'No project-specific logs recorded yet.'
 
-    const activitiesContext = activities
-      .map((a) => `- [${a.date}] Work: ${a.work} | Learned: ${a.learning || 'N/A'} | Struggle: ${a.struggle || 'N/A'}`)
-      .join('\n') || 'No activities logged this week.'
+    const milestonesContext =
+      milestones.map((m) => `- Milestone: ${m.title} (${m.completed ? 'Completed' : 'Pending'})`).join('\n') ||
+      'No explicit milestones recorded.'
 
-    const githubContext = githubEvents
-      .map((g) => `- [${g.date}] GitHub ${g.type}: ${g.title} (${g.repoName})`)
-      .join('\n') || 'No GitHub events synced.'
+    const prompt = PROMPTS.PROJECT_SUMMARY
+      .replace('{projectName}', project.name || 'Untitled Project')
+      .replace('{projectCategory}', project.category || 'General')
+      .replace('{projectStatus}', project.status || 'Active')
+      .replace('{projectDescription}', project.description || 'No description provided.')
+      .replace('{activityCount}', projectActivities.length.toString())
+      .replace('{projectLogsContext}', projectLogsContext)
+      .replace('{milestonesContext}', milestonesContext)
 
-    const prompt = PROMPT_TEMPLATES.WEEKLY_REFLECTION_V1
-      .replace('{recordCount}', activities.length.toString())
-      .replace('{activitiesContext}', activitiesContext)
-      .replace('{githubContext}', githubContext)
-
-    const sources: AISourceAttribution[] = activities.slice(0, 5).map((a) => ({
-      id: a.id,
-      type: 'activity',
-      title: a.work.slice(0, 45) + '...',
-      date: a.date
-    }))
-
-    const draft = await provider.generateStructuredOutput<AIWeeklyReflectionDraft>({
+    const rawResult = await callGeminiStructured({
       prompt,
-      apiKey: config.apiKey,
-      model: config.model,
-      jsonMode: true
+      apiKey: options.apiKey,
+      model: options.model
     })
 
-    return { ...draft, sources }
-  }
-
-  async generateProjectCaseStudy(
-    project: any,
-    projectActivities: any[],
-    config: { provider?: AIProviderId; apiKey?: string; model?: string } = {}
-  ): Promise<AIProjectCaseStudyDraft> {
-    const route = this.taskRouter.getRoute('PROJECT_CASE_STUDY')
-    const providerId = config.provider || route.primaryProvider
-    const provider = this.getProvider(providerId)
-
-    const projectLogsContext = projectActivities
-      .map((a) => `- [${a.date}] ${a.work} (Learned: ${a.learning || 'N/A'}, Blocker: ${a.struggle || 'N/A'})`)
-      .join('\n') || 'No project-specific logs recorded.'
-
-    const prompt = PROMPT_TEMPLATES.PROJECT_CASE_STUDY_V1
-      .replace('{projectName}', project.name)
-      .replace('{projectCategory}', project.category || 'General')
-      .replace('{projectDescription}', project.description || '')
-      .replace('{projectLogsContext}', projectLogsContext)
-
-    const sources: AISourceAttribution[] = projectActivities.slice(0, 5).map((a) => ({
+    const validated = validateProjectSummaryResult(rawResult)
+    validated.sources = projectActivities.slice(0, 5).map((a) => ({
       id: a.id,
       type: 'activity',
       title: a.work,
       date: a.date
     }))
 
-    const draft = await provider.generateStructuredOutput<AIProjectCaseStudyDraft>({
-      prompt,
-      apiKey: config.apiKey,
-      model: config.model,
-      jsonMode: true
-    })
-
-    return {
-      ...draft,
-      projectId: project.id,
-      projectTitle: project.name,
-      sources
-    }
-  }
-
-  async askWorkfolio(
-    userQuestion: string,
-    contextData: { activities: any[]; projects: any[]; evidence: any[]; github: any[] },
-    config: { provider?: AIProviderId; apiKey?: string; model?: string } = {}
-  ): Promise<{ text: string; sources: AISourceAttribution[] }> {
-    const route = this.taskRouter.getRoute('ASK_WORKFOLIO')
-    const providerId = config.provider || route.primaryProvider
-    const provider = this.getProvider(providerId)
-
-    const activitiesSummary = contextData.activities
-      .slice(0, 8)
-      .map((a) => `• Activity [${a.date}]: ${a.work} (Project: ${a.projectTitle || 'Workspace'})`)
-      .join('\n')
-
-    const projectsSummary = contextData.projects
-      .slice(0, 5)
-      .map((p) => `• Project: ${p.name} (${p.category}) - Status: ${p.status}`)
-      .join('\n')
-
-    const evidenceSummary = contextData.evidence
-      .slice(0, 5)
-      .map((e) => `• Evidence: ${e.title} (Category: ${e.category})`)
-      .join('\n')
-
-    const githubSummary = contextData.github
-      .slice(0, 5)
-      .map((g) => `• GitHub ${g.type}: ${g.title} (${g.repoName})`)
-      .join('\n')
-
-    const dataContext = `
-ACTIVITIES:
-${activitiesSummary || 'None'}
-
-PROJECTS:
-${projectsSummary || 'None'}
-
-EVIDENCE:
-${evidenceSummary || 'None'}
-
-GITHUB ACTIVITY:
-${githubSummary || 'None'}
-`
-
-    const prompt = PROMPT_TEMPLATES.ASK_WORKFOLIO_V1
-      .replace('{workfolioDataContext}', dataContext)
-      .replace('{userQuestion}', userQuestion)
-
-    const sources: AISourceAttribution[] = [
-      ...contextData.activities.slice(0, 3).map((a) => ({ id: a.id, type: 'activity' as const, title: a.work, date: a.date })),
-      ...contextData.projects.slice(0, 2).map((p) => ({ id: p.id, type: 'project' as const, title: p.name })),
-      ...contextData.evidence.slice(0, 2).map((e) => ({ id: e.id, type: 'evidence' as const, title: e.title }))
-    ]
-
-    try {
-      const responseText = await provider.generateText({
-        prompt,
-        apiKey: config.apiKey,
-        model: config.model
-      })
-      return { text: responseText, sources }
-    } catch (err: any) {
-      if (this.taskRouter.shouldFallback('ASK_WORKFOLIO', err) && route.fallbackProvider) {
-        const fallback = this.getProvider(route.fallbackProvider)
-        const text = await fallback.generateText({ prompt, apiKey: config.apiKey })
-        return { text, sources }
-      }
-      throw err
-    }
+    return validated
   }
 }
 

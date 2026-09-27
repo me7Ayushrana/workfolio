@@ -30,11 +30,16 @@ import { QuickCaptureModal } from '@/components/quick-capture-modal'
 import { ActivityHeatmap } from '@/components/activity-heatmap'
 import { WorkfolioMascot } from '@/components/workfolio-mascot'
 import { AuthModal } from '@/components/auth-modal'
+import { WeeklyReflectionSection } from '@/components/weekly-reflection'
+import { NextActionSection } from '@/components/next-action-section'
+import { AskWorkfolioModal } from '@/components/ask-workfolio-modal'
 import { ActivityLogEntry, useWorkfolio } from '@/lib/workfolio-store'
 
 export default function Home() {
   const { userProfile, setMascotVariant, activities, projects, skills, learningTracks, goals, problems, implementations, deleteActivity } = useWorkfolio()
   const [showCaptureModal, setShowCaptureModal] = useState(false)
+  const [captureInitialMode, setCaptureInitialMode] = useState<'direct' | 'ai' | 'voice'>('direct')
+  const [showAskModal, setShowAskModal] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [editingActivity, setEditingActivity] = useState<ActivityLogEntry | null>(null)
 
@@ -354,6 +359,16 @@ export default function Home() {
               </div>
             </section>
 
+            {/* AI FEATURE 4: NEXT ACTION SECTION */}
+            <div id="next-action">
+              <NextActionSection />
+            </div>
+
+            {/* AI FEATURE 3: WEEKLY REFLECTION SECTION */}
+            <div id="reflection">
+              <WeeklyReflectionSection />
+            </div>
+
           </div>
 
           {/* RIGHT SIDEBAR COLUMN (4 COLS) */}
@@ -364,11 +379,26 @@ export default function Home() {
               <ActivityHeatmap activities={activities} />
             </div>
 
+            {/* ASK WORKFOLIO ASSISTANT LAUNCHER CARD */}
+            <div className="rounded-2xl border border-[#c1a05b]/40 bg-[#0c0d14] p-6 text-[#f3eee4] shadow-xl space-y-4">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
+                <Sparkles size={14} /> ASK WORKFOLIO ASSISTANT
+              </div>
+              <h3 className="font-serif text-2xl font-light">Natural Language Query Engine</h3>
+              <p className="text-xs text-[#f3eee4]/70 leading-relaxed">
+                Query your activities, skills, and evidence through controlled tool lookups.
+              </p>
+              <button
+                onClick={() => setShowAskModal(true)}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#c1a05b] py-3 text-xs font-bold uppercase tracking-wider text-[#08090f] hover:bg-white transition-all shadow-md cursor-pointer"
+              >
+                <Sparkles size={14} /> Launch Workfolio Assistant
+              </button>
+            </div>
+
           </aside>
 
         </div>
-
-
 
       </div>
 
@@ -395,13 +425,22 @@ export default function Home() {
         </p>
       </footer>
 
-      {showCaptureModal && <QuickCaptureModal onClose={() => setShowCaptureModal(false)} />}
+      {showCaptureModal && (
+        <QuickCaptureModal
+          initialMode={captureInitialMode}
+          onClose={() => {
+            setShowCaptureModal(false)
+            setCaptureInitialMode('direct')
+          }}
+        />
+      )}
       {editingActivity && (
         <QuickCaptureModal
           activityToEdit={editingActivity}
           onClose={() => setEditingActivity(null)}
         />
       )}
+      {showAskModal && <AskWorkfolioModal isOpen={showAskModal} onClose={() => setShowAskModal(false)} />}
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </main>
   )

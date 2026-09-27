@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { WorkfolioHeader } from '@/components/workfolio-header'
 import { QuickCaptureModal } from '@/components/quick-capture-modal'
+import { ProjectAISummary } from '@/components/project-ai-summary'
 import { useWorkfolio } from '@/lib/workfolio-store'
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -244,6 +245,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <Plus size={14} /> + ADD PROJECT UPDATE
           </button>
         </div>
+
+        {/* AI FEATURE 6: PROJECT AI SUMMARY */}
+        <ProjectAISummary project={project} projectActivities={projectActivities} />
 
         {/* EXTERNAL LINKS ROW */}
         <div className="border border-[#0c0d14]/15 bg-[#e5dac9] p-4">
