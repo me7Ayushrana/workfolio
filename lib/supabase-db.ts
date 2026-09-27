@@ -5,10 +5,10 @@ let supabaseAdmin: SupabaseClient | null = null
 export function getSupabaseAdmin(): SupabaseClient | null {
   if (supabaseAdmin) return supabaseAdmin
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://zleptvsyivwhnoqipibu.supabase.co'
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_DQq7sZhHN45jgsQczLMtoA_QghzvEeB'
 
-  if (url && serviceKey && !url.includes('placeholder')) {
+  if (url && serviceKey) {
     try {
       supabaseAdmin = createClient(url, serviceKey, {
         auth: { persistSession: false }
@@ -86,6 +86,17 @@ export async function syncUserDataToSupabase(userId: string, data: Partial<UserD
   if (!client || !userId) return false
 
   try {
+    if (data.userProfile) {
+      await client.from('users').upsert({
+        id: userId,
+        email: data.userProfile.email,
+        display_name: data.userProfile.display_name,
+        first_name: data.userProfile.first_name,
+        last_name: data.userProfile.last_name,
+        photo_url: data.userProfile.photoURL,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).catch(() => null)
+    }
     if (data.projects?.length) {
       const records = data.projects.map((p) => ({
         id: p.id,

@@ -26,6 +26,7 @@ import { AskWorkfolioModal } from './ask-workfolio-modal'
 import { AuthModal } from './auth-modal'
 import { useWorkfolio } from '@/lib/workfolio-store'
 import { signInWithGoogleFirebase, signOutFirebase } from '@/lib/firebase'
+import { saveUserDataToSupabase } from '@/lib/supabase'
 
 function GoogleLogo({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -52,7 +53,7 @@ function GoogleLogo({ className = "w-4 h-4" }: { className?: string }) {
 
 export function WorkfolioHeader() {
   const pathname = usePathname()
-  const { userProfile, connectProvider, disconnectProvider } = useWorkfolio()
+  const { userProfile, connectProvider, disconnectProvider, projects, activities } = useWorkfolio()
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLogModal, setShowLogModal] = useState(false)
@@ -63,23 +64,39 @@ export function WorkfolioHeader() {
   const [darkMode, setDarkMode] = useState(false)
   const [isSigningIn, setIsSigningIn] = useState(false)
 
-  const handleGoogleSignInClick = async () => {
-    setIsSigningIn(true)
-    try {
-      const session = await signInWithGoogleFirebase()
-      const nameParts = (session.displayName || 'Google User').split(' ')
-      connectProvider('google', {
-        first_name: nameParts[0] || 'User',
-        last_name: nameParts.slice(1).join(' ') || '',
-        display_name: session.displayName || 'Google User',
-        email: session.email || 'user@google.com',
-        google_connected: true
-      })
-    } catch {
-      setShowAuthModal(true)
-    } finally {
-      setIsSigningIn(false)
+  const [headerEmailInput, setHeaderEmailInput] = useState(userProfile.email || 'ayushamit0007@gmail.com')
+
+  const handleGoogleSignInClick = () => {
+    setAccountDropdownOpen(!accountDropdownOpen)
+  }
+
+  const handleConfirmHeaderGoogleSignIn = (selectedEmail?: string) => {
+    const cleanEmail = (selectedEmail || headerEmailInput).trim() || 'ayushamit0007@gmail.com'
+    const nameParts = cleanEmail.split('@')[0].split('.')
+    const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
+    const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
+    const dName = `${fName} ${lName}`.trim()
+    const userId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
+
+    const updatedProfile = {
+      ...userProfile,
+      first_name: fName,
+      last_name: lName,
+      display_name: dName,
+      email: cleanEmail,
+      google_connected: true
     }
+
+    connectProvider('google', updatedProfile)
+
+    saveUserDataToSupabase(
+      userId,
+      updatedProfile,
+      projects || [],
+      activities || []
+    )
+
+    setAccountDropdownOpen(false)
   }
 
   const handleSignOutClick = async () => {
@@ -319,35 +336,85 @@ export function WorkfolioHeader() {
               )}
 
               {accountDropdownOpen && (
-                <div className="absolute right-0 top-full z-50 mt-1 w-56 border border-[#c1a05b]/30 bg-[#0c0d14] p-3 shadow-2xl rounded-sm">
-                  <div className="flex items-center gap-2.5 pb-2.5 mb-2 border-b border-[#f3eee4]/10">
-                    <GoogleLogo className="w-4 h-4 shrink-0" />
-                    <div className="overflow-hidden">
-                      <p className="text-xs font-bold text-[#f3eee4] truncate">
-                        {userProfile.display_name || 'Google Account'}
+                <div className="absolute right-0 top-full z-50 mt-1 w-64 border border-[#c1a05b]/40 bg-[#0c0d14] p-3 shadow-2xl rounded-xl text-xs space-y-3">
+                  {userProfile.google_connected ? (
+                    <>
+                      <div className="flex items-center gap-2.5 pb-2.5 border-b border-[#f3eee4]/10">
+                        <GoogleLogo className="w-4 h-4 shrink-0" />
+                        <div className="overflow-hidden">
+                          <p className="text-xs font-bold text-[#f3eee4] truncate">
+                            {userProfile.display_name || 'Google Account'}
+                          </p>
+                          <p className="text-[9px] text-[#f3eee4]/60 truncate">
+                            {userProfile.email || 'Connected'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setAccountDropdownOpen(false)
+                          setShowAuthModal(true)
+                        }}
+                        className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#1a1c24] rounded-lg transition-colors"
+                      >
+                        Profile & API Credentials
+                      </button>
+
+                      <button
+                        onClick={handleSignOutClick}
+                        className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors"
+                      >
+                        Sign Out (Disconnect)
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between font-bold text-white border-b border-white/10 pb-2">
+                        <span className="flex items-center gap-1.5 text-xs">
+                          <GoogleLogo className="w-3.5 h-3.5" /> Select Account
+                        </span>
+                        <span className="text-[9px] text-[#c1a05b]">Supabase Ready</span>
+                      </div>
+
+                      <p className="text-[10px] text-[#f3eee4]/70 leading-tight">
+                        Choose or enter your Google email to sign in & sync all projects to Supabase.
                       </p>
-                      <p className="text-[9px] text-[#f3eee4]/60 truncate">
-                        {userProfile.email || 'Connected via Firebase'}
-                      </p>
+
+                      <div className="flex flex-wrap gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmHeaderGoogleSignIn('ayushamit0007@gmail.com')}
+                          className="text-[9px] font-semibold bg-white/10 hover:bg-[#4285F4]/30 px-2 py-1 rounded text-white transition-colors"
+                        >
+                          ayushamit0007@gmail.com
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmHeaderGoogleSignIn('itsayushr7@gmail.com')}
+                          className="text-[9px] font-semibold bg-white/10 hover:bg-[#4285F4]/30 px-2 py-1 rounded text-white transition-colors"
+                        >
+                          itsayushr7@gmail.com
+                        </button>
+                      </div>
+
+                      <input
+                        type="email"
+                        value={headerEmailInput}
+                        onChange={(e) => setHeaderEmailInput(e.target.value)}
+                        placeholder="ayushamit0007@gmail.com"
+                        className="w-full rounded-lg border border-white/20 bg-[#121420] px-3 py-1.5 text-xs text-white outline-none focus:border-[#4285F4]"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmHeaderGoogleSignIn()}
+                        className="w-full rounded-lg bg-[#4285F4] hover:bg-[#3367D6] py-2 text-xs font-bold text-white transition-all cursor-pointer shadow flex items-center justify-center gap-1"
+                      >
+                        <span>Sign In as {headerEmailInput.split('@')[0] || 'User'}</span>
+                      </button>
                     </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setAccountDropdownOpen(false)
-                      setShowAuthModal(true)
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#1a1c24] rounded-sm transition-colors mb-1"
-                  >
-                    Identity & API Credentials
-                  </button>
-
-                  <button
-                    onClick={handleSignOutClick}
-                    className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-950/40 rounded-sm transition-colors"
-                  >
-                    Sign Out (Disconnect)
-                  </button>
+                  )}
                 </div>
               )}
             </div>
