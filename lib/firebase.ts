@@ -19,7 +19,8 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'workfolio-96ab9',
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'workfolio-96ab9.firebasestorage.app',
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '1014854710087',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:1014854710087:web:Od96a81bdb84808a535262'
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:1014854710087:web:0d96a81bdb84808a535262',
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-ZGD9K1DGEP'
 }
 
 if (typeof window !== 'undefined') {
