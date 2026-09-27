@@ -21,7 +21,26 @@ interface NextActionItem {
 }
 
 export function NextActionSection() {
-  const { activities, projects, goals, problems, learningTracks, evidence, logActivityEntry } = useWorkfolio()
+  const {
+    activities,
+    projects,
+    goals,
+    problems,
+    learningTracks,
+    evidence,
+    logActivityEntry,
+    geminiConfig,
+    groqConfig,
+    aiPrimaryProvider
+  } = useWorkfolio()
+
+  const activeApiKey =
+    aiPrimaryProvider === 'groq'
+      ? groqConfig.apiKey || geminiConfig.apiKey
+      : geminiConfig.apiKey || groqConfig.apiKey
+
+  const activeModel =
+    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
 
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'EMPTY' | 'ERROR' | 'NOT_CONFIGURED'>('IDLE')
@@ -39,6 +58,8 @@ export function NextActionSection() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          apiKey: activeApiKey,
+          model: activeModel,
           context: {
             activities: activities.slice(0, 15),
             projects: projects.slice(0, 10),

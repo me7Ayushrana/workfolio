@@ -24,10 +24,29 @@ interface AskWorkfolioModalProps {
 }
 
 export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
-  const { activities, projects, evidence, skills, learningTracks, goals, problems } = useWorkfolio()
+  const {
+    activities,
+    projects,
+    evidence,
+    skills,
+    learningTracks,
+    goals,
+    problems,
+    geminiConfig,
+    groqConfig,
+    aiPrimaryProvider
+  } = useWorkfolio()
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const activeApiKey =
+    aiPrimaryProvider === 'groq'
+      ? groqConfig.apiKey || geminiConfig.apiKey
+      : geminiConfig.apiKey || groqConfig.apiKey
+
+  const activeModel =
+    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
 
   const [messages, setMessages] = useState<
     Array<{
@@ -71,6 +90,8 @@ export function AskWorkfolioModal({ isOpen, onClose }: AskWorkfolioModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: q,
+          apiKey: activeApiKey,
+          model: activeModel,
           contextData: {
             activities,
             projects,

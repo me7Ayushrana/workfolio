@@ -40,7 +40,26 @@ export function QuickCaptureModal({
   activityToEdit,
   initialMode = 'direct'
 }: QuickCaptureModalProps) {
-  const { projects, skills, logActivityEntry, updateActivityEntry, deleteActivity, createProject, createSkill } = useWorkfolio()
+  const {
+    projects,
+    skills,
+    logActivityEntry,
+    updateActivityEntry,
+    deleteActivity,
+    createProject,
+    createSkill,
+    geminiConfig,
+    groqConfig,
+    aiPrimaryProvider
+  } = useWorkfolio()
+
+  const activeApiKey =
+    aiPrimaryProvider === 'groq'
+      ? groqConfig.apiKey || geminiConfig.apiKey
+      : geminiConfig.apiKey || groqConfig.apiKey
+
+  const activeModel =
+    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
 
   const isEditing = !!activityToEdit
 
@@ -208,6 +227,8 @@ export function QuickCaptureModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: naturalInput,
+          apiKey: activeApiKey,
+          model: activeModel,
           projects: projects.map((p) => ({ id: p.id, name: p.name })),
           skills: skills.map((s) => ({ id: s.id, name: s.name }))
         })

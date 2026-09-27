@@ -5,7 +5,25 @@ import { Sparkles, Calendar, ArrowRight, AlertCircle, CheckCircle2, RefreshCw, C
 import { useWorkfolio } from '@/lib/workfolio-store'
 
 export function WeeklyReflectionSection() {
-  const { activities, projects, learningTracks, goals, problems, evidence } = useWorkfolio()
+  const {
+    activities,
+    projects,
+    learningTracks,
+    goals,
+    problems,
+    evidence,
+    geminiConfig,
+    groqConfig,
+    aiPrimaryProvider
+  } = useWorkfolio()
+
+  const activeApiKey =
+    aiPrimaryProvider === 'groq'
+      ? groqConfig.apiKey || geminiConfig.apiKey
+      : geminiConfig.apiKey || groqConfig.apiKey
+
+  const activeModel =
+    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
 
   const [timeframe, setTimeframe] = useState<'current' | 'previous' | 'custom'>('current')
   const [loading, setLoading] = useState(false)
@@ -32,6 +50,8 @@ export function WeeklyReflectionSection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dateRange: dateRangeLabel,
+          apiKey: activeApiKey,
+          model: activeModel,
           context: {
             activities: activities.slice(0, 20),
             projects,
