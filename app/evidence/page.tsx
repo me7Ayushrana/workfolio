@@ -35,71 +35,7 @@ interface UnifiedEvidenceItem {
   capabilities?: string[]
 }
 
-const DEFAULT_ARTIFACTS: UnifiedEvidenceItem[] = [
-  {
-    id: 'ev-default-1',
-    title: 'Live Application Build & Production Deployment',
-    category: 'Production App',
-    project: 'Expense Tracker & Ledger',
-    date: '2026-03-15',
-    sourceType: 'ARTIFACT_ENTRY',
-    evidenceUrl: 'https://github.com/user/workfolio-app',
-    workSummary: 'Deployed full-stack reactive store with Next.js 14, Webpack bundler, and Tailwind CSS theme engine.',
-    capabilities: ['Next.js Architecture', 'State Management']
-  },
-  {
-    id: 'ev-default-2',
-    title: 'UI Screenshot & Design Tokens Specification',
-    category: 'Design System',
-    project: 'Workfolio Editorial UI Kit',
-    date: '2026-03-10',
-    sourceType: 'ARTIFACT_ENTRY',
-    evidenceUrl: 'https://figma.com/@workfolio-design-system',
-    workSummary: 'Crafted warm ivory & forest green editorial design tokens with accessible high-contrast color palette.',
-    capabilities: ['UI Engineering', 'Design Systems']
-  },
-  {
-    id: 'ev-default-3',
-    title: 'Repository & Commit Hash Verification',
-    category: 'GitHub Source',
-    project: 'Weather & Climate API Integration',
-    date: '2026-02-28',
-    sourceType: 'ARTIFACT_ENTRY',
-    evidenceUrl: 'https://github.com/user/weather-api-service',
-    workSummary: 'Implemented rate-limited OpenWeather API proxy with automated fallback caching layers.',
-    capabilities: ['API Integration & Resilience', 'Backend']
-  },
-  {
-    id: 'ev-default-4',
-    title: 'Architecture Note & Interactive Data Flowchart',
-    category: 'System Architecture',
-    project: 'CRM Workflow Automation',
-    date: '2026-02-20',
-    sourceType: 'ARTIFACT_ENTRY',
-    workSummary: 'Architected async queue worker engine processing webhook payloads with zero lost events.',
-    capabilities: ['Problem Solving & System Design', 'Automation']
-  },
-  {
-    id: 'ev-default-5',
-    title: 'API Documentation & OpenAPI Specification',
-    category: 'Documentation',
-    project: 'Weather API Service',
-    date: '2026-02-14',
-    sourceType: 'ARTIFACT_ENTRY',
-    workSummary: 'Authored complete REST endpoint spec with TypeScript types and mock server definitions.',
-    capabilities: ['Technical Documentation', 'API Design']
-  },
-  {
-    id: 'ev-default-6',
-    title: 'Demo Recording & Live Video Walkthrough',
-    category: 'Video Signal',
-    project: 'Expense Tracker & Ledger',
-    date: '2026-02-01',
-    sourceType: 'ARTIFACT_ENTRY',
-    workSummary: 'Recorded 3-minute architectural overview showing optimistic UI state updates and data persistence.',
-    capabilities: ['Developer Relations', 'System Demo']
-  }
-]
+const DEFAULT_ARTIFACTS: UnifiedEvidenceItem[] = []
 
 const MONTH_NAMES = [
   { value: '01', label: 'January' },
