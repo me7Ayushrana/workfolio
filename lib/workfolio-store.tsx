@@ -657,14 +657,31 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     const unsubscribe = subscribeAuthState((firebaseUser) => {
       if (firebaseUser) {
         const nameParts = (firebaseUser.displayName || 'Google User').split(' ')
+        const updatedProfile = {
+          auth_user_id: firebaseUser.uid,
+          google_connected: true,
+          email: firebaseUser.email || '',
+          display_name: firebaseUser.displayName || 'Google User',
+          first_name: nameParts[0] || 'User',
+          last_name: nameParts.slice(1).join(' ') || '',
+          photoURL: firebaseUser.photoURL || ''
+        }
         setUserProfile((prev) => ({
           ...prev,
-          google_connected: true,
-          email: firebaseUser.email || prev.email,
-          display_name: firebaseUser.displayName || prev.display_name,
-          first_name: nameParts[0] || prev.first_name,
-          last_name: nameParts.slice(1).join(' ') || prev.last_name,
-          photoURL: firebaseUser.photoURL || prev.photoURL
+          ...updatedProfile
+        }))
+        // Automatically sync profile and identity to Supabase PostgreSQL using Firebase UID
+        import('./supabase-db').then(({ syncUserDataToSupabase }) => {
+          syncUserDataToSupabase(firebaseUser.uid, {
+            userProfile: updatedProfile
+          })
+        })
+      } else {
+        setUserProfile((prev) => ({
+          ...prev,
+          google_connected: false,
+          auth_user_id: '',
+          email: prev.google_connected ? '' : prev.email
         }))
       }
     })

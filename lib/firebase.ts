@@ -50,8 +50,19 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
     const result = await signInWithPopup(auth, provider)
     return formatFirebaseUser(result.user)
   } catch (err: any) {
-    console.warn('Firebase Google Auth popup notice:', err?.code || err?.message)
-    throw err
+    console.warn('Firebase Google Auth error code:', err?.code, err?.message)
+    if (err?.code === 'auth/popup-blocked') {
+      throw new Error('Google Sign-In popup was blocked by your browser. Please allow popups for this site.')
+    } else if (err?.code === 'auth/popup-closed-by-user') {
+      throw new Error('Google Sign-In popup was closed before completing sign-in.')
+    } else if (err?.code === 'auth/cancelled-popup-request') {
+      throw new Error('Google Sign-In popup request was cancelled.')
+    } else if (err?.code === 'auth/account-exists-with-different-credential') {
+      throw new Error('An account already exists with the same email using a different sign-in provider.')
+    } else if (err?.code === 'auth/network-request-failed') {
+      throw new Error('Network error during Google Sign-In. Please check your internet connection.')
+    }
+    throw new Error(err?.message || 'Google Sign-In failed.')
   }
 }
 
