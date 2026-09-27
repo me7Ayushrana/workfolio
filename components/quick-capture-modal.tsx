@@ -1,9 +1,22 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { 
-  CheckCircle2, Plus, Search, Sparkles, X, ChevronDown, Folder, GraduationCap, 
-  Edit3, Trash2, Rocket, Bug, Lightbulb, Zap, FileCode2, Clock, Layers, ArrowRight
+import {
+  Check,
+  Plus,
+  Search,
+  Sparkles,
+  X,
+  ChevronDown,
+  Folder,
+  GraduationCap,
+  Edit3,
+  Trash2,
+  CheckCircle2,
+  ArrowRight,
+  Layers,
+  Link as LinkIcon,
+  HelpCircle
 } from 'lucide-react'
 import { ActivityLogEntry, ActivityType, useWorkfolio } from '@/lib/workfolio-store'
 
@@ -26,60 +39,50 @@ export function QuickCaptureModal({
 
   const isEditing = !!activityToEdit
 
+  // Mode Selection: 'direct' or 'ai'
+  const [entryMode, setEntryMode] = useState<'direct' | 'ai'>('direct')
+
+  // AI Prompt State
   const [naturalInput, setNaturalInput] = useState('')
   const [isParsingAI, setIsParsingAI] = useState(false)
-  const [aiDraftStatus, setAiDraftStatus] = useState<'IDLE' | 'DRAFT' | 'APPROVED'>('IDLE')
+  const [aiError, setAiError] = useState<string | null>(null)
 
+  // Core Form State
   const [work, setWork] = useState(activityToEdit?.work || '')
   const [learning, setLearning] = useState(activityToEdit?.learning || '')
   const [struggle, setStruggle] = useState(activityToEdit?.struggle || '')
   const [intention, setIntention] = useState(activityToEdit?.intention || '')
   const [selectedProjectId, setSelectedProjectId] = useState<string>(activityToEdit?.projectId || defaultProjectId || '')
   const [selectedSkillId, setSelectedSkillId] = useState<string>(activityToEdit?.skillId || defaultSkillId || '')
-  const [capabilitiesStr, setCapabilitiesStr] = useState(activityToEdit?.capabilities?.join(', ') || 'React, System Architecture')
+  const [capabilitiesStr, setCapabilitiesStr] = useState(activityToEdit?.capabilities?.join(', ') || '')
   const [evidenceTitle, setEvidenceTitle] = useState(activityToEdit?.evidenceTitle || '')
   const [evidenceUrl, setEvidenceUrl] = useState(activityToEdit?.evidenceUrl || '')
   const [activityType, setActivityType] = useState<ActivityType>(activityToEdit?.type || 'BUILD')
-  const [showAdvanced, setShowAdvanced] = useState(!!activityToEdit?.evidenceTitle || !!activityToEdit?.evidenceUrl)
+  
+  // UI Expanders
+  const [showReflections, setShowReflections] = useState(
+    !!activityToEdit?.learning || !!activityToEdit?.struggle || !!activityToEdit?.intention
+  )
+  const [showEvidence, setShowEvidence] = useState(
+    !!activityToEdit?.evidenceTitle || !!activityToEdit?.evidenceUrl || !!activityToEdit?.capabilities?.length
+  )
+
   const [isSaved, setIsSaved] = useState(false)
   const [savedAction, setSavedAction] = useState<'created' | 'updated' | 'deleted'>('created')
 
-  const handleAIParse = async () => {
-    if (!naturalInput.trim() || isParsingAI) return
-    setIsParsingAI(true)
-    try {
-      const parsed = await executeAITask('ACTIVITY_STRUCTURING', { description: naturalInput })
-      if (parsed) {
-        setWork(parsed.work || naturalInput)
-        if (parsed.learning) setLearning(parsed.learning)
-        if (parsed.struggle) setStruggle(parsed.struggle)
-        if (parsed.intention) setIntention(parsed.intention)
-        if (parsed.type) setActivityType(parsed.type)
-        if (parsed.capabilities && parsed.capabilities.length) setCapabilitiesStr(parsed.capabilities.join(', '))
-        setAiDraftStatus('DRAFT')
-      }
-    } catch (err: any) {
-      alert(`AI Parsing error: ${err.message || 'Check your API Key settings.'}`)
-    } finally {
-      setIsParsingAI(false)
-    }
-  }
-
-  // Search states for dropdowns
+  // Search & Dropdown states
   const [projectSearch, setProjectSearch] = useState('')
   const [skillSearch, setSkillSearch] = useState('')
   const [showProjectDropdown, setShowProjectDropdown] = useState(false)
   const [showSkillDropdown, setShowSkillDropdown] = useState(false)
 
-  // Quick Inline Creation States
-  const [showInlineNewProject, setShowInlineNewProject] = useState(false)
+  // Inline Creation states
+  const [showInlineProject, setShowInlineProject] = useState(false)
   const [newProjName, setNewProjName] = useState('')
-  const [newProjCategory, setNewProjCategory] = useState('AI')
-  const [newProjDesc, setNewProjDesc] = useState('')
+  const [newProjCategory, setNewProjCategory] = useState('AI Systems')
 
-  const [showInlineNewSkill, setShowInlineNewSkill] = useState(false)
+  const [showInlineSkill, setShowInlineSkill] = useState(false)
   const [newSkillName, setNewSkillName] = useState('')
-  const [newSkillCategory, setNewSkillCategory] = useState('AI / Data')
   const [newSkillGoal, setNewSkillGoal] = useState('')
 
   useEffect(() => {
@@ -90,50 +93,60 @@ export function QuickCaptureModal({
   }, [defaultProjectId, defaultSkillId, activityToEdit])
 
   const activeProjects = projects.filter((p) => p.status !== 'Archived')
-  const filteredProjects = activeProjects.filter((p) =>
-    p.name.toLowerCase().includes(projectSearch.toLowerCase()) ||
-    p.category.toLowerCase().includes(projectSearch.toLowerCase())
+  const filteredProjects = activeProjects.filter(
+    (p) => p.name.toLowerCase().includes(projectSearch.toLowerCase()) || p.category.toLowerCase().includes(projectSearch.toLowerCase())
   )
 
   const activeSkills = skills.filter((s) => s.status !== 'ARCHIVED')
-  const filteredSkills = activeSkills.filter((s) =>
-    s.name.toLowerCase().includes(skillSearch.toLowerCase()) ||
-    s.category.toLowerCase().includes(skillSearch.toLowerCase())
+  const filteredSkills = activeSkills.filter(
+    (s) => s.name.toLowerCase().includes(skillSearch.toLowerCase()) || s.category.toLowerCase().includes(skillSearch.toLowerCase())
   )
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId)
   const selectedSkill = skills.find((s) => s.id === selectedSkillId)
 
-  // Starter Template Presets
-  const quickTemplates = [
-    { icon: Rocket, label: 'Feature Built', text: 'Built core module and architecture for ' },
-    { icon: Bug, label: 'Bug Resolved', text: 'Fixed issue where ' },
-    { icon: Lightbulb, label: 'Concept Learned', text: 'Studied and implemented ' },
-    { icon: Zap, label: 'Optimized', text: 'Optimized performance and data flow in ' },
-    { icon: FileCode2, label: 'Docs & Tests', text: 'Added integration tests and documentation for ' }
+  // Quick Preset Templates
+  const presetPrompts = [
+    { label: 'Feature Built', text: 'Built core functionality for ' },
+    { label: 'Bug Resolved', text: 'Fixed issue where ' },
+    { label: 'Concept Learned', text: 'Studied and implemented ' },
+    { label: 'Refactored & Tested', text: 'Optimized performance and test coverage for ' }
   ]
 
-  const applyTemplate = (prefix: string) => {
-    if (!work.trim()) {
-      setWork(prefix)
-    } else {
-      setWork((prev) => `${prefix}${prev}`)
+  const handleApplyPreset = (prefix: string) => {
+    setWork((prev) => (prev.trim() ? `${prefix}${prev}` : prefix))
+  }
+
+  const handleAIParse = async () => {
+    if (!naturalInput.trim() || isParsingAI) return
+    setIsParsingAI(true)
+    setAiError(null)
+    try {
+      const parsed = await executeAITask('ACTIVITY_STRUCTURING', { description: naturalInput })
+      if (parsed) {
+        setWork(parsed.work || naturalInput)
+        if (parsed.learning) setLearning(parsed.learning)
+        if (parsed.struggle) setStruggle(parsed.struggle)
+        if (parsed.intention) setIntention(parsed.intention)
+        if (parsed.type) setActivityType(parsed.type)
+        if (parsed.capabilities?.length) setCapabilitiesStr(parsed.capabilities.join(', '))
+        setEntryMode('direct')
+        setShowReflections(!!parsed.learning || !!parsed.struggle || !!parsed.intention)
+      }
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to parse text. Please ensure your AI API key is configured.')
+    } finally {
+      setIsParsingAI(false)
     }
   }
 
   const handleCreateProjectInline = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newProjName.trim()) return
-    const created = createProject(
-      newProjName.trim(),
-      newProjDesc.trim() || 'Created during activity session.',
-      newProjCategory,
-      'In progress'
-    )
+    const created = createProject(newProjName.trim(), 'Created during daily log session.', newProjCategory, 'In progress')
     setSelectedProjectId(created.id)
-    setShowInlineNewProject(false)
+    setShowInlineProject(false)
     setNewProjName('')
-    setNewProjDesc('')
   }
 
   const handleCreateSkillInline = (e: React.FormEvent) => {
@@ -141,15 +154,15 @@ export function QuickCaptureModal({
     if (!newSkillName.trim()) return
     const created = createSkill({
       name: newSkillName.trim(),
-      category: newSkillCategory,
+      category: 'Engineering',
       currentLevel: 'Learning',
-      learningGoal: newSkillGoal.trim() || 'Master practical concepts.',
+      learningGoal: newSkillGoal.trim() || 'Master practical application.',
       status: 'LEARNING',
-      currentlyLearning: 'Foundational concepts and application',
-      nextStep: 'Complete first practice project'
+      currentlyLearning: 'Foundational concepts',
+      nextStep: 'Build prototype implementation'
     })
     setSelectedSkillId(created.id)
-    setShowInlineNewSkill(false)
+    setShowInlineSkill(false)
     setNewSkillName('')
     setNewSkillGoal('')
   }
@@ -195,569 +208,581 @@ export function QuickCaptureModal({
     setTimeout(() => {
       onSuccess?.()
       onClose()
-    }, 800)
+    }, 600)
   }
 
   const handleDelete = () => {
     if (!activityToEdit) return
-    if (confirm(`Are you sure you want to delete this activity log entry?\n"${activityToEdit.work.slice(0, 40)}..."`)) {
+    if (confirm(`Are you sure you want to delete this activity entry?`)) {
       deleteActivity(activityToEdit.id)
       setSavedAction('deleted')
       setIsSaved(true)
       setTimeout(() => {
         onSuccess?.()
         onClose()
-      }, 700)
+      }, 500)
     }
   }
 
-  const activityTypes: { type: ActivityType; label: string; bg: string }[] = [
-    { type: 'BUILD', label: 'Build', bg: 'bg-[#c1a05b] text-[#08090f]' },
-    { type: 'LEARN', label: 'Learn', bg: 'bg-[#2ec4b6] text-[#08090f]' },
-    { type: 'RESEARCH', label: 'Research', bg: 'bg-[#8e7cc3] text-[#ffffff]' },
-    { type: 'DEBUG', label: 'Debug', bg: 'bg-[#e63946] text-[#ffffff]' },
-    { type: 'DESIGN', label: 'Design', bg: 'bg-[#ff9f1c] text-[#08090f]' },
-    { type: 'TEST', label: 'Test', bg: 'bg-[#45a29e] text-[#08090f]' },
-    { type: 'MEETING', label: 'Meeting', bg: 'bg-[#6c757d] text-[#ffffff]' },
-    { type: 'SHIP', label: 'Ship', bg: 'bg-[#38b000] text-[#ffffff]' },
-    { type: 'PLAN', label: 'Plan', bg: 'bg-[#0077b6] text-[#ffffff]' },
-    { type: 'OTHER', label: 'Other', bg: 'bg-[#4a4e69] text-[#ffffff]' }
+  const categories: { type: ActivityType; label: string }[] = [
+    { type: 'BUILD', label: 'Build' },
+    { type: 'LEARN', label: 'Learn' },
+    { type: 'RESEARCH', label: 'Research' },
+    { type: 'DEBUG', label: 'Debug' },
+    { type: 'DESIGN', label: 'Design' },
+    { type: 'TEST', label: 'Test' },
+    { type: 'SHIP', label: 'Ship' },
+    { type: 'PLAN', label: 'Plan' },
+    { type: 'OTHER', label: 'Other' }
   ]
 
-  // Live Metrics
   const charCount = work.length
   const wordCount = work.trim() ? work.trim().split(/\s+/).length : 0
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-[#0c0d14] p-7 text-[#f3eee4] shadow-2xl border border-[#c1a05b]/40 rounded-xl max-h-[92vh] overflow-y-auto font-sans">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 p-4 backdrop-blur-xl">
+      <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-[#c1a05b]/30 bg-[#0c0d14] text-[#f3eee4] shadow-[0_30px_90px_rgba(0,0,0,0.9)] backdrop-blur-2xl transition-all">
         
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-[#f3eee4]/15 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-[#c1a05b]/20 border border-[#c1a05b]/40 flex items-center justify-center text-[#c1a05b]">
-              {isEditing ? <Edit3 size={20} /> : <Plus size={22} />}
+        {/* ========================================================================= */}
+        {/* MODAL HEADER: CLEAN, ELEGANT ARCHITECTURE */}
+        {/* ========================================================================= */}
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#090a10] px-8 py-5">
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
+              <span>WORKFOLIO LOG CONSOLE</span>
             </div>
-            <div>
-              <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
-                {isEditing ? 'UPDATE WORKLOG ENTRY' : 'FAST WORK & LEARNING CAPTURE'}
-              </span>
-              <h2 className="font-serif text-3xl font-light text-[#f3eee4]">
-                {isEditing ? 'Edit Activity Log' : '+ Log Activity'}
-              </h2>
-            </div>
+            <h2 className="font-serif text-2xl font-light text-[#f3eee4] mt-0.5">
+              {isEditing ? 'Edit Activity Entry' : 'Log Daily Activity'}
+            </h2>
           </div>
-          
-          <div className="flex items-center gap-2">
-            {isEditing && (
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="flex items-center gap-1 bg-[#e63946]/20 border border-[#e63946]/40 hover:bg-[#e63946] text-[#ff6b6b] hover:text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors rounded cursor-pointer"
-                title="Delete this entry"
-              >
-                <Trash2 size={12} /> Delete
-              </button>
+
+          <div className="flex items-center gap-3">
+            {!isEditing && (
+              <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setEntryMode('direct')}
+                  className={`rounded-lg px-3 py-1 text-[11px] font-semibold transition-all cursor-pointer ${
+                    entryMode === 'direct'
+                      ? 'bg-[#c1a05b] text-[#08090f] shadow-sm'
+                      : 'text-[#f3eee4]/60 hover:text-white'
+                  }`}
+                >
+                  Direct Entry
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEntryMode('ai')}
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-[11px] font-semibold transition-all cursor-pointer ${
+                    entryMode === 'ai'
+                      ? 'bg-[#c1a05b] text-[#08090f] shadow-sm'
+                      : 'text-[#f3eee4]/60 hover:text-white'
+                  }`}
+                >
+                  <Sparkles size={12} />
+                  <span>AI Smart Log</span>
+                </button>
+              </div>
             )}
-            <button 
-              onClick={onClose} 
-              className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-[#f3eee4]/60 hover:text-[#f3eee4] transition-colors cursor-pointer"
+
+            <button
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[#f3eee4]/60 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
             >
-              <X size={16} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
+        {/* ========================================================================= */}
+        {/* CONTENT BODY */}
+        {/* ========================================================================= */}
         {isSaved ? (
-          <div className="my-12 text-center space-y-4">
-            <CheckCircle2 className="mx-auto text-[#c1a05b] animate-bounce" size={56} />
+          <div className="my-14 text-center space-y-4 px-8">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#c1a05b]/10 border border-[#c1a05b]/40 text-[#c1a05b]">
+              <CheckCircle2 size={36} />
+            </div>
             <h3 className="font-serif text-3xl font-light text-[#f3eee4]">
-              {savedAction === 'updated' 
-                ? 'Activity Log Updated!' 
-                : savedAction === 'deleted' 
-                ? 'Activity Log Deleted!' 
-                : 'Saved to Workfolio Workspace!'}
+              {savedAction === 'updated'
+                ? 'Activity Updated!'
+                : savedAction === 'deleted'
+                ? 'Activity Deleted!'
+                : 'Activity Logged!'}
             </h3>
-            <p className="text-xs text-[#f3eee4]/75 max-w-sm mx-auto leading-relaxed">
-              Your updates have been synchronized across your Work Journal, Project Timelines, and Skill Maps.
+            <p className="text-xs text-[#f3eee4]/70 max-w-sm mx-auto leading-relaxed">
+              Synchronized to your Work Journal, Project Ledger, and Skill Mapping.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-            {/* NATURAL LANGUAGE AI CAPTURE BOX */}
-            {!isEditing && (
-              <div className="border border-[#c1a05b]/40 bg-[#08090f] p-4 space-y-3">
+          <div className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+
+            {/* AI SMART LOG MODE */}
+            {entryMode === 'ai' && !isEditing && (
+              <div className="space-y-4 rounded-2xl border border-[#c1a05b]/30 bg-[#121420] p-6">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
-                    <Sparkles size={14} /> NATURAL LANGUAGE AI CAPTURE
-                  </span>
-                  <span className="text-[10px] text-[#f3eee4]/50">Describe your work in plain text</span>
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
+                    <Sparkles size={15} />
+                    <span>AI NATURAL LANGUAGE PARSER</span>
+                  </div>
+                  <span className="text-[11px] text-[#f3eee4]/50">Describe what you did in plain English</span>
                 </div>
+
                 <textarea
                   value={naturalInput}
                   onChange={(e) => setNaturalInput(e.target.value)}
-                  placeholder="e.g. Spent 2 hours fixing low-light receipt OCR threshold bugs on Expense Tracker project using Computer Vision skill..."
-                  rows={2}
-                  className="w-full border border-[#f3eee4]/15 bg-[#0c0d14] p-3 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/40 focus:border-[#c1a05b] focus:outline-none"
+                  placeholder="e.g. Spent 2 hours building receipt threshold preprocessing for Expense Tracker project using Computer Vision skill..."
+                  rows={3}
+                  className="w-full rounded-xl border border-white/10 bg-[#0c0d14] p-4 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] transition-all leading-relaxed"
+                  autoFocus
                 />
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-[#f3eee4]/40">
-                    AI structures your input into Work, Learning, Struggle, and Skill tags.
-                  </span>
+
+                {aiError && (
+                  <p className="text-xs text-[#ff6b6b] bg-[#ff6b6b]/10 p-3 rounded-xl border border-[#ff6b6b]/20">
+                    {aiError}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between pt-1">
+                  <p className="text-[11px] text-[#f3eee4]/40">
+                    Gemini AI will automatically extract work, learning, struggles, and tags.
+                  </p>
                   <button
                     type="button"
                     onClick={handleAIParse}
                     disabled={isParsingAI || !naturalInput.trim()}
-                    className="flex items-center gap-1.5 bg-[#c1a05b] px-3.5 py-1.5 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] disabled:opacity-50 transition-all cursor-pointer"
+                    className="flex items-center gap-2 rounded-xl bg-[#c1a05b] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#08090f] hover:bg-white transition-all disabled:opacity-40 cursor-pointer shadow-md"
                   >
-                    <Sparkles size={13} />
-                    <span>{isParsingAI ? 'STRUCTURING...' : 'PARSE WITH AI'}</span>
+                    <Sparkles size={14} />
+                    <span>{isParsingAI ? 'Processing...' : 'Structure with AI'}</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* AI GENERATED DRAFT STATUS BANNER */}
-            {aiDraftStatus === 'DRAFT' && (
-              <div className="border border-[#c1a05b] bg-[#1a2d23] p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="bg-[#c1a05b] text-[#08090f] font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                    AI GENERATED DRAFT
-                  </span>
-                  <span className="text-[#f3eee4]/80">Please review structured fields before saving.</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setAiDraftStatus('IDLE')}
-                    className="text-[10px] text-[#f3eee4]/60 hover:text-[#f3eee4] underline"
-                  >
-                    Discard Draft
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            {/* 1. Quick Starter Preset Chips */}
-            {!isEditing && (
-              <div className="space-y-1.5">
-                <span className="block text-[9px] font-bold uppercase tracking-[.2em] text-[#c1a05b]">
-                  QUICK TEMPLATE PRESETS (CLICK TO INSERT)
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {quickTemplates.map((tmpl) => {
-                    const Icon = tmpl.icon
-                    return (
-                      <button
-                        key={tmpl.label}
-                        type="button"
-                        onClick={() => applyTemplate(tmpl.text)}
-                        className="flex items-center gap-1.5 bg-[#08090f] hover:bg-[#c1a05b] hover:text-[#08090f] border border-[#c1a05b]/30 px-3 py-1 text-[10px] font-medium text-[#f3eee4]/80 transition-all rounded-full cursor-pointer group"
-                      >
-                        <Icon size={12} className="text-[#c1a05b] group-hover:text-[#08090f]" />
-                        <span>{tmpl.label}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
+            {/* DIRECT ENTRY MODE */}
+            {(entryMode === 'direct' || isEditing) && (
+              <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* 2. Activity Type Pills */}
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b] mb-2">
-                SELECT ACTIVITY CATEGORY
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {activityTypes.map((t) => (
-                  <button
-                    key={t.type}
-                    type="button"
-                    onClick={() => setActivityType(t.type)}
-                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all rounded border cursor-pointer ${
-                      activityType === t.type
-                        ? `${t.bg} border-transparent shadow-md scale-105`
-                        : 'bg-[#08090f] text-[#f3eee4]/70 border-[#f3eee4]/15 hover:border-[#c1a05b]/50'
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. WHAT DID YOU WORK ON? */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
-                  WHAT DID YOU WORK ON? <span className="text-[#ff6b6b]">*</span>
-                </label>
-                <span className="text-[9px] font-mono text-[#c1a05b]">
-                  {wordCount} words · {charCount} chars
-                </span>
-              </div>
-              <textarea
-                value={work}
-                onChange={(e) => setWork(e.target.value)}
-                rows={3}
-                autoFocus
-                placeholder="e.g. Built OCR preprocessing module for low-light receipt handling & added validation rules..."
-                className="w-full border border-[#f3eee4]/20 bg-[#08090f] p-3.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] rounded transition-all leading-relaxed"
-                required
-              />
-            </div>
-
-            {/* 4. Project & Skill Selector Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Project Selector */}
-              <div className="relative">
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-[.16em] text-[#c1a05b] flex items-center gap-1.5">
-                    <Folder size={13} /> Associate Project
+                {/* CATEGORY SELECTOR PILLS */}
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b]">
+                    Activity Category
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowInlineNewProject(!showInlineNewProject)}
-                    className="text-[9px] font-bold uppercase tracking-wider text-[#c1a05b] hover:underline flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <Plus size={10} /> + New
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((c) => {
+                      const selected = activityType === c.type
+                      return (
+                        <button
+                          key={c.type}
+                          type="button"
+                          onClick={() => setActivityType(c.type)}
+                          className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all cursor-pointer ${
+                            selected
+                              ? 'bg-[#c1a05b] text-[#08090f] shadow-md scale-[1.02]'
+                              : 'bg-white/5 text-[#f3eee4]/70 border border-white/10 hover:border-[#c1a05b]/40 hover:text-white'
+                          }`}
+                        >
+                          {c.label}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowProjectDropdown(!showProjectDropdown)
-                    setShowSkillDropdown(false)
-                  }}
-                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#c1a05b] rounded transition-all cursor-pointer"
-                >
-                  <span className="truncate font-medium">
-                    {selectedProject ? `${selectedProject.name} (${selectedProject.category})` : 'No Project (General Entry)'}
-                  </span>
-                  <ChevronDown size={14} className="text-[#c1a05b]" />
-                </button>
-
-                {showProjectDropdown && (
-                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#c1a05b]/40 bg-[#08090f] p-2 shadow-2xl rounded">
-                    <div className="relative mb-2">
-                      <Search size={12} className="absolute left-2.5 top-2.5 text-[#f3eee4]/40" />
-                      <input
-                        type="text"
-                        value={projectSearch}
-                        onChange={(e) => setProjectSearch(e.target.value)}
-                        placeholder="Search active projects..."
-                        className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedProjectId('')
-                        setShowProjectDropdown(false)
-                      }}
-                      className={`w-full text-left px-2.5 py-2 text-xs transition-colors rounded ${
-                        !selectedProjectId ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                      }`}
-                    >
-                      No Project (Independent Entry)
-                    </button>
-
-                    <div className="my-1 border-t border-[#f3eee4]/10" />
-
-                    {filteredProjects.map((p) => (
+                {/* PRESET CHIPS */}
+                {!isEditing && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <span className="text-[10px] uppercase font-mono text-[#f3eee4]/40 mr-1">Quick Starters:</span>
+                    {presetPrompts.map((p) => (
                       <button
-                        key={p.id}
+                        key={p.label}
                         type="button"
-                        onClick={() => {
-                          setSelectedProjectId(p.id)
-                          setShowProjectDropdown(false)
-                        }}
-                        className={`w-full text-left px-2.5 py-2 text-xs flex items-center justify-between transition-colors rounded ${
-                          selectedProjectId === p.id ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                        }`}
+                        onClick={() => handleApplyPreset(p.text)}
+                        className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-[#f3eee4]/70 hover:border-[#c1a05b]/40 hover:text-white transition-all cursor-pointer"
                       >
-                        <span className="truncate">{p.name}</span>
-                        <span className="text-[9px] uppercase font-mono opacity-80">{p.category}</span>
+                        {p.label}
                       </button>
                     ))}
                   </div>
                 )}
-              </div>
 
-              {/* Skill Selector */}
-              <div className="relative">
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-[.16em] text-[#2ec4b6] flex items-center gap-1.5">
-                    <GraduationCap size={13} /> Associate Skill / Learning
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowInlineNewSkill(!showInlineNewSkill)}
-                    className="text-[9px] font-bold uppercase tracking-wider text-[#2ec4b6] hover:underline flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <Plus size={10} /> + New
-                  </button>
+                {/* MAIN ENTRY TEXTAREA */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">
+                      What did you accomplish? <span className="text-[#c1a05b]">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-[#f3eee4]/40">
+                      {wordCount} words · {charCount} chars
+                    </span>
+                  </div>
+                  <textarea
+                    value={work}
+                    onChange={(e) => setWork(e.target.value)}
+                    rows={4}
+                    placeholder="Describe what you worked on, shipped, or solved..."
+                    className="w-full rounded-2xl border border-white/15 bg-[#121420] p-4 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] transition-all leading-relaxed"
+                    required
+                    autoFocus={!isEditing}
+                  />
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSkillDropdown(!showSkillDropdown)
-                    setShowProjectDropdown(false)
-                  }}
-                  className="w-full flex items-center justify-between border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-left text-xs text-[#f3eee4] outline-none hover:border-[#2ec4b6] rounded transition-all cursor-pointer"
-                >
-                  <span className="truncate font-medium">
-                    {selectedSkill ? `${selectedSkill.name} (${selectedSkill.category})` : 'No Skill (General Entry)'}
-                  </span>
-                  <ChevronDown size={14} className="text-[#2ec4b6]" />
-                </button>
+                {/* PROJECT & SKILL CONNECTORS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {showSkillDropdown && (
-                  <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto border border-[#2ec4b6]/40 bg-[#08090f] p-2 shadow-2xl rounded">
-                    <div className="relative mb-2">
-                      <Search size={12} className="absolute left-2.5 top-2.5 text-[#f3eee4]/40" />
-                      <input
-                        type="text"
-                        value={skillSearch}
-                        onChange={(e) => setSkillSearch(e.target.value)}
-                        placeholder="Search skills..."
-                        className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] pl-7 pr-2 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
-                      />
+                  {/* PROJECT SELECTOR */}
+                  <div className="relative space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] flex items-center gap-1.5">
+                        <Folder size={13} /> Project Association
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowInlineProject(!showInlineProject)}
+                        className="text-[10px] font-bold text-[#c1a05b] hover:underline flex items-center gap-0.5 cursor-pointer"
+                      >
+                        <Plus size={10} /> New
+                      </button>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedSkillId('')
+                        setShowProjectDropdown(!showProjectDropdown)
                         setShowSkillDropdown(false)
                       }}
-                      className={`w-full text-left px-2.5 py-2 text-xs transition-colors rounded ${
-                        !selectedSkillId ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                      }`}
+                      className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#121420] px-4 py-3 text-left text-xs text-[#f3eee4] outline-none hover:border-[#c1a05b]/50 transition-all cursor-pointer"
                     >
-                      No Skill (General Entry)
+                      <span className="truncate font-medium">
+                        {selectedProject ? selectedProject.name : 'No Project (General Entry)'}
+                      </span>
+                      <ChevronDown size={14} className="text-[#c1a05b]" />
                     </button>
 
-                    <div className="my-1 border-t border-[#f3eee4]/10" />
+                    {showProjectDropdown && (
+                      <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#c1a05b]/30 bg-[#121420] p-2 shadow-2xl backdrop-blur-xl">
+                        <div className="relative mb-2">
+                          <Search size={12} className="absolute left-3 top-3 text-[#f3eee4]/40" />
+                          <input
+                            type="text"
+                            value={projectSearch}
+                            onChange={(e) => setProjectSearch(e.target.value)}
+                            placeholder="Filter projects..."
+                            className="w-full rounded-lg border border-white/10 bg-[#0c0d14] pl-8 pr-3 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
+                          />
+                        </div>
 
-                    {filteredSkills.map((s) => (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedProjectId('')
+                            setShowProjectDropdown(false)
+                          }}
+                          className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${
+                            !selectedProjectId ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                          }`}
+                        >
+                          No Project (General Entry)
+                        </button>
+
+                        <div className="my-1 border-t border-white/10" />
+
+                        {filteredProjects.map((p) => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedProjectId(p.id)
+                              setShowProjectDropdown(false)
+                            }}
+                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between rounded-lg transition-colors ${
+                              selectedProjectId === p.id ? 'bg-[#c1a05b] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                            }`}
+                          >
+                            <span className="truncate">{p.name}</span>
+                            <span className="text-[9px] uppercase font-mono opacity-70">{p.category}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SKILL SELECTOR */}
+                  <div className="relative space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-[#2ec4b6] flex items-center gap-1.5">
+                        <GraduationCap size={13} /> Skill Association
+                      </label>
                       <button
-                        key={s.id}
                         type="button"
-                        onClick={() => {
-                          setSelectedSkillId(s.id)
-                          setShowSkillDropdown(false)
-                        }}
-                        className={`w-full text-left px-2.5 py-2 text-xs flex items-center justify-between transition-colors rounded ${
-                          selectedSkillId === s.id ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
-                        }`}
+                        onClick={() => setShowInlineSkill(!showInlineSkill)}
+                        className="text-[10px] font-bold text-[#2ec4b6] hover:underline flex items-center gap-0.5 cursor-pointer"
                       >
-                        <span className="truncate">{s.name}</span>
-                        <span className="text-[9px] uppercase font-mono opacity-80">{s.status}</span>
+                        <Plus size={10} /> New
                       </button>
-                    ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowSkillDropdown(!showSkillDropdown)
+                        setShowProjectDropdown(false)
+                      }}
+                      className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#121420] px-4 py-3 text-left text-xs text-[#f3eee4] outline-none hover:border-[#2ec4b6]/50 transition-all cursor-pointer"
+                    >
+                      <span className="truncate font-medium">
+                        {selectedSkill ? selectedSkill.name : 'No Skill (General Entry)'}
+                      </span>
+                      <ChevronDown size={14} className="text-[#2ec4b6]" />
+                    </button>
+
+                    {showSkillDropdown && (
+                      <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#2ec4b6]/30 bg-[#121420] p-2 shadow-2xl backdrop-blur-xl">
+                        <div className="relative mb-2">
+                          <Search size={12} className="absolute left-3 top-3 text-[#f3eee4]/40" />
+                          <input
+                            type="text"
+                            value={skillSearch}
+                            onChange={(e) => setSkillSearch(e.target.value)}
+                            placeholder="Filter skills..."
+                            className="w-full rounded-lg border border-white/10 bg-[#0c0d14] pl-8 pr-3 py-1.5 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedSkillId('')
+                            setShowSkillDropdown(false)
+                          }}
+                          className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors ${
+                            !selectedSkillId ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                          }`}
+                        >
+                          No Skill (General Entry)
+                        </button>
+
+                        <div className="my-1 border-t border-white/10" />
+
+                        {filteredSkills.map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSkillId(s.id)
+                              setShowSkillDropdown(false)
+                            }}
+                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between rounded-lg transition-colors ${
+                              selectedSkillId === s.id ? 'bg-[#2ec4b6] text-[#08090f] font-bold' : 'hover:bg-white/5 text-[#f3eee4]'
+                            }`}
+                          >
+                            <span className="truncate">{s.name}</span>
+                            <span className="text-[9px] uppercase font-mono opacity-70">{s.status}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* INLINE PROJECT CREATION */}
+                {showInlineProject && (
+                  <div className="rounded-2xl border border-[#c1a05b]/30 bg-[#121420] p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
+                      <span>Create New Project</span>
+                      <button type="button" onClick={() => setShowInlineProject(false)} className="text-white/40 hover:text-white">
+                        <X size={14} />
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Project Name *"
+                        value={newProjName}
+                        onChange={(e) => setNewProjName(e.target.value)}
+                        className="flex-1 rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCreateProjectInline}
+                        className="rounded-xl bg-[#c1a05b] px-4 py-2 text-xs font-bold text-[#08090f] hover:bg-white transition-all cursor-pointer"
+                      >
+                        Create
+                      </button>
+                    </div>
                   </div>
                 )}
-              </div>
-            </div>
 
-            {/* Quick Inline Forms */}
-            {showInlineNewProject && (
-              <div className="border border-[#c1a05b]/40 bg-[#08090f] p-4 space-y-2.5 text-xs rounded">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#c1a05b]">
-                    QUICK CREATE PROJECT
-                  </span>
-                  <button type="button" onClick={() => setShowInlineNewProject(false)} className="text-[#f3eee4]/50">
-                    <X size={14} />
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Project Name *"
-                  value={newProjName}
-                  onChange={(e) => setNewProjName(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b]"
-                />
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Category (e.g. AI, Web)"
-                    value={newProjCategory}
-                    onChange={(e) => setNewProjCategory(e.target.value)}
-                    className="w-1/2 border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleCreateProjectInline}
-                    className="w-1/2 bg-[#c1a05b] text-[#08090f] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
-                  >
-                    Create & Select
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {showInlineNewSkill && (
-              <div className="border border-[#2ec4b6]/40 bg-[#08090f] p-4 space-y-2.5 text-xs rounded">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#2ec4b6]">
-                    QUICK CREATE SKILL
-                  </span>
-                  <button type="button" onClick={() => setShowInlineNewSkill(false)} className="text-[#f3eee4]/50">
-                    <X size={14} />
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Skill Name (e.g. React, Computer Vision) *"
-                  value={newSkillName}
-                  onChange={(e) => setNewSkillName(e.target.value)}
-                  className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
-                />
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Learning Goal"
-                    value={newSkillGoal}
-                    onChange={(e) => setNewSkillGoal(e.target.value)}
-                    className="w-1/2 border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleCreateSkillInline}
-                    className="w-1/2 bg-[#2ec4b6] text-[#08090f] font-bold text-[10px] uppercase tracking-wider py-2 rounded cursor-pointer"
-                  >
-                    Create & Select
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* 5. WHAT DID YOU LEARN? */}
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#2ec4b6]">
-                WHAT DID YOU LEARN? (KEY TAKEAWAY)
-              </label>
-              <input
-                value={learning}
-                onChange={(e) => setLearning(e.target.value)}
-                placeholder="e.g. Learned thresholding technique for low-contrast images..."
-                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#2ec4b6] rounded transition-all"
-              />
-            </div>
-
-            {/* 6. STRUGGLES / BLOCKERS */}
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#ff6b6b]">
-                WHAT DID YOU STRUGGLE WITH / BLOCKERS?
-              </label>
-              <input
-                value={struggle}
-                onChange={(e) => setStruggle(e.target.value)}
-                placeholder="e.g. Currency sign misclassification on degraded receipts..."
-                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#ff6b6b] rounded transition-all"
-              />
-            </div>
-
-            {/* 7. NEXT INTENTION */}
-            <div className="space-y-1">
-              <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b]">
-                WHAT'S NEXT? (NEXT INTENTION)
-              </label>
-              <input
-                value={intention}
-                onChange={(e) => setIntention(e.target.value)}
-                placeholder="e.g. Add adaptive thresholding and bounding box validation..."
-                className="w-full border border-[#f3eee4]/20 bg-[#08090f] px-3.5 py-2.5 text-xs text-[#f3eee4] placeholder-[#f3eee4]/40 outline-none focus:border-[#c1a05b] rounded transition-all"
-              />
-            </div>
-
-            {/* 8. Evidence Artifacts & Capabilities */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-[10px] font-bold uppercase tracking-[.16em] text-[#c1a05b] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                {showAdvanced ? '− Hide Evidence & Capabilities' : '+ Add Evidence Artifacts & Capabilities'}
-              </button>
-
-              {showAdvanced && (
-                <div className="mt-3 space-y-3 border-t border-[#f3eee4]/15 pt-3 bg-[#08090f] p-4 border border-[#f3eee4]/15 rounded">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]/70 mb-1">
-                      Evidence Title / Proof Artifact
-                    </label>
-                    <input
-                      value={evidenceTitle}
-                      onChange={(e) => setEvidenceTitle(e.target.value)}
-                      placeholder="e.g. OCR Pipeline Test Screenshot & Benchmark Log"
-                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
-                    />
+                {/* INLINE SKILL CREATION */}
+                {showInlineSkill && (
+                  <div className="rounded-2xl border border-[#2ec4b6]/30 bg-[#121420] p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#2ec4b6]">
+                      <span>Create New Skill</span>
+                      <button type="button" onClick={() => setShowInlineSkill(false)} className="text-white/40 hover:text-white">
+                        <X size={14} />
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Skill Name *"
+                        value={newSkillName}
+                        onChange={(e) => setNewSkillName(e.target.value)}
+                        className="flex-1 rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2 text-xs text-[#f3eee4] outline-none focus:border-[#2ec4b6]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCreateSkillInline}
+                        className="rounded-xl bg-[#2ec4b6] px-4 py-2 text-xs font-bold text-[#08090f] hover:bg-white transition-all cursor-pointer"
+                      >
+                        Create
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]/70 mb-1">
-                      Evidence URL / Repository Link
-                    </label>
-                    <input
-                      value={evidenceUrl}
-                      onChange={(e) => setEvidenceUrl(e.target.value)}
-                      placeholder="e.g. https://github.com/org/repo/pull/42"
-                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-[.16em] text-[#f3eee4]/70 mb-1">
-                      Capabilities (Comma separated)
-                    </label>
-                    <input
-                      value={capabilitiesStr}
-                      onChange={(e) => setCapabilitiesStr(e.target.value)}
-                      placeholder="React, Computer Vision, API Design"
-                      className="w-full border border-[#f3eee4]/20 bg-[#0c0d14] px-3 py-2 text-xs text-[#f3eee4] outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Actions Footer */}
-            <div className="flex items-center justify-between border-t border-[#f3eee4]/15 pt-5">
-              <div>
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    className="text-xs font-bold uppercase tracking-wider text-[#ff6b6b] hover:underline cursor-pointer flex items-center gap-1"
-                  >
-                    <Trash2 size={12} /> Delete Entry
-                  </button>
                 )}
-              </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]/60 hover:text-[#f3eee4] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#c1a05b] text-[#08090f] px-6 py-2.5 text-xs font-bold uppercase tracking-[.16em] shadow-lg hover:bg-[#f3eee4] transition-all rounded cursor-pointer"
-                >
-                  {isEditing ? 'Save Changes' : 'Save Activity'}
-                </button>
-              </div>
-            </div>
-          </form>
+                {/* COLLAPSIBLE REFLECTIONS & INTENTIONS */}
+                <div className="border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowReflections(!showReflections)}
+                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#c1a05b] hover:text-white transition-all cursor-pointer"
+                  >
+                    <span>{showReflections ? '− Hide Learning & Intentions' : '+ Add Learning, Struggles & Next Intentions'}</span>
+                  </button>
+
+                  {showReflections && (
+                    <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-[#121420] p-5">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#2ec4b6]">
+                          What did you learn? (Key Takeaway)
+                        </label>
+                        <input
+                          value={learning}
+                          onChange={(e) => setLearning(e.target.value)}
+                          placeholder="e.g. Mastered adaptive thresholding for receipt OCR..."
+                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#2ec4b6]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#ff6b6b]">
+                          Struggles / Blockers
+                        </label>
+                        <input
+                          value={struggle}
+                          onChange={(e) => setStruggle(e.target.value)}
+                          placeholder="e.g. Low contrast receipt image noise..."
+                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#ff6b6b]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#c1a05b]">
+                          What's Next? (Next Intention)
+                        </label>
+                        <input
+                          value={intention}
+                          onChange={(e) => setIntention(e.target.value)}
+                          placeholder="e.g. Implement cross-validation benchmark suite..."
+                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-4 py-2.5 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b]"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* COLLAPSIBLE EVIDENCE ARTIFACTS */}
+                <div className="border-t border-white/10 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEvidence(!showEvidence)}
+                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#f3eee4]/70 hover:text-white transition-all cursor-pointer"
+                  >
+                    <span>{showEvidence ? '− Hide Proof & Evidence Links' : '+ Attach Proof Artifact & Capabilities'}</span>
+                  </button>
+
+                  {showEvidence && (
+                    <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-[#121420] p-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
+                            Evidence Title / Proof Name
+                          </label>
+                          <input
+                            value={evidenceTitle}
+                            onChange={(e) => setEvidenceTitle(e.target.value)}
+                            placeholder="e.g. OCR Benchmark Test Screenshot"
+                            className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
+                            Evidence URL / PR Link
+                          </label>
+                          <input
+                            value={evidenceUrl}
+                            onChange={(e) => setEvidenceUrl(e.target.value)}
+                            placeholder="e.g. https://github.com/org/repo/pull/42"
+                            className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#f3eee4]/70">
+                          Capabilities Used (Comma Separated)
+                        </label>
+                        <input
+                          value={capabilitiesStr}
+                          onChange={(e) => setCapabilitiesStr(e.target.value)}
+                          placeholder="React, Computer Vision, API Design"
+                          className="w-full rounded-xl border border-white/10 bg-[#0c0d14] px-3.5 py-2.5 text-xs text-[#f3eee4] outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* MODAL ACTION FOOTER */}
+                <div className="flex items-center justify-between border-t border-white/10 pt-6">
+                  <div>
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="flex items-center gap-1.5 rounded-xl border border-[#ff6b6b]/30 bg-[#ff6b6b]/10 px-4 py-2 text-xs font-bold text-[#ff6b6b] hover:bg-[#ff6b6b] hover:text-white transition-all cursor-pointer"
+                      >
+                        <Trash2 size={13} /> Delete Entry
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="rounded-xl border border-white/10 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#f3eee4]/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c1a05b] to-[#a3823d] px-7 py-2.5 text-xs font-bold uppercase tracking-[.18em] text-[#08090f] hover:opacity-95 transition-all cursor-pointer shadow-lg"
+                    >
+                      <span>{isEditing ? 'Save Changes' : 'Publish Activity Log'}</span>
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+            )}
+
+          </div>
         )}
+
       </div>
     </div>
   )
