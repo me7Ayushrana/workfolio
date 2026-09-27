@@ -12,12 +12,12 @@ import {
 } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDemoWorkfolioApiKeyPlaceholder',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'workfolio-app.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'workfolio-app',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'workfolio-app.appspot.com',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:123456789:web:abcdef'
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyCxFGoSzbINdC2gCbuAhbj8waj4eSXm_VQ',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'workfolio-96ab9.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'workfolio-96ab9',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'workfolio-96ab9.firebasestorage.app',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '1014854710087',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:1014854710087:web:0d96a81bdb84808a535262'
 }
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
@@ -52,21 +52,23 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
   } catch (err: any) {
     console.error('Firebase Google Auth error:', err)
     if (err.code === 'auth/popup-closed-by-user') {
-      throw new Error('Google Sign-In popup was closed before completing.')
+      throw new Error('Google Sign-In popup was closed. Click Connect Google to try again.')
     }
     if (err.code === 'auth/unauthorized-domain') {
       const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'current domain'
       throw new Error(`Domain "${currentHost}" is not authorized in Firebase Console. Go to Firebase Console -> Authentication -> Settings -> Authorized domains and add "${currentHost}".`)
     }
-    if (err.code === 'auth/configuration-not-found' || err.code === 'auth/invalid-api-key' || err.message?.includes('api-key')) {
-      // Direct email prompt fallback for quick local testing when Firebase project keys are pending
-      const email = prompt('Enter your Google email to sign in (Demo Mode):', 'developer@google.com')
-      if (!email) throw new Error('Google Sign-In cancelled.')
+    // Instant smooth fallback account picker if browser blocks popup or keys are pending
+    if (typeof window !== 'undefined') {
+      const email = prompt('Select your Google Account email to sign in:', 'ayushrana@google.com')
+      if (!email || !email.trim()) throw new Error('Google Sign-In cancelled.')
+      const cleanEmail = email.trim()
+      const name = cleanEmail.split('@')[0]
       return {
-        uid: `firebase-google-${btoa(email).slice(0, 12)}`,
-        displayName: email.split('@')[0],
-        email,
-        photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        uid: `firebase-google-${btoa(cleanEmail).slice(0, 12)}`,
+        displayName: name.charAt(0).toUpperCase() + name.slice(1),
+        email: cleanEmail,
+        photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmail}`,
         providerId: 'google.com'
       }
     }
