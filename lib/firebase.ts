@@ -4,6 +4,8 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -44,15 +46,24 @@ export function formatFirebaseUser(user: User): FirebaseUserSession {
 }
 
 export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
   try {
-    const provider = new GoogleAuthProvider()
-    provider.setCustomParameters({ prompt: 'select_account' })
     const result = await signInWithPopup(auth, provider)
     return formatFirebaseUser(result.user)
   } catch (err: any) {
     console.warn('Firebase Google Auth error code:', err?.code, err?.message)
+    if (err?.code === 'auth/popup-blocked' || err?.code === 'auth/unauthorized-domain') {
+      try {
+        await signInWithRedirect(auth, provider)
+        return new Promise(() => {})
+      } catch (redirectErr: any) {
+        console.warn('Firebase signInWithRedirect error:', redirectErr)
+      }
+    }
+
     if (err?.code === 'auth/popup-blocked') {
-      throw new Error('Google Sign-In popup was blocked by your browser. Please allow popups for this site.')
+      throw new Error('Google Sign-In popup was blocked by your browser. Please allow popups or try again.')
     } else if (err?.code === 'auth/popup-closed-by-user') {
       throw new Error('Google Sign-In popup was closed before completing sign-in.')
     } else if (err?.code === 'auth/cancelled-popup-request') {
@@ -61,6 +72,8 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
       throw new Error('An account already exists with the same email using a different sign-in provider.')
     } else if (err?.code === 'auth/network-request-failed') {
       throw new Error('Network error during Google Sign-In. Please check your internet connection.')
+    } else if (err?.code === 'auth/unauthorized-domain') {
+      throw new Error('This domain needs to be added in Firebase Console under Authentication > Settings > Authorized Domains.')
     }
     throw new Error(err?.message || 'Google Sign-In failed.')
   }
@@ -106,6 +119,14 @@ export async function signOutFirebase(): Promise<void> {
 }
 
 export function subscribeAuthState(callback: (user: FirebaseUserSession | null) => void) {
+  try {
+    getRedirectResult(auth).then((result) => {
+      if (result?.user) {
+        callback(formatFirebaseUser(result.user))
+      }
+    }).catch(() => {})
+  } catch {}
+
   return onAuthStateChanged(auth, (user) => {
     if (user) {
       callback(formatFirebaseUser(user))
