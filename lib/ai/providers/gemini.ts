@@ -1,5 +1,6 @@
 import { BaseAIProvider, AIGenerateOptions, AIChatOptions } from './base'
 import { AIProviderId, AISourceAttribution } from '../types'
+import { AIProviderStatus } from '../credential-vault'
 
 export class GeminiProvider extends BaseAIProvider {
   id: AIProviderId = 'gemini'
@@ -7,13 +8,18 @@ export class GeminiProvider extends BaseAIProvider {
   defaultModel = 'gemini-1.5-flash'
   supportsMultimodal = true
 
-  async testConnection(apiKey: string, model: string = this.defaultModel): Promise<{ success: boolean; message: string }> {
+  async testConnection(
+    apiKey: string,
+    model: string = this.defaultModel
+  ): Promise<{ success: boolean; status: AIProviderStatus; message: string }> {
     const cleanKey = apiKey?.trim().replace(/^["']|["']$/g, '').replace(/[\r\n\t]/g, '') || ''
     if (!cleanKey) {
-      return { success: false, message: 'Google Gemini API key is missing. Please enter your API key.' }
+      return {
+        success: false,
+        status: 'NOT_CONFIGURED',
+        message: 'Google Gemini API key is missing. Please provide a key or set GEMINI_API_KEY on the server.'
+      }
     }
-
-    const isStandardFormat = cleanKey.startsWith('AIzaSy') || cleanKey.length >= 12
 
     try {
       // Validate key against Google Gemini official models REST endpoint
@@ -23,35 +29,76 @@ export class GeminiProvider extends BaseAIProvider {
       )
 
       if (res.ok) {
-        return { success: true, message: `Successfully connected & verified Google Gemini API Key!` }
-      } else {
-        const errorData = await res.json().catch(() => ({}))
-        const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
-        if (res.status === 400 || res.status === 403) {
-          if (rawMsg.toLowerCase().includes('key') || rawMsg.toLowerCase().includes('invalid')) {
-            return {
-              success: false,
-              message: `Google Gemini rejected key (HTTP ${res.status}): ${rawMsg}`
-            }
+        return {
+          success: true,
+          status: 'VALID',
+          message: `Successfully connected & verified Google Gemini credential.`
+        }
+      }
+
+      const errorData = await res.json().catch(() => ({}))
+      const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
+      const lowerMsg = rawMsg.toLowerCase()
+
+      if (res.status === 400 || res.status === 401) {
+        return {
+          success: false,
+          status: 'INVALID',
+          message: `Google Gemini rejected API key credential: ${rawMsg}`
+        }
+      }
+
+      if (res.status === 403) {
+        if (lowerMsg.includes('quota') || lowerMsg.includes('billing')) {
+          return {
+            success: false,
+            status: 'BILLING_REQUIRED',
+            message: `Google Gemini quota/billing issue: ${rawMsg}`
           }
         }
-        if (isStandardFormat) {
-          return { success: true, message: `Google Gemini API Key saved to local vault and activated!` }
+        return {
+          success: false,
+          status: 'PERMISSION_ERROR',
+          message: `Google Gemini permission error: ${rawMsg}`
         }
-        return { success: false, message: `Google Gemini error (${res.status}): ${rawMsg}` }
+      }
+
+      if (res.status === 429) {
+        return {
+          success: false,
+          status: 'RATE_LIMITED',
+          message: `Google Gemini rate limit exceeded: ${rawMsg}`
+        }
+      }
+
+      if (res.status >= 500) {
+        return {
+          success: false,
+          status: 'PROVIDER_ERROR',
+          message: `Google Gemini provider temporary error (HTTP ${res.status}): ${rawMsg}`
+        }
+      }
+
+      return {
+        success: false,
+        status: 'INVALID',
+        message: `Google Gemini connection error (HTTP ${res.status}): ${rawMsg}`
       }
     } catch (err: any) {
-      if (isStandardFormat) {
-        return { success: true, message: `Google Gemini API Key saved to local vault and activated!` }
+      return {
+        success: false,
+        status: 'NETWORK_ERROR',
+        message: `Network failure connecting to Google Gemini: ${err?.message || 'Connection refused'}`
       }
-      return { success: false, message: `Network error reaching Google Gemini API: ${err?.message || 'Connection refused'}` }
     }
   }
 
   async generateText(options: AIGenerateOptions): Promise<string> {
     const key = options.apiKey?.trim()
     if (!key) {
-      throw new Error('Google Gemini API key is not configured.')
+      const err: any = new Error('Google Gemini API key is not configured.')
+      err.code = 'NOT_CONFIGURED'
+      throw err
     }
 
     const modelName = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
@@ -81,8 +128,14 @@ export class GeminiProvider extends BaseAIProvider {
     })
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err?.error?.message || `Gemini API returned HTTP ${res.status}`)
+      const errData = await res.json().catch(() => ({}))
+      const msg = errData?.error?.message || `Gemini API returned HTTP ${res.status}`
+      const err: any = new Error(msg)
+      if (res.status === 401 || res.status === 400) err.code = 'INVALID'
+      else if (res.status === 429) err.code = 'RATE_LIMITED'
+      else if (res.status === 403) err.code = 'PERMISSION_ERROR'
+      else if (res.status >= 500) err.code = 'PROVIDER_ERROR'
+      throw err
     }
 
     const data = await res.json()
@@ -96,26 +149,30 @@ export class GeminiProvider extends BaseAIProvider {
       const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim()
       return JSON.parse(cleaned) as T
     } catch (e: any) {
-      throw new Error(`Failed to parse Gemini structured JSON output: ${e.message}`)
+      const err: any = new Error(`Failed to parse Gemini structured JSON output: ${e.message}`)
+      err.code = 'STRUCTURED_PARSE_ERROR'
+      throw err
     }
   }
 
   async chat(options: AIChatOptions): Promise<{ text: string; sources?: AISourceAttribution[] }> {
     const key = options.apiKey?.trim()
     if (!key) {
-      throw new Error('Google Gemini API key is not configured.')
+      const err: any = new Error('Google Gemini API key is not configured.')
+      err.code = 'NOT_CONFIGURED'
+      throw err
     }
 
-    const modelName = options.model || this.defaultModel
+    const modelName = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
 
-    const formattedContents = options.messages.map((m) => ({
-      role: m.role === 'user' ? 'user' : 'model',
+    const contents = options.messages.map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }]
     }))
 
     if (options.systemInstruction) {
-      formattedContents.unshift({
+      contents.unshift({
         role: 'user',
         parts: [{ text: `SYSTEM INSTRUCTION:\n${options.systemInstruction}` }]
       })
@@ -124,30 +181,24 @@ export class GeminiProvider extends BaseAIProvider {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: formattedContents })
+      body: JSON.stringify({ contents })
     })
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err?.error?.message || `Gemini API chat returned HTTP ${res.status}`)
+      const errData = await res.json().catch(() => ({}))
+      throw new Error(errData?.error?.message || `Gemini API returned HTTP ${res.status}`)
     }
 
     const data = await res.json()
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.'
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     return { text, sources: options.contextSources }
   }
 
   async analyzeImage(imageUrl: string, prompt: string, apiKey?: string): Promise<string> {
-    return this.generateText({
-      prompt: `[Analyze Image from URL: ${imageUrl}]\n\nPrompt: ${prompt}`,
-      apiKey
-    })
+    return this.generateText({ prompt: `${prompt}\n[Image URL: ${imageUrl}]`, apiKey })
   }
 
   async analyzeDocument(documentText: string, prompt: string, apiKey?: string): Promise<string> {
-    return this.generateText({
-      prompt: `[Document Content Begin]\n${documentText.slice(0, 15000)}\n[Document Content End]\n\nTask: ${prompt}`,
-      apiKey
-    })
+    return this.generateText({ prompt: `${prompt}\n\nDocument Content:\n${documentText}`, apiKey })
   }
 }

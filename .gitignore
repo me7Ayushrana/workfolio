@@ -18,6 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
+.workfolio-byok-vault.json
 
 # vercel
 .vercel

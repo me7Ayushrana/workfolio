@@ -15,61 +15,141 @@ import {
   validateProjectSummaryResult
 } from './schemas'
 import { WORKFOLIO_TOOLS, WorkfolioContextData } from './tools'
+import {
+  getEffectiveProviderConfig,
+  getProviderPreferences,
+  saveBYOKCredential,
+  updateProviderStatusInVault,
+  AIProviderStatus
+} from './credential-vault'
 
 export class AIService {
   private geminiProvider = new GeminiProvider()
   private groqProvider = new GroqProvider()
 
   /**
-   * Unified AI Structured Dispatcher (Handles Groq & Gemini seamlessly)
+   * Universal AI Provider Dispatcher with Deterministic Server-Side Routing & Failover
    */
   private async executeStructuredAI<T>(
     prompt: string,
     options: { apiKey?: string; model?: string } = {},
     systemInstruction?: string
   ): Promise<T> {
-    const key = options.apiKey?.trim() || process.env.GEMINI_API_KEY?.trim() || process.env.GROQ_API_KEY?.trim()
+    const prefs = getProviderPreferences()
+    let primaryId = prefs.primaryProvider
+    let secondaryId: 'gemini' | 'groq' = primaryId === 'gemini' ? 'groq' : 'gemini'
 
-    if (!key) {
-      const error: any = new Error('AI is not configured yet. Please set or connect your API key in Settings.')
+    // Check if explicit override is provided in options
+    if (options.apiKey?.trim()) {
+      const explicitKey = options.apiKey.trim()
+      const isGroq = explicitKey.startsWith('gsk_') || (options.model && options.model.includes('llama'))
+      if (isGroq) {
+        return this.groqProvider.generateStructuredOutput<T>({
+          prompt,
+          apiKey: explicitKey,
+          model: options.model && !options.model.includes('gemini') ? options.model : 'llama-3.3-70b-versatile',
+          systemInstruction
+        })
+      } else {
+        return this.geminiProvider.generateStructuredOutput<T>({
+          prompt,
+          apiKey: explicitKey,
+          model: options.model && options.model.includes('gemini') ? options.model : 'gemini-1.5-flash',
+          systemInstruction
+        })
+      }
+    }
+
+    // Resolve server effective configs
+    const primaryConfig = getEffectiveProviderConfig(primaryId)
+    const secondaryConfig = getEffectiveProviderConfig(secondaryId)
+
+    if (!primaryConfig.isConfigured && !secondaryConfig.isConfigured) {
+      const error: any = new Error(
+        'AI is not configured. Please set GEMINI_API_KEY or GROQ_API_KEY on your server, or connect your key in AI Settings.'
+      )
       error.code = 'NOT_CONFIGURED'
       throw error
     }
 
-    const isGroqKey = key.startsWith('gsk_') || (options.model && options.model.includes('llama'))
+    // Pick target configuration
+    const activeId = primaryConfig.isConfigured ? primaryId : secondaryId
+    const activeConfig = primaryConfig.isConfigured ? primaryConfig : secondaryConfig
+    const activeProvider = activeId === 'gemini' ? this.geminiProvider : this.groqProvider
 
-    if (isGroqKey) {
-      return this.groqProvider.generateStructuredOutput<T>({
+    try {
+      return await activeProvider.generateStructuredOutput<T>({
         prompt,
-        apiKey: key,
-        model: options.model && options.model.includes('llama') ? options.model : 'llama-3.3-70b-versatile',
+        apiKey: activeConfig.apiKey,
+        model: options.model || activeConfig.model,
         systemInstruction
       })
-    } else {
-      return this.geminiProvider.generateStructuredOutput<T>({
-        prompt,
-        apiKey: key,
-        model: options.model && options.model.includes('gemini') ? options.model : 'gemini-1.5-flash',
-        systemInstruction
-      })
+    } catch (err: any) {
+      // Check if recoverable for fallback
+      const isRecoverable =
+        err?.code === 'NETWORK_ERROR' || err?.code === 'PROVIDER_ERROR' || (err?.message && err.message.includes('500'))
+
+      if (isRecoverable && prefs.fallbackEnabled && primaryConfig.isConfigured && secondaryConfig.isConfigured) {
+        const fallbackProvider = secondaryId === 'gemini' ? this.geminiProvider : this.groqProvider
+        return await fallbackProvider.generateStructuredOutput<T>({
+          prompt,
+          apiKey: secondaryConfig.apiKey,
+          model: secondaryConfig.model,
+          systemInstruction
+        })
+      }
+
+      // Re-throw non-recoverable error (INVALID, BILLING_REQUIRED, PERMISSION_ERROR, NOT_CONFIGURED)
+      throw err
     }
   }
 
   /**
-   * Connection Verification for Gemini and Groq BYOK
+   * Connection Verification for Gemini and Groq BYOK & Platform keys
    */
   async testConnection(
     providerId: AIProviderId,
     apiKey: string,
     model?: string
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<{ success: boolean; status: AIProviderStatus; message: string }> {
     const cleanKey = apiKey?.trim() || ''
-    if (providerId === 'gemini') {
-      return this.geminiProvider.testConnection(cleanKey, model)
-    } else if (providerId === 'groq') {
-      return this.groqProvider.testConnection(cleanKey, model)
+
+    // If key provided, test submitted key
+    if (cleanKey) {
+      if (providerId === 'gemini') {
+        const result = await this.geminiProvider.testConnection(cleanKey, model)
+        if (result.success) {
+          saveBYOKCredential('gemini', cleanKey, result.status, model)
+        }
+        return result
+      } else if (providerId === 'groq') {
+        const result = await this.groqProvider.testConnection(cleanKey, model)
+        if (result.success) {
+          saveBYOKCredential('groq', cleanKey, result.status, model)
+        }
+        return result
+      }
     }
-    return { success: false, message: `Unsupported provider: ${providerId}` }
+
+    // Otherwise test server effective key
+    const effective = getEffectiveProviderConfig(providerId === 'groq' ? 'groq' : 'gemini')
+    if (!effective.isConfigured) {
+      return {
+        success: false,
+        status: 'NOT_CONFIGURED',
+        message: `${providerId === 'groq' ? 'Groq' : 'Google Gemini'} is not configured on server.`
+      }
+    }
+
+    let result: { success: boolean; status: AIProviderStatus; message: string }
+    if (providerId === 'groq') {
+      result = await this.groqProvider.testConnection(effective.apiKey, model || effective.model)
+    } else {
+      result = await this.geminiProvider.testConnection(effective.apiKey, model || effective.model)
+    }
+
+    updateProviderStatusInVault(providerId === 'groq' ? 'groq' : 'gemini', result.status)
+    return result
   }
 
   /**
@@ -95,10 +175,8 @@ export class AIService {
       .replace('{skillsContext}', skillsContext)
 
     const rawResult = await this.executeStructuredAI<any>(prompt, options)
-
     const validated = validateActivityParseResult(rawResult)
 
-    // Match matched project name to real project object if found
     if (validated.projectTitle && validated.projectTitle !== 'No matching project found' && projects.length > 0) {
       const match = projects.find(
         (p) => p.name.toLowerCase().trim() === validated.projectTitle?.toLowerCase().trim()
@@ -107,10 +185,7 @@ export class AIService {
         validated.projectId = match.id
         validated.projectTitle = match.name
       } else {
-        // Double check fuzzy match
-        const fuzzy = projects.find((p) =>
-          rawText.toLowerCase().includes(p.name.toLowerCase())
-        )
+        const fuzzy = projects.find((p) => rawText.toLowerCase().includes(p.name.toLowerCase()))
         if (fuzzy) {
           validated.projectId = fuzzy.id
           validated.projectTitle = fuzzy.name
@@ -128,7 +203,7 @@ export class AIService {
   }
 
   /**
-   * FEATURE 2: AI Voice Logging (reuses Activity Parser with transcript)
+   * FEATURE 2: AI Voice Logging
    */
   async parseVoiceTranscript(
     transcript: string,
@@ -180,9 +255,7 @@ export class AIService {
       projects.map((p) => `- Project: ${p.name} (Status: ${p.status || 'Active'})`).join('\n') || 'None'
 
     const problemsContext =
-      problems
-        .map((pr) => `- Problem: ${pr.title} (Status: ${pr.status || 'Open'})`)
-        .join('\n') || 'None'
+      problems.map((pr) => `- Problem: ${pr.title} (Status: ${pr.status || 'Open'})`).join('\n') || 'None'
 
     const learningContext =
       learningTracks.map((l) => `- Learning Track: ${l.title}`).join('\n') || 'None'
@@ -196,7 +269,6 @@ export class AIService {
       .replace('{learningContext}', learningContext)
 
     const rawResult = await this.executeStructuredAI<any>(prompt, options)
-
     const validated = validateWeeklyReflectionResult(rawResult)
     validated.supportingRecordIds = activities.map((a) => a.id).slice(0, 10)
     return validated
@@ -214,10 +286,11 @@ export class AIService {
     const problems = context.problems || []
     const goals = context.goals || []
 
-    const intentionsContext = activities
-      .filter((a) => a.intention || a.struggle)
-      .map((a) => `- [${a.date || 'Recent'}] Next Step: "${a.intention || 'N/A'}" | Challenge: "${a.struggle || 'N/A'}"`)
-      .join('\n') || 'No explicit next steps logged in recent activities.'
+    const intentionsContext =
+      activities
+        .filter((a) => a.intention || a.struggle)
+        .map((a) => `- [${a.date || 'Recent'}] Next Step: "${a.intention || 'N/A'}" | Challenge: "${a.struggle || 'N/A'}"`)
+        .join('\n') || 'No explicit next steps logged in recent activities.'
 
     const projectsContext =
       projects.map((p) => `- Project ID "${p.id}": ${p.name} (Category: ${p.category}, Status: ${p.status})`).join('\n') ||
@@ -238,19 +311,17 @@ export class AIService {
       .replace('{goalsContext}', goalsContext)
 
     const rawResult = await this.executeStructuredAI<any>(prompt, options)
-
     return validateNextActionResult(rawResult)
   }
 
   /**
-   * FEATURE 5: Ask Workfolio (Controlled Tool-Calling Query)
+   * FEATURE 5: Ask Workfolio
    */
   async askWorkfolio(
     userQuestion: string,
     context: WorkfolioContextData,
     options: { apiKey?: string; model?: string } = {}
   ): Promise<AskWorkfolioResult> {
-    // 1. Perform controlled tool queries over Workfolio data
     const matchedActivities = WORKFOLIO_TOOLS.searchActivities(context, userQuestion)
     const matchedProjects = WORKFOLIO_TOOLS.searchProjects(context, userQuestion)
     const matchedEvidence = WORKFOLIO_TOOLS.searchEvidence(context, userQuestion)
@@ -275,10 +346,8 @@ ${matchedProblems.slice(0, 4).map((pr) => `- [Problem ID ${pr.id}]: Title: "${pr
       .replace('{databaseContext}', databaseContext)
 
     const rawResult = await this.executeStructuredAI<any>(prompt, options)
-
     const validated = validateAskWorkfolioResult(rawResult)
 
-    // Build verified source list from matched records
     const sources: AskWorkfolioResult['sources'] = []
     matchedActivities.slice(0, 3).forEach((a) => {
       sources.push({ id: a.id, type: 'activity', title: a.work, date: a.date })
@@ -327,7 +396,6 @@ ${matchedProblems.slice(0, 4).map((pr) => `- [Problem ID ${pr.id}]: Title: "${pr
       .replace('{milestonesContext}', milestonesContext)
 
     const rawResult = await this.executeStructuredAI<any>(prompt, options)
-
     const validated = validateProjectSummaryResult(rawResult)
     validated.sources = projectActivities.slice(0, 5).map((a) => ({
       id: a.id,

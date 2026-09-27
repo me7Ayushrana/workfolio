@@ -10,15 +10,7 @@ interface ProjectAISummaryProps {
 }
 
 export function ProjectAISummary({ project, projectActivities }: ProjectAISummaryProps) {
-  const { updateProjectNotes, updateProject, geminiConfig, groqConfig, aiPrimaryProvider } = useWorkfolio()
-
-  const activeApiKey =
-    aiPrimaryProvider === 'groq'
-      ? groqConfig.apiKey || geminiConfig.apiKey
-      : geminiConfig.apiKey || groqConfig.apiKey
-
-  const activeModel =
-    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
+  const { updateProjectNotes, updateProject } = useWorkfolio()
 
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR' | 'NOT_CONFIGURED'>('IDLE')
@@ -38,8 +30,6 @@ export function ProjectAISummary({ project, projectActivities }: ProjectAISummar
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          apiKey: activeApiKey,
-          model: activeModel,
           project: {
             id: project.id,
             name: project.name,

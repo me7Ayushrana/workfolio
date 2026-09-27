@@ -1,5 +1,6 @@
 import { BaseAIProvider, AIGenerateOptions, AIChatOptions } from './base'
 import { AIProviderId, AISourceAttribution } from '../types'
+import { AIProviderStatus } from '../credential-vault'
 
 export class GroqProvider extends BaseAIProvider {
   id: AIProviderId = 'groq'
@@ -7,13 +8,18 @@ export class GroqProvider extends BaseAIProvider {
   defaultModel = 'llama-3.3-70b-versatile'
   supportsMultimodal = false
 
-  async testConnection(apiKey: string, model: string = this.defaultModel): Promise<{ success: boolean; message: string }> {
+  async testConnection(
+    apiKey: string,
+    model: string = this.defaultModel
+  ): Promise<{ success: boolean; status: AIProviderStatus; message: string }> {
     const cleanKey = apiKey?.trim().replace(/^["']|["']$/g, '').replace(/[\r\n\t]/g, '') || ''
     if (!cleanKey) {
-      return { success: false, message: 'Groq API key is missing. Please enter your API key.' }
+      return {
+        success: false,
+        status: 'NOT_CONFIGURED',
+        message: 'Groq API key is missing. Please provide a key or set GROQ_API_KEY on the server.'
+      }
     }
-
-    const isStandardFormat = cleanKey.startsWith('gsk_') || cleanKey.length >= 12
 
     try {
       const res = await fetch('https://api.groq.com/openai/v1/models', {
@@ -22,39 +28,80 @@ export class GroqProvider extends BaseAIProvider {
       })
 
       if (res.ok) {
-        return { success: true, message: `Successfully connected & verified Groq API Key (${model})!` }
-      } else {
-        const errorData = await res.json().catch(() => ({}))
-        const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
-        if (res.status === 401 || res.status === 403) {
-          if (rawMsg.toLowerCase().includes('key') || rawMsg.toLowerCase().includes('invalid')) {
-            return {
-              success: false,
-              message: `Groq rejected key (HTTP ${res.status}): ${rawMsg}`
-            }
+        return {
+          success: true,
+          status: 'VALID',
+          message: `Successfully connected & verified Groq credential (${model}).`
+        }
+      }
+
+      const errorData = await res.json().catch(() => ({}))
+      const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
+      const lowerMsg = rawMsg.toLowerCase()
+
+      if (res.status === 401) {
+        return {
+          success: false,
+          status: 'INVALID',
+          message: `Groq rejected API key credential: ${rawMsg}`
+        }
+      }
+
+      if (res.status === 403) {
+        if (lowerMsg.includes('billing') || lowerMsg.includes('quota')) {
+          return {
+            success: false,
+            status: 'BILLING_REQUIRED',
+            message: `Groq quota/billing limit reached: ${rawMsg}`
           }
         }
-        if (isStandardFormat) {
-          return { success: true, message: `Groq API Key saved to local vault and activated!` }
+        return {
+          success: false,
+          status: 'PERMISSION_ERROR',
+          message: `Groq permission error: ${rawMsg}`
         }
-        return { success: false, message: `Groq error (${res.status}): ${rawMsg}` }
+      }
+
+      if (res.status === 429) {
+        return {
+          success: false,
+          status: 'RATE_LIMITED',
+          message: `Groq rate limit exceeded: ${rawMsg}`
+        }
+      }
+
+      if (res.status >= 500) {
+        return {
+          success: false,
+          status: 'PROVIDER_ERROR',
+          message: `Groq provider temporary error (HTTP ${res.status}): ${rawMsg}`
+        }
+      }
+
+      return {
+        success: false,
+        status: 'INVALID',
+        message: `Groq error (HTTP ${res.status}): ${rawMsg}`
       }
     } catch (err: any) {
-      if (isStandardFormat) {
-        return { success: true, message: `Groq API Key saved to local vault and activated!` }
+      return {
+        success: false,
+        status: 'NETWORK_ERROR',
+        message: `Network failure connecting to Groq: ${err?.message || 'Connection refused'}`
       }
-      return { success: false, message: `Network error reaching Groq API: ${err?.message || 'Connection refused'}` }
     }
   }
 
   async generateText(options: AIGenerateOptions): Promise<string> {
     const key = options.apiKey?.trim()
     if (!key) {
-      throw new Error('Groq API key is not configured.')
+      const err: any = new Error('Groq API key is not configured.')
+      err.code = 'NOT_CONFIGURED'
+      throw err
     }
 
     const modelName = options.model && !options.model.includes('gemini') ? options.model : this.defaultModel
-    const messages = []
+    const messages: any[] = []
     if (options.systemInstruction) {
       messages.push({ role: 'system', content: options.systemInstruction })
     }
@@ -79,8 +126,14 @@ export class GroqProvider extends BaseAIProvider {
     })
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err?.error?.message || `Groq API returned HTTP ${res.status}`)
+      const errData = await res.json().catch(() => ({}))
+      const msg = errData?.error?.message || `Groq API returned HTTP ${res.status}`
+      const err: any = new Error(msg)
+      if (res.status === 401) err.code = 'INVALID'
+      else if (res.status === 429) err.code = 'RATE_LIMITED'
+      else if (res.status === 403) err.code = 'PERMISSION_ERROR'
+      else if (res.status >= 500) err.code = 'PROVIDER_ERROR'
+      throw err
     }
 
     const data = await res.json()
@@ -93,25 +146,28 @@ export class GroqProvider extends BaseAIProvider {
       const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim()
       return JSON.parse(cleaned) as T
     } catch (e: any) {
-      throw new Error(`Failed to parse Groq structured JSON output: ${e.message}`)
+      const err: any = new Error(`Failed to parse Groq structured JSON output: ${e.message}`)
+      err.code = 'STRUCTURED_PARSE_ERROR'
+      throw err
     }
   }
 
   async chat(options: AIChatOptions): Promise<{ text: string; sources?: AISourceAttribution[] }> {
     const key = options.apiKey?.trim()
     if (!key) {
-      throw new Error('Groq API key is not configured.')
+      const err: any = new Error('Groq API key is not configured.')
+      err.code = 'NOT_CONFIGURED'
+      throw err
     }
 
-    const modelName = options.model || this.defaultModel
-    const messages = options.messages.map((m) => ({
-      role: m.role,
-      content: m.content
-    }))
-
+    const modelName = options.model && !options.model.includes('gemini') ? options.model : this.defaultModel
+    const messages: any[] = []
     if (options.systemInstruction) {
-      messages.unshift({ role: 'system', content: options.systemInstruction })
+      messages.push({ role: 'system', content: options.systemInstruction })
     }
+    options.messages.forEach((m) => {
+      messages.push({ role: m.role, content: m.content })
+    })
 
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -126,12 +182,12 @@ export class GroqProvider extends BaseAIProvider {
     })
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err?.error?.message || `Groq API chat returned HTTP ${res.status}`)
+      const errData = await res.json().catch(() => ({}))
+      throw new Error(errData?.error?.message || `Groq API returned HTTP ${res.status}`)
     }
 
     const data = await res.json()
-    const text = data?.choices?.[0]?.message?.content || 'No response generated.'
+    const text = data?.choices?.[0]?.message?.content || ''
     return { text, sources: options.contextSources }
   }
 }

@@ -9,21 +9,8 @@ export function WeeklyReflectionSection() {
     activities,
     projects,
     learningTracks,
-    goals,
-    problems,
-    evidence,
-    geminiConfig,
-    groqConfig,
-    aiPrimaryProvider
+    problems
   } = useWorkfolio()
-
-  const activeApiKey =
-    aiPrimaryProvider === 'groq'
-      ? groqConfig.apiKey || geminiConfig.apiKey
-      : geminiConfig.apiKey || groqConfig.apiKey
-
-  const activeModel =
-    aiPrimaryProvider === 'groq' ? groqConfig.defaultModel : geminiConfig.defaultModel
 
   const [timeframe, setTimeframe] = useState<'current' | 'previous' | 'custom'>('current')
   const [loading, setLoading] = useState(false)
@@ -32,12 +19,13 @@ export function WeeklyReflectionSection() {
   const [reflectionData, setReflectionData] = useState<any | null>(null)
   const [showSupportingRecords, setShowSupportingRecords] = useState(false)
 
-  const dateRangeLabel =
+  const timeframeLabel =
     timeframe === 'current'
       ? 'Current Week'
       : timeframe === 'previous'
       ? 'Previous Week'
       : 'Last 30 Days'
+  const dateRangeLabel = timeframeLabel
 
   const handleGenerateReflection = async () => {
     setLoading(true)
@@ -49,9 +37,7 @@ export function WeeklyReflectionSection() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dateRange: dateRangeLabel,
-          apiKey: activeApiKey,
-          model: activeModel,
+          dateRange: timeframeLabel,
           context: {
             activities: activities.slice(0, 20),
             projects,
