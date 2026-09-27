@@ -368,31 +368,7 @@ export default function Home() {
 
         </div>
 
-        {/* ========================================================================= */}
-        {/* BOTTOM DISCOVER EXPLORE FOOTER BANNER */}
-        {/* ========================================================================= */}
-        <section className="pt-4 border-t-2 border-[#0c0d14]/20">
-          <div className="flex flex-col justify-between gap-6 bg-[#0c0d14] p-8 text-[#f3eee4] md:flex-row md:items-center shadow-lg">
-            <div>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.25em] text-[#c1a05b]">
-                <Compass size={14} />
-                <span>DISCOVER & IMPLEMENT</span>
-              </div>
-              <h2 className="mt-2 font-serif text-3xl font-light">
-                Explore starter systems & developer tools.
-              </h2>
-              <p className="mt-2 text-xs text-[#f3eee4]/75 max-w-xl leading-relaxed">
-                Discover published resources in the Workfolio Explore Ecosystem to adapt and implement into your own active projects.
-              </p>
-            </div>
-            <Link
-              href="/explore"
-              className="inline-flex shrink-0 items-center gap-2 bg-[#c1a05b] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[.18em] text-[#111318] hover:bg-[#f3eee4] transition-colors shadow-sm"
-            >
-              DISCOVER ECOSYSTEM <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </section>
+
 
       </div>
 
