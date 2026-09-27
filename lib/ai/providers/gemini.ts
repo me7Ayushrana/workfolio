@@ -8,27 +8,42 @@ export class GeminiProvider extends BaseAIProvider {
   supportsMultimodal = true
 
   async testConnection(apiKey: string, model: string = this.defaultModel): Promise<{ success: boolean; message: string }> {
-    if (!apiKey || !apiKey.trim()) {
-      return { success: false, message: 'Google Gemini API key is missing.' }
+    const cleanKey = apiKey?.trim() || ''
+    if (!cleanKey) {
+      return { success: false, message: 'Google Gemini API key is missing. Please enter your API key.' }
     }
 
     try {
-      // Call Google Gemini REST API model endpoint to verify key safely
       const targetModel = model || this.defaultModel
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}?key=${apiKey.trim()}`,
-        { method: 'GET' }
+        `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${cleanKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: 'ping' }] }]
+          })
+        }
       )
 
       if (res.ok) {
         return { success: true, message: `Successfully connected to Google Gemini (${targetModel}).` }
       } else {
         const errorData = await res.json().catch(() => ({}))
-        const rawMsg = errorData?.error?.message || `HTTP status ${res.status}`
+        const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
         if (res.status === 400 || res.status === 403) {
-          return { success: false, message: `Invalid API key or quota unavailable (${rawMsg}).` }
+          return {
+            success: false,
+            message: `Invalid API key or model permission error: ${rawMsg}. Make sure you copied the entire key string from Google AI Studio.`
+          }
         }
-        return { success: false, message: `Google Gemini returned error: ${rawMsg}` }
+        if (res.status === 429) {
+          return {
+            success: false,
+            message: `Google Gemini API rate limit reached (HTTP 429). Please wait a minute or check your quota.`
+          }
+        }
+        return { success: false, message: `Google Gemini error (${res.status}): ${rawMsg}` }
       }
     } catch (err: any) {
       return { success: false, message: `Network error reaching Google Gemini API: ${err?.message || 'Connection refused'}` }

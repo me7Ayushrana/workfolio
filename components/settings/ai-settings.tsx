@@ -61,24 +61,36 @@ export function AISettings() {
   const hasActiveKey = isGeminiActive || isGroqActive
 
   const handleTestGemini = async () => {
+    const cleanKey = geminiKey.trim()
+    if (!cleanKey) {
+      setStatusMessage({ type: 'error', text: 'Please enter your Google Gemini API key first.' })
+      return
+    }
     setTestingGemini(true)
     setStatusMessage(null)
-    const result = await testAIProviderConnection('gemini', geminiKey, geminiConfig.defaultModel)
+    updateAIProviderConfig('gemini', { apiKey: cleanKey })
+    const result = await testAIProviderConnection('gemini', cleanKey, geminiConfig.defaultModel)
     setTestingGemini(false)
     if (result.success) {
-      setStatusMessage({ type: 'success', text: 'Google Gemini API Key verified and active!' })
+      setStatusMessage({ type: 'success', text: result.message || 'Google Gemini API Key verified and active!' })
     } else {
       setStatusMessage({ type: 'error', text: `Gemini Verification Failed: ${result.message}` })
     }
   }
 
   const handleTestGroq = async () => {
+    const cleanKey = groqKey.trim()
+    if (!cleanKey) {
+      setStatusMessage({ type: 'error', text: 'Please enter your Groq API key first.' })
+      return
+    }
     setTestingGroq(true)
     setStatusMessage(null)
-    const result = await testAIProviderConnection('groq', groqKey, groqConfig.defaultModel)
+    updateAIProviderConfig('groq', { apiKey: cleanKey })
+    const result = await testAIProviderConnection('groq', cleanKey, groqConfig.defaultModel)
     setTestingGroq(false)
     if (result.success) {
-      setStatusMessage({ type: 'success', text: 'Groq LPU API Key verified and active!' })
+      setStatusMessage({ type: 'success', text: result.message || 'Groq LPU API Key verified and active!' })
     } else {
       setStatusMessage({ type: 'error', text: `Groq Verification Failed: ${result.message}` })
     }
@@ -401,7 +413,7 @@ export function AISettings() {
                 rel="noreferrer"
                 className="text-[#c1a05b] hover:underline flex items-center gap-1"
               >
-                <span>Get Free Key</span>
+                <span>Get Free Key ↗</span>
                 <ExternalLink size={13} />
               </a>
             </div>
@@ -410,7 +422,10 @@ export function AISettings() {
               <input
                 type="password"
                 value={geminiKey}
-                onChange={(e) => setGeminiKey(e.target.value)}
+                onChange={(e) => {
+                  setGeminiKey(e.target.value)
+                  updateAIProviderConfig('gemini', { apiKey: e.target.value })
+                }}
                 placeholder="AIzaSy..."
                 className="flex-1 rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white placeholder:text-white/30 focus:border-[#c1a05b] focus:outline-none transition-all"
               />
@@ -435,6 +450,30 @@ export function AISettings() {
               <option value="gemini-1.5-flash">gemini-1.5-flash (Fast & Structured - Recommended)</option>
               <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Reasoning & Multimodal)</option>
             </select>
+          </div>
+
+          {/* STEP-BY-STEP GEMINI GUIDE */}
+          <div className="rounded-2xl border border-emerald-500/20 bg-black/40 p-4 space-y-2.5 text-xs">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="font-bold text-emerald-400 uppercase text-[10px] flex items-center gap-1.5">
+                <Info size={13} /> HOW TO GET YOUR FREE GEMINI KEY
+              </span>
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-[11px] font-bold text-[#c1a05b] hover:underline"
+              >
+                <span>Google AI Studio ↗</span>
+              </a>
+            </div>
+
+            <ol className="space-y-1.5 text-[11px] text-[#f3eee4]/80 leading-relaxed list-decimal pl-4">
+              <li>Click <strong className="text-white">"Get Free Key ↗"</strong> above to open <strong>Google AI Studio</strong>.</li>
+              <li>Sign in with your Google account.</li>
+              <li>Click the blue <strong className="text-white">"Create API key"</strong> button (select or create a Google Cloud project if prompted).</li>
+              <li>Copy your key string (begins with <code className="text-[#c1a05b]">AIzaSy...</code>), paste it into the box above, and click <strong className="text-white">TEST</strong>.</li>
+            </ol>
           </div>
         </div>
 
@@ -474,7 +513,7 @@ export function AISettings() {
                 rel="noreferrer"
                 className="text-[#c1a05b] hover:underline flex items-center gap-1"
               >
-                <span>Get Free Key</span>
+                <span>Get Free Key ↗</span>
                 <ExternalLink size={13} />
               </a>
             </div>
@@ -483,7 +522,10 @@ export function AISettings() {
               <input
                 type="password"
                 value={groqKey}
-                onChange={(e) => setGroqKey(e.target.value)}
+                onChange={(e) => {
+                  setGroqKey(e.target.value)
+                  updateAIProviderConfig('groq', { apiKey: e.target.value })
+                }}
                 placeholder="gsk_..."
                 className="flex-1 rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white placeholder:text-white/30 focus:border-[#c1a05b] focus:outline-none transition-all"
               />
@@ -508,6 +550,30 @@ export function AISettings() {
               <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Recommended)</option>
               <option value="llama3-8b-8192">llama3-8b-8192 (Ultra Fast)</option>
             </select>
+          </div>
+
+          {/* STEP-BY-STEP GROQ GUIDE */}
+          <div className="rounded-2xl border border-sky-500/20 bg-black/40 p-4 space-y-2.5 text-xs">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="font-bold text-sky-400 uppercase text-[10px] flex items-center gap-1.5">
+                <Info size={13} /> HOW TO GET YOUR FREE GROQ KEY
+              </span>
+              <a
+                href="https://console.groq.com/keys"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-[11px] font-bold text-[#c1a05b] hover:underline"
+              >
+                <span>Groq Console ↗</span>
+              </a>
+            </div>
+
+            <ol className="space-y-1.5 text-[11px] text-[#f3eee4]/80 leading-relaxed list-decimal pl-4">
+              <li>Click <strong className="text-white">"Get Free Key ↗"</strong> above to open the <strong>Groq Console</strong>.</li>
+              <li>Sign up or log in for a free Groq account.</li>
+              <li>Click <strong className="text-white">"Create API Key"</strong>, enter a name (e.g. <code className="text-[#c1a05b]">Workfolio</code>), and click Submit.</li>
+              <li>Copy your secret key string (begins with <code className="text-[#c1a05b]">gsk_...</code>), paste it into the box above, and click <strong className="text-white">TEST</strong>.</li>
+            </ol>
           </div>
         </div>
       </div>

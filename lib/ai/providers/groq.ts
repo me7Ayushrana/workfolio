@@ -8,23 +8,29 @@ export class GroqProvider extends BaseAIProvider {
   supportsMultimodal = false
 
   async testConnection(apiKey: string, model: string = this.defaultModel): Promise<{ success: boolean; message: string }> {
-    if (!apiKey || !apiKey.trim()) {
-      return { success: false, message: 'Groq API key is missing.' }
+    const cleanKey = apiKey?.trim() || ''
+    if (!cleanKey) {
+      return { success: false, message: 'Groq API key is missing. Please enter your API key.' }
     }
 
     try {
-      // Call Groq models REST endpoint to verify API key safely
       const res = await fetch('https://api.groq.com/openai/v1/models', {
         method: 'GET',
-        headers: { Authorization: `Bearer ${apiKey.trim()}` }
+        headers: { Authorization: `Bearer ${cleanKey}` }
       })
 
       if (res.ok) {
         return { success: true, message: `Successfully connected to Groq (${model}).` }
       } else {
         const errorData = await res.json().catch(() => ({}))
-        const rawMsg = errorData?.error?.message || `HTTP status ${res.status}`
-        return { success: false, message: `Groq returned error: ${rawMsg}` }
+        const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
+        if (res.status === 401 || res.status === 403) {
+          return {
+            success: false,
+            message: `Invalid Groq API key: ${rawMsg}. Please copy the entire gsk_... key from Groq Console.`
+          }
+        }
+        return { success: false, message: `Groq error (${res.status}): ${rawMsg}` }
       }
     } catch (err: any) {
       return { success: false, message: `Network error reaching Groq API: ${err?.message || 'Connection refused'}` }

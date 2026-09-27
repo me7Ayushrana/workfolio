@@ -1,5 +1,8 @@
 import { callGeminiStructured } from './gemini'
 import { PROMPTS } from './prompts'
+import { GeminiProvider } from './providers/gemini'
+import { GroqProvider } from './providers/groq'
+import { AIProviderId } from './types'
 import {
   AIActivityParseResult,
   AIWeeklyReflectionResult,
@@ -15,6 +18,26 @@ import {
 import { WORKFOLIO_TOOLS, WorkfolioContextData } from './tools'
 
 export class AIService {
+  private geminiProvider = new GeminiProvider()
+  private groqProvider = new GroqProvider()
+
+  /**
+   * Connection Verification for Gemini and Groq BYOK
+   */
+  async testConnection(
+    providerId: AIProviderId,
+    apiKey: string,
+    model?: string
+  ): Promise<{ success: boolean; message: string }> {
+    const cleanKey = apiKey?.trim() || ''
+    if (providerId === 'gemini') {
+      return this.geminiProvider.testConnection(cleanKey, model)
+    } else if (providerId === 'groq') {
+      return this.groqProvider.testConnection(cleanKey, model)
+    }
+    return { success: false, message: `Unsupported provider: ${providerId}` }
+  }
+
   /**
    * FEATURE 1: AI Activity Parser
    */
