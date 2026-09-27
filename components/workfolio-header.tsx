@@ -99,7 +99,17 @@ export function WorkfolioHeader() {
     } catch (err: any) {
       console.error('Google Sign-In Error:', err?.code, err?.message, err)
       const errCode = err?.code || 'auth/error'
-      const errMsg = err?.message || 'Google OAuth failed.'
+      let errMsg = err?.message || 'Google OAuth failed.'
+
+      if (errCode === 'auth/unauthorized-domain') {
+        const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'your domain'
+        errMsg = `Domain "${currentDomain}" is not authorized. Add "${currentDomain}" in Firebase Console > Authentication > Settings > Authorized domains.`
+      } else if (errCode === 'auth/operation-not-allowed') {
+        errMsg = 'Google Sign-In provider is disabled in Firebase Console. Enable it in Authentication > Sign-in method > Google.'
+      } else if (errCode === 'auth/api-key-not-valid' || errCode === 'auth/invalid-api-key') {
+        errMsg = 'Firebase API Key is invalid or restricted in Google Cloud Console. Enable Identity Toolkit API & verify API key restrictions.'
+      }
+
       setAuthError(`[${errCode}] ${errMsg}`)
     } finally {
       setIsSigningIn(false)

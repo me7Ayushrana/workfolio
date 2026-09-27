@@ -55,19 +55,45 @@ export function formatFirebaseUser(user: User): FirebaseUserSession {
   }
 }
 
-export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
+export async function signInWithGoogleFirebase(forceRedirect = false): Promise<FirebaseUserSession> {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
+
+  if (forceRedirect) {
+    console.log('[FIREBASE OAUTH] Executing signInWithRedirect...')
+    await signInWithRedirect(auth, provider)
+    return new Promise(() => {})
+  }
+
   try {
+    console.log('[FIREBASE OAUTH] Executing signInWithPopup...')
     const result = await signInWithPopup(auth, provider)
     return formatFirebaseUser(result.user)
   } catch (err: any) {
     console.error('FIREBASE GOOGLE OAUTH ERROR CODE:', err?.code)
     console.error('FIREBASE GOOGLE OAUTH ERROR MESSAGE:', err?.message)
     console.error('FULL FIREBASE ERROR OBJECT:', err)
+
+    if (
+      err?.code === 'auth/popup-blocked' ||
+      err?.code === 'auth/popup-closed-by-user' ||
+      err?.code === 'auth/cancelled-popup-request'
+    ) {
+      console.warn('[FIREBASE OAUTH] Popup was blocked or closed. Falling back to signInWithRedirect...')
+      await signInWithRedirect(auth, provider)
+      return new Promise(() => {})
+    }
+
     throw err
   }
 }
+
+export async function signInWithGoogleRedirect(): Promise<void> {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
+  await signInWithRedirect(auth, provider)
+}
+
 
 export async function signInWithGithubFirebase(): Promise<FirebaseUserSession> {
   try {
