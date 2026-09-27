@@ -14,33 +14,21 @@ export class GeminiProvider extends BaseAIProvider {
     }
 
     try {
-      const targetModel = model || this.defaultModel
+      // Validate key against Google Gemini official models endpoint
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${cleanKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: 'ping' }] }]
-          })
-        }
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`,
+        { method: 'GET' }
       )
 
       if (res.ok) {
-        return { success: true, message: `Successfully connected to Google Gemini (${targetModel}).` }
+        return { success: true, message: `Successfully connected & verified Google Gemini API Key!` }
       } else {
         const errorData = await res.json().catch(() => ({}))
         const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
         if (res.status === 400 || res.status === 403) {
           return {
             success: false,
-            message: `Invalid API key or model permission error: ${rawMsg}. Make sure you copied the entire key string from Google AI Studio.`
-          }
-        }
-        if (res.status === 429) {
-          return {
-            success: false,
-            message: `Google Gemini API rate limit reached (HTTP 429). Please wait a minute or check your quota.`
+            message: `Key Verification Failed (${res.status}): ${rawMsg}. Make sure you copied the complete key string from Google AI Studio.`
           }
         }
         return { success: false, message: `Google Gemini error (${res.status}): ${rawMsg}` }

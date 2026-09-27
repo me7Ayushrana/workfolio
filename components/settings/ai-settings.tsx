@@ -56,8 +56,8 @@ export function AISettings() {
 
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const isGeminiActive = geminiConfig.status === 'active'
-  const isGroqActive = groqConfig.status === 'active'
+  const isGeminiActive = (geminiConfig.status === 'active' || geminiKey.trim().length > 5) && geminiConfig.status !== 'error'
+  const isGroqActive = (groqConfig.status === 'active' || groqKey.trim().length > 5) && groqConfig.status !== 'error'
   const hasActiveKey = isGeminiActive || isGroqActive
 
   const handleTestGemini = async () => {
@@ -391,14 +391,19 @@ export function AISettings() {
             </div>
 
             {/* STATUS BEACON */}
-            {isGeminiActive ? (
-              <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1 text-[11px] font-bold text-emerald-300">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                ACTIVE
-              </span>
-            ) : (
+            {geminiConfig.status === 'error' ? (
               <span className="flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/20 px-3.5 py-1 text-[11px] font-bold text-red-300">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-400 animate-pulse"></span>
+                INVALID KEY
+              </span>
+            ) : isGeminiActive ? (
+              <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1 text-[11px] font-bold text-emerald-300">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                CONNECTED & ACTIVE
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/20 px-3.5 py-1 text-[11px] font-bold text-amber-300">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
                 UNCONFIGURED
               </span>
             )}
@@ -491,14 +496,19 @@ export function AISettings() {
             </div>
 
             {/* STATUS BEACON */}
-            {isGroqActive ? (
-              <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1 text-[11px] font-bold text-emerald-300">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                ACTIVE
-              </span>
-            ) : (
+            {groqConfig.status === 'error' ? (
               <span className="flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/20 px-3.5 py-1 text-[11px] font-bold text-red-300">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-400 animate-pulse"></span>
+                INVALID KEY
+              </span>
+            ) : isGroqActive ? (
+              <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3.5 py-1 text-[11px] font-bold text-emerald-300">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                CONNECTED & ACTIVE
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/20 px-3.5 py-1 text-[11px] font-bold text-amber-300">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
                 UNCONFIGURED
               </span>
             )}
