@@ -47,8 +47,6 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncStatus, setSyncStatus] = useState<string | null>(null)
-  const [showGoogleAccountPicker, setShowGoogleAccountPicker] = useState(false)
-  const [googleEmailInput, setGoogleEmailInput] = useState(userProfile.email || 'itsayushr7@gmail.com')
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,33 +67,43 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
   const handleGoogleLogin = async () => {
     setIsSyncing(true)
-    setSyncStatus('Connecting to Google Auth...')
+    setSyncStatus('Opening Google OAuth popup...')
     try {
       const session = await signInWithGoogleFirebase()
       const nameParts = (session.displayName || 'Google User').split(' ')
       const fName = nameParts[0] || 'User'
       const lName = nameParts.slice(1).join(' ') || ''
+      const cleanEmail = session.email || 'user@google.com'
 
-      connectProvider('google', {
+      const updatedProfile = {
         first_name: fName,
         last_name: lName,
-        display_name: session.displayName || 'Google User',
-        email: session.email || 'user@google.com',
+        display_name: session.displayName || `${fName} ${lName}`.trim(),
+        email: cleanEmail,
+        photoURL: session.photoURL || userProfile.photoURL,
         google_connected: true
-      })
+      }
 
-      setEmail(session.email || '')
+      connectProvider('google', updatedProfile)
+
+      setEmail(cleanEmail)
       if (fName) setFirstName(fName)
       if (lName) setLastName(lName)
 
-      setSyncStatus(`Google Account Connected (${session.email})!`)
+      await saveUserDataToSupabase(
+        session.uid,
+        { ...userProfile, ...updatedProfile },
+        projects || [],
+        activities || []
+      )
+
+      setSyncStatus(`Google Account Connected (${cleanEmail})!`)
       setTimeout(() => {
         setSyncStatus(null)
         onClose()
       }, 800)
     } catch {
-      setShowGoogleAccountPicker(true)
-      setSyncStatus(null)
+      setSyncStatus('Google login popup closed or cancelled.')
     } finally {
       setIsSyncing(false)
     }
@@ -328,89 +336,40 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                 </p>
               </div>
 
-              {/* GOOGLE IDENTITY PROVIDER & DIRECT ACCOUNT SELECTOR */}
-              <div className="rounded-2xl border border-[#4285F4]/30 bg-[#121420] p-5 space-y-4 shadow-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#4285F4] font-black text-lg shadow-sm shrink-0">
-                      G
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white text-sm">Google Identity Provider</h4>
-                      <p className="text-[11px] text-[#f3eee4]/60">
-                        {userProfile.google_connected ? `Connected as ${userProfile.email}` : 'Select your Google Account to log in & sync'}
-                      </p>
-                    </div>
+              {/* GOOGLE IDENTITY PROVIDER */}
+              <div className="flex items-center justify-between rounded-2xl border border-[#4285F4]/30 bg-[#121420] p-5 shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#4285F4] font-black text-lg shadow-sm shrink-0">
+                    G
                   </div>
-
-                  {userProfile.google_connected ? (
-                    <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1.5 border border-emerald-500/30 rounded-lg">
-                        <Check size={12} /> Connected
-                      </span>
-                      <button
-                        onClick={() => disconnectProvider('google')}
-                        className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
-                      >
-                        Disconnect
-                      </button>
-                    </div>
-                  ) : null}
+                  <div>
+                    <h4 className="font-bold text-white text-sm">Google Identity Provider</h4>
+                    <p className="text-[11px] text-[#f3eee4]/60">
+                      {userProfile.google_connected ? `Connected as ${userProfile.email}` : 'Sign in with Google OAuth popup to select your account & sync data'}
+                    </p>
+                  </div>
                 </div>
 
-                {/* DIRECT GOOGLE ACCOUNT SELECTOR CARD (PERMANENTLY VISIBLE WHEN NOT CONNECTED) */}
-                {!userProfile.google_connected && (
-                  <div className="rounded-xl border border-white/10 bg-[#08090f] p-4 space-y-3">
-                    <div className="flex items-center justify-between text-xs font-semibold text-[#f3eee4]">
-                      <span>Google Account Email</span>
-                      <button
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        className="text-[10px] font-bold text-[#4285F4] hover:underline cursor-pointer"
-                      >
-                        {isSyncing ? 'Opening Google OAuth...' : 'Try Google OAuth Popup'}
-                      </button>
-                    </div>
-
-                    <input
-                      type="email"
-                      value={googleEmailInput}
-                      onChange={(e) => setGoogleEmailInput(e.target.value)}
-                      placeholder="itsayushr7@gmail.com"
-                      className="w-full rounded-xl border border-white/20 bg-[#121420] px-4 py-2.5 text-xs text-white outline-none focus:border-[#4285F4] transition-all"
-                    />
-
+                {userProfile.google_connected ? (
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1.5 border border-emerald-500/30 rounded-lg">
+                      <Check size={12} /> Connected
+                    </span>
                     <button
-                      type="button"
-                      onClick={() => {
-                        const cleanEmail = googleEmailInput.trim() || 'itsayushr7@gmail.com'
-                        const nameParts = cleanEmail.split('@')[0].split('.')
-                        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
-                        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
-
-                        connectProvider('google', {
-                          first_name: fName,
-                          last_name: lName,
-                          display_name: `${fName} ${lName}`.trim(),
-                          email: cleanEmail,
-                          google_connected: true
-                        })
-                        setEmail(cleanEmail)
-                        setFirstName(fName)
-                        if (lName) setLastName(lName)
-
-                        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
-                        setTimeout(() => {
-                          setSyncStatus(null)
-                          onClose()
-                        }, 600)
-                      }}
-                      className="w-full rounded-xl bg-[#4285F4] hover:bg-[#3367D6] py-2.5 text-xs font-bold text-white transition-all cursor-pointer shadow flex items-center justify-center gap-1.5"
+                      onClick={() => disconnectProvider('google')}
+                      className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
                     >
-                      <span>Sign In as {googleEmailInput.split('@')[0] || 'Google Account'}</span>
-                      <Check size={14} />
+                      Disconnect
                     </button>
                   </div>
+                ) : (
+                  <button
+                    onClick={handleGoogleLogin}
+                    disabled={isSyncing}
+                    className="rounded-xl bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-xs uppercase tracking-wider px-4 py-2 transition-all cursor-pointer shadow flex items-center gap-1.5 shrink-0"
+                  >
+                    <span>{isSyncing ? 'Opening Google...' : 'Connect Google'}</span>
+                  </button>
                 )}
               </div>
 
