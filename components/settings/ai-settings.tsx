@@ -587,12 +587,22 @@ export function AISettings() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#f3eee4]/90 block mb-2">App / Token (Optional override)</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-[#f3eee4]/90">GitHub Personal Access Token</label>
+                  <a
+                    href="https://github.com/settings/tokens/new?description=Workfolio%20Integration&scopes=repo,read:user,read:org,workflow"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#c1a05b] hover:underline"
+                  >
+                    <span>Get Free Token ↗</span>
+                  </a>
+                </div>
                 <input
                   type="password"
                   value={githubToken}
                   onChange={(e) => setGithubToken(e.target.value)}
-                  placeholder="ghp_... or server app installation"
+                  placeholder="ghp_..."
                   className="w-full rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white placeholder:text-white/30 focus:border-[#c1a05b] focus:outline-none transition-all"
                 />
               </div>
@@ -618,6 +628,42 @@ export function AISettings() {
                     Disconnect
                   </button>
                 )}
+              </div>
+            </div>
+
+            {/* STEP-BY-STEP TOKEN GENERATION GUIDE */}
+            <div className="rounded-2xl border border-purple-500/20 bg-black/40 p-4 space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="font-bold text-[#c1a05b] uppercase text-[10px] flex items-center gap-1.5">
+                  <Info size={14} /> STEP-BY-STEP GITHUB TOKEN CREATION GUIDE
+                </span>
+                <a
+                  href="https://github.com/settings/tokens/new?description=Workfolio%20Integration&scopes=repo,read:user,read:org,workflow"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 text-[11px] font-bold text-[#c1a05b] hover:underline"
+                >
+                  <span>1-Click Direct Token Generator ↗</span>
+                </a>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-4 text-[#f3eee4]/80 text-[11px] leading-relaxed">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1">
+                  <span className="font-bold text-[#c1a05b] block">STEP 1: Click Button</span>
+                  <p>Click <strong className="text-white">"Get Free Token ↗"</strong> above to open GitHub's official token generator page.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1">
+                  <span className="font-bold text-[#c1a05b] block">STEP 2: Sign In</span>
+                  <p>Sign in to your GitHub account if prompted by your browser.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1">
+                  <span className="font-bold text-[#c1a05b] block">STEP 3: Verify Scopes</span>
+                  <p>Check that <code className="text-[#c1a05b]">repo</code> & <code className="text-[#c1a05b]">read:user</code> permissions are selected (pre-selected by our link).</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1">
+                  <span className="font-bold text-[#c1a05b] block">STEP 4: Copy & Paste</span>
+                  <p>Scroll down, click green <strong className="text-white">"Generate token"</strong>, copy token string (<code className="text-[#c1a05b]">ghp_...</code>), and paste it above!</p>
+                </div>
               </div>
             </div>
 
