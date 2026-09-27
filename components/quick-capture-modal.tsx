@@ -732,6 +732,111 @@ export function QuickCaptureModal({
                   </div>
                 )}
 
+                {/* PROJECT & SKILL ASSOCIATION SELECTORS */}
+                <div className="grid gap-4 sm:grid-cols-2 pt-1">
+                  {/* PROJECT SELECTOR */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b]">
+                        Associated Project
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowInlineProject(!showInlineProject)}
+                        className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus size={11} /> {showInlineProject ? 'Cancel' : 'New Project'}
+                      </button>
+                    </div>
+
+                    {showInlineProject ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newProjName}
+                          onChange={(e) => setNewProjName(e.target.value)}
+                          placeholder="Project Name..."
+                          className="w-full rounded-xl border border-[#c1a05b]/50 bg-[#121420] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleCreateProjectInline}
+                          className="rounded-xl bg-[#c1a05b] px-3 py-2 text-xs font-bold text-[#08090f] shrink-0 cursor-pointer hover:bg-white"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <select
+                          value={selectedProjectId}
+                          onChange={(e) => setSelectedProjectId(e.target.value)}
+                          className="w-full appearance-none rounded-xl border border-white/15 bg-[#121420] px-3.5 py-2.5 pr-8 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] transition-all cursor-pointer"
+                        >
+                          <option value="">-- No Specific Project --</option>
+                          {projects.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              📁 {p.name} ({p.category || 'General'})
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown size={14} className="pointer-events-none absolute right-3 top-3 text-[#f3eee4]/60" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SKILL SELECTOR */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-[10px] font-bold uppercase tracking-[.18em] text-[#c1a05b]">
+                        Associated Skill
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowInlineSkill(!showInlineSkill)}
+                        className="text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus size={11} /> {showInlineSkill ? 'Cancel' : 'New Skill'}
+                      </button>
+                    </div>
+
+                    {showInlineSkill ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newSkillName}
+                          onChange={(e) => setNewSkillName(e.target.value)}
+                          placeholder="Skill (e.g. Next.js)..."
+                          className="w-full rounded-xl border border-[#c1a05b]/50 bg-[#121420] px-3 py-2 text-xs text-[#f3eee4] outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleCreateSkillInline}
+                          className="rounded-xl bg-[#c1a05b] px-3 py-2 text-xs font-bold text-[#08090f] shrink-0 cursor-pointer hover:bg-white"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <select
+                          value={selectedSkillId}
+                          onChange={(e) => setSelectedSkillId(e.target.value)}
+                          className="w-full appearance-none rounded-xl border border-white/15 bg-[#121420] px-3.5 py-2.5 pr-8 text-xs text-[#f3eee4] outline-none focus:border-[#c1a05b] transition-all cursor-pointer"
+                        >
+                          <option value="">-- No Specific Skill --</option>
+                          {skills.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              🎓 {s.name} ({s.category || 'Engineering'})
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown size={14} className="pointer-events-none absolute right-3 top-3 text-[#f3eee4]/60" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* MAIN ENTRY TEXTAREA */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
