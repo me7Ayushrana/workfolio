@@ -328,71 +328,56 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                 </p>
               </div>
 
-              {/* GOOGLE LOGIN CARD */}
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121420] p-4 text-xs shadow-md">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-black font-bold text-base shadow-sm">
-                    G
+              {/* GOOGLE IDENTITY PROVIDER & DIRECT ACCOUNT SELECTOR */}
+              <div className="rounded-2xl border border-[#4285F4]/30 bg-[#121420] p-5 space-y-4 shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#4285F4] font-black text-lg shadow-sm shrink-0">
+                      G
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">Google Identity Provider</h4>
+                      <p className="text-[11px] text-[#f3eee4]/60">
+                        {userProfile.google_connected ? `Connected as ${userProfile.email}` : 'Select your Google Account to log in & sync'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white">Google Identity Provider</h4>
-                    <p className="text-[11px] text-[#f3eee4]/60">
-                      {userProfile.google_connected ? userProfile.email : 'Not connected'}
-                    </p>
-                  </div>
+
+                  {userProfile.google_connected ? (
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1.5 border border-emerald-500/30 rounded-lg">
+                        <Check size={12} /> Connected
+                      </span>
+                      <button
+                        onClick={() => disconnectProvider('google')}
+                        className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
+                      >
+                        Disconnect
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
 
-                {userProfile.google_connected ? (
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 border border-emerald-500/30 rounded-lg">
-                      <Check size={12} /> Connected
-                    </span>
-                    <button
-                      onClick={() => disconnectProvider('google')}
-                      className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleGoogleLogin}
-                    disabled={isSyncing}
-                    className="rounded-xl bg-[#c1a05b] text-[#08090f] font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-[#f3eee4] transition-all cursor-pointer shadow"
-                  >
-                    {isSyncing ? 'Connecting...' : 'Connect Google'}
-                  </button>
-                )}
-              </div>
+                {/* DIRECT GOOGLE ACCOUNT SELECTOR CARD (PERMANENTLY VISIBLE WHEN NOT CONNECTED) */}
+                {!userProfile.google_connected && (
+                  <div className="rounded-xl border border-white/10 bg-[#08090f] p-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-semibold text-[#f3eee4]">
+                      <span>Google Account Email</span>
+                      <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        className="text-[10px] font-bold text-[#4285F4] hover:underline cursor-pointer"
+                      >
+                        {isSyncing ? 'Opening Google OAuth...' : 'Try Google OAuth Popup'}
+                      </button>
+                    </div>
 
-              {/* IN-APP GOOGLE ACCOUNT SELECTOR PANEL */}
-              {showGoogleAccountPicker && (
-                <div className="rounded-2xl border border-[#4285F4]/40 bg-[#0d1222] p-4 space-y-3 shadow-lg">
-                  <div className="flex items-center justify-between text-xs font-bold text-white">
-                    <span className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[#4285F4] text-[10px] font-black">G</span>
-                      Select Google Account to Sign In
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowGoogleAccountPicker(false)}
-                      className="text-[#f3eee4]/50 hover:text-white"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-
-                  <p className="text-[11px] text-[#f3eee4]/70 leading-relaxed">
-                    Confirm your Google account email to authorize identity and sync your Workfolio activity ledger.
-                  </p>
-
-                  <div className="space-y-2">
                     <input
                       type="email"
                       value={googleEmailInput}
                       onChange={(e) => setGoogleEmailInput(e.target.value)}
-                      placeholder="Enter your Google email..."
-                      className="w-full rounded-xl border border-white/20 bg-[#08090f] px-3.5 py-2 text-xs text-white outline-none focus:border-[#4285F4]"
+                      placeholder="itsayushr7@gmail.com"
+                      className="w-full rounded-xl border border-white/20 bg-[#121420] px-4 py-2.5 text-xs text-white outline-none focus:border-[#4285F4] transition-all"
                     />
 
                     <button
@@ -414,8 +399,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                         setFirstName(fName)
                         if (lName) setLastName(lName)
 
-                        setShowGoogleAccountPicker(false)
-                        setSyncStatus(`Connected as ${cleanEmail}!`)
+                        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
                         setTimeout(() => {
                           setSyncStatus(null)
                           onClose()
@@ -427,8 +411,8 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                       <Check size={14} />
                     </button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* GITHUB LOGIN CARD */}
               <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121420] p-4 text-xs shadow-md">
