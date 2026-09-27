@@ -50,28 +50,7 @@ export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
     const result = await signInWithPopup(auth, provider)
     return formatFirebaseUser(result.user)
   } catch (err: any) {
-    console.error('Firebase Google Auth error:', err)
-    if (err.code === 'auth/popup-closed-by-user') {
-      throw new Error('Google Sign-In popup was closed. Click Connect Google to try again.')
-    }
-    if (err.code === 'auth/unauthorized-domain') {
-      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'current domain'
-      throw new Error(`Domain "${currentHost}" is not authorized in Firebase Console. Go to Firebase Console -> Authentication -> Settings -> Authorized domains and add "${currentHost}".`)
-    }
-    // Instant smooth fallback account picker if browser blocks popup or keys are pending
-    if (typeof window !== 'undefined') {
-      const email = prompt('Select your Google Account email to sign in:', 'ayushrana@google.com')
-      if (!email || !email.trim()) throw new Error('Google Sign-In cancelled.')
-      const cleanEmail = email.trim()
-      const name = cleanEmail.split('@')[0]
-      return {
-        uid: `firebase-google-${btoa(cleanEmail).slice(0, 12)}`,
-        displayName: name.charAt(0).toUpperCase() + name.slice(1),
-        email: cleanEmail,
-        photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmail}`,
-        providerId: 'google.com'
-      }
-    }
+    console.warn('Firebase Google Auth popup notice:', err?.code || err?.message)
     throw err
   }
 }

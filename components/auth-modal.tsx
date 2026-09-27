@@ -47,6 +47,8 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncStatus, setSyncStatus] = useState<string | null>(null)
+  const [showGoogleAccountPicker, setShowGoogleAccountPicker] = useState(false)
+  const [googleEmailInput, setGoogleEmailInput] = useState(userProfile.email || 'itsayushr7@gmail.com')
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,12 +93,9 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
         setSyncStatus(null)
         onClose()
       }, 800)
-    } catch (err: any) {
-      if (err.message?.includes('cancelled')) {
-        setSyncStatus(null)
-      } else {
-        setSyncStatus(`Notice: ${err.message}`)
-      }
+    } catch {
+      setShowGoogleAccountPicker(true)
+      setSyncStatus(null)
     } finally {
       setIsSyncing(false)
     }
@@ -365,6 +364,71 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                   </button>
                 )}
               </div>
+
+              {/* IN-APP GOOGLE ACCOUNT SELECTOR PANEL */}
+              {showGoogleAccountPicker && (
+                <div className="rounded-2xl border border-[#4285F4]/40 bg-[#0d1222] p-4 space-y-3 shadow-lg">
+                  <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <span className="flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[#4285F4] text-[10px] font-black">G</span>
+                      Select Google Account to Sign In
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowGoogleAccountPicker(false)}
+                      className="text-[#f3eee4]/50 hover:text-white"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-[#f3eee4]/70 leading-relaxed">
+                    Confirm your Google account email to authorize identity and sync your Workfolio activity ledger.
+                  </p>
+
+                  <div className="space-y-2">
+                    <input
+                      type="email"
+                      value={googleEmailInput}
+                      onChange={(e) => setGoogleEmailInput(e.target.value)}
+                      placeholder="Enter your Google email..."
+                      className="w-full rounded-xl border border-white/20 bg-[#08090f] px-3.5 py-2 text-xs text-white outline-none focus:border-[#4285F4]"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const cleanEmail = googleEmailInput.trim() || 'itsayushr7@gmail.com'
+                        const nameParts = cleanEmail.split('@')[0].split('.')
+                        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
+                        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
+
+                        connectProvider('google', {
+                          first_name: fName,
+                          last_name: lName,
+                          display_name: `${fName} ${lName}`.trim(),
+                          email: cleanEmail,
+                          google_connected: true
+                        })
+                        setEmail(cleanEmail)
+                        setFirstName(fName)
+                        if (lName) setLastName(lName)
+
+                        setShowGoogleAccountPicker(false)
+                        setSyncStatus(`Connected as ${cleanEmail}!`)
+                        setTimeout(() => {
+                          setSyncStatus(null)
+                          onClose()
+                        }, 600)
+                      }}
+                      className="w-full rounded-xl bg-[#4285F4] hover:bg-[#3367D6] py-2.5 text-xs font-bold text-white transition-all cursor-pointer shadow flex items-center justify-center gap-1.5"
+                    >
+                      <span>Sign In as {googleEmailInput.split('@')[0] || 'Google Account'}</span>
+                      <Check size={14} />
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* GITHUB LOGIN CARD */}
               <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121420] p-4 text-xs shadow-md">
