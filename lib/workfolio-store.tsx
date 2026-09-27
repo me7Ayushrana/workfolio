@@ -314,265 +314,32 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
 }
 
 // -------------------------------------------------------------
-// INITIAL SEED DATA FOR LOGGED WORK, LEARNING & SKILLS
+// INITIAL SEED DATA FOR LOGGED WORK, LEARNING & SKILLS (EMPTY BY DEFAULT)
 // -------------------------------------------------------------
 
-const INITIAL_SKILLS: SkillItem[] = [
-  {
-    id: 'skill-cv-ocr',
-    name: 'Computer Vision & OCR',
-    category: 'AI / Data',
-    currentLevel: 'Learning',
-    learningGoal: 'Build & deploy high-precision document and receipt OCR pipelines.',
-    description: 'Image binarization, adaptive thresholding, bounding box extraction and vision models.',
-    targetDate: '2026-10-15',
-    status: 'LEARNING',
-    currentlyLearning: 'Model evaluation and cross-validation on low-light receipts',
-    nextStep: 'Implement cross-validation on the Expense Intelligence dataset',
-    startedDate: '2026-08-18',
-    lastUpdatedDate: '2026-09-26',
-    relatedCapability: 'OCR & Computer Vision',
-    relatedProjectId: 'expense-tracker-1'
-  },
-  {
-    id: 'skill-react-arch',
-    name: 'React & Next.js Systems',
-    category: 'Frontend Systems',
-    currentLevel: 'Intermediate',
-    learningGoal: 'Master server-side rendering, compound component patterns, and motion design.',
-    description: 'Declarative layout animations, design tokens, and performant UI architectures.',
-    targetDate: '2026-11-01',
-    status: 'PRACTICING',
-    currentlyLearning: 'Advanced compound component patterns and layout transitions',
-    nextStep: 'Build reusable constellation graph canvas components',
-    startedDate: '2026-07-10',
-    lastUpdatedDate: '2026-09-24',
-    relatedCapability: 'React & Frontend Architecture',
-    relatedProjectId: 'expense-tracker-1'
-  },
-  {
-    id: 'skill-resilient-api',
-    name: 'Fault-Tolerant API Caching',
-    category: 'Developer Tools',
-    currentLevel: 'Intermediate',
-    learningGoal: 'Architect resilient data layers with Redis caching and backoff retry algorithms.',
-    description: 'Exponential backoff, stale-while-revalidate caches, and rate-limit mitigation.',
-    targetDate: '2026-10-01',
-    status: 'APPLIED',
-    currentlyLearning: 'Stale-while-revalidate fallback caching strategies',
-    nextStep: 'Benchmark Redis LRU vs in-memory cache under peak traffic',
-    startedDate: '2026-08-01',
-    lastUpdatedDate: '2026-09-22',
-    relatedCapability: 'API Integration & Resilience',
-    relatedProjectId: 'weather-api-2'
-  }
-]
-
-const INITIAL_ACTIVITIES: ActivityLogEntry[] = [
-  {
-    id: 'act-1',
-    date: new Date().toISOString().split('T')[0],
-    time: '10:30 AM',
-    work: 'Built the OCR receipt parsing pipeline for Expense Tracker.',
-    learning: 'Improved image thresholding and confidence score validation.',
-    struggle: 'Low-light receipt image degradation caused false positive currency parsing.',
-    intention: 'Add adaptive image preprocessing and fallback verification.',
-    projectId: 'expense-tracker-1',
-    projectTitle: 'Expense Tracker',
-    skillId: 'skill-cv-ocr',
-    skillName: 'Computer Vision & OCR',
-    capabilities: ['React', 'OCR', 'API Integration'],
-    evidenceTitle: 'OCR Pipeline Commit & Test Screenshot',
-    evidenceUrl: 'https://github.com/workfolio/expense-tracker',
-    type: 'BUILD',
-    durationMinutes: 90
-  },
-  {
-    id: 'act-2',
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-    time: '04:15 PM',
-    work: 'Documented resilient rate limit strategy and caching layer for Weather API.',
-    learning: 'Implemented exponential backoff retry algorithms with Redis LRU eviction.',
-    struggle: 'Intermittent third-party API timeout spikes during peak hours.',
-    intention: 'Implement stale-while-revalidate fallback caching.',
-    projectId: 'weather-api-2',
-    projectTitle: 'Weather API',
-    skillId: 'skill-resilient-api',
-    skillName: 'Fault-Tolerant API Caching',
-    capabilities: ['Python', 'API Integration', 'Automation'],
-    evidenceTitle: 'Rate Limiting Architecture Spec',
-    evidenceUrl: 'https://github.com/workfolio/weather-api',
-    type: 'WORK',
-    durationMinutes: 60
-  },
-  {
-    id: 'act-3',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0],
-    time: '02:00 PM',
-    work: 'Connected automated sales deal triggers directly to verifiable proof logs.',
-    learning: 'Idempotent webhook delivery techniques using Zod validation.',
-    struggle: 'Duplicated webhook payloads under heavy queue traffic.',
-    intention: 'Add message deduplication Redis key TTL.',
-    projectId: 'crm-automation-3',
-    projectTitle: 'CRM Automation',
-    skillId: 'skill-react-arch',
-    skillName: 'React & Next.js Systems',
-    capabilities: ['Automation', 'Problem Solving'],
-    evidenceTitle: 'Pipeline Automation Diagram',
-    type: 'SHIP',
-    durationMinutes: 120
-  }
-]
-
-const INITIAL_LEARNING: LearningTrack[] = [
-  {
-    id: 'learn-1',
-    topic: 'Machine Learning & OCR Intelligence',
-    progress: 70,
-    steps: [
-      { id: 'ls-1', title: 'Python Numerical Foundations (NumPy/Pandas)', status: 'COMPLETED' },
-      { id: 'ls-2', title: 'Image Preprocessing & Binarization', status: 'COMPLETED' },
-      { id: 'ls-3', title: 'Tesseract & Vision Model Fine-Tuning', status: 'IN_PROGRESS' },
-      { id: 'ls-4', title: 'Model Evaluation & Confidence Metrics', status: 'NOT_STARTED' }
-    ],
-    nextSteps: ['Test adaptive thresholding on low-quality receipts', 'Measure OCR accuracy across 100 sample invoices']
-  },
-  {
-    id: 'learn-2',
-    topic: 'Frontend Design Systems & Framer Motion',
-    progress: 85,
-    steps: [
-      { id: 'ls-5', title: 'Tailwind CSS Custom Token Architecture', status: 'COMPLETED' },
-      { id: 'ls-6', title: 'Framer Motion Layout Animations', status: 'COMPLETED' },
-      { id: 'ls-7', title: 'SVG Dynamic Graph Canvas Rendering', status: 'IN_PROGRESS' }
-    ],
-    nextSteps: ['Refine constellation graph node drag physics', 'Add reduced motion accessibility toggles']
-  }
-]
-
-const INITIAL_GOALS: GoalItem[] = [
-  {
-    id: 'goal-1',
-    title: 'Complete Expense Intelligence OCR Pipeline',
-    deadline: '2026-09-30',
-    projectId: 'expense-tracker-1',
-    skillId: 'skill-cv-ocr',
-    type: 'Project',
-    completed: false,
-    totalSteps: 5,
-    completedSteps: 4
-  },
-  {
-    id: 'goal-2',
-    title: 'Log at least 5 daily work & learning entries this week',
-    deadline: '2026-09-28',
-    type: 'Weekly',
-    completed: true,
-    totalSteps: 5,
-    completedSteps: 5
-  },
-  {
-    id: 'goal-3',
-    title: 'Document 3 new evidence items in Evidence Vault',
-    deadline: '2026-10-05',
-    type: 'Monthly',
-    completed: false,
-    totalSteps: 3,
-    completedSteps: 2
-  }
-]
-
-const INITIAL_PROBLEMS: ProblemSolution[] = [
-  {
-    id: 'prob-1',
-    problem: 'OCR failed to parse currency symbols on crumpled or low-light receipts.',
-    attempts: 'Tried basic grayscale conversion and static thresholding.',
-    solution: 'Implemented adaptive Gaussian thresholding and bounding box padding before OCR dispatch.',
-    projectId: 'expense-tracker-1',
-    capability: 'OCR & Computer Vision',
-    resolved: true,
-    date: '2026-09-24'
-  },
-  {
-    id: 'prob-2',
-    problem: 'Rate limit exhaustion on external weather telemetry endpoint under burst requests.',
-    attempts: 'Added simple fixed delay timer between requests.',
-    solution: 'Built an LRU Redis cache layer with stale-while-revalidate fallback.',
-    projectId: 'weather-api-2',
-    capability: 'API Integration & Resilience',
-    resolved: true,
-    date: '2026-09-20'
-  }
-]
+const INITIAL_SKILLS: SkillItem[] = []
+const INITIAL_ACTIVITIES: ActivityLogEntry[] = []
+const INITIAL_LEARNING: LearningTrack[] = []
+const INITIAL_GOALS: GoalItem[] = []
+const INITIAL_PROBLEMS: ProblemSolution[] = []
 
 const INITIAL_RESOURCES: ExploreResource[] = [
   {
-    id: 'res-expense-intelligence',
-    slug: 'expense-intelligence-system',
-    title: 'Workfolio Expense Intelligence System',
-    description: 'AI-powered receipt capture, voice notes and expense categorization engine.',
-    longDescription:
-      'An end-to-end expense intelligence architecture built for high reliability. Converts raw receipt images and voice snippets into structured financial data with automated reconciliation and audit trails.',
-    coverImage: '/images/mono-1.png',
-    screenshots: ['/images/mono-1.png', '/images/040e36b1-d16f-474b-a712-a9979e6ab479.png'],
-    type: 'PROJECT',
-    category: 'AI & Machine Learning',
-    tags: ['AI', 'OCR', 'Finance', 'Next.js', 'React'],
-    technologies: ['React 19', 'Next.js 16', 'OCR Engine', 'Tailwind CSS', 'TypeScript'],
-    difficulty: 'Intermediate',
-    version: '1.2.0',
-    createdBy: 'Workfolio Core Team',
-    publishedDate: '2026-09-15',
-    updatedDate: '2026-09-24',
-    featured: true,
-    status: 'published',
-    viewsCount: 1420,
-    savesCount: 384,
-    implementationsCount: 128,
-    externalUrl: 'https://expense-demo.workfolio.app',
-    repositoryUrl: 'https://github.com/workfolio/expense-intelligence',
-    documentationUrl: 'https://docs.workfolio.app/expense-intelligence',
-    implementationGuide: [
-      'Clone repository or install via Workfolio CLI.',
-      'Configure OCR API key in environment variables.',
-      'Mount expense receipt scanner UI component in your React application.',
-      'Connect webhook handlers for expense reconciliation.',
-      'Verify test transactions and audit logs.'
-    ],
-    learnPoints: [
-      'How to parse unstructured receipt data with high accuracy',
-      'Client-side image pre-processing before API dispatch',
-      'State management for multi-stage OCR pipelines'
-    ],
-    reusePoints: [
-      'Reusable OCR canvas parsing module',
-      'Expense category classification schema',
-      'Financial timeline UI layout'
-    ],
-    requirements: ['Node.js 18+', 'React 18+', 'Next.js App Router'],
-    changelog: [
-      { version: '1.2.0', date: '2026-09-24', notes: 'Added voice note transcription support.' },
-      { version: '1.0.0', date: '2026-09-15', notes: 'Initial public release on Explore.' }
-    ],
-    collectionId: 'col-ai-ml',
-    sourceProjectId: 'expense-tracker-1'
-  },
-  {
-    id: 'res-analytics-ui-kit',
+    id: 'res-[#1]',
     slug: 'analytics-ui-system',
     title: 'Editorial Analytics UI System',
     description: 'A restrained, typography-first interface system for data-dense dashboards.',
     longDescription:
       'Designed for complex data applications that require poise and legibility. Built with warm ivory tones, deep forest accents, and accessible charts.',
     coverImage: '/images/mono-2.png',
-    screenshots: ['/images/mono-2.png', '/images/634f7bae-77a5-49d0-a0ab-5271a6194e66.png'],
+    screenshots: ['/images/mono-2.png'],
     type: 'UI KIT',
     category: 'Design Systems',
     tags: ['UI Kit', 'Components', 'Design', 'Tailwind'],
-    technologies: ['React 19', 'Tailwind CSS', 'Framer Motion', 'Recharts'],
+    technologies: ['React 19', 'Tailwind CSS', 'Framer Motion'],
     difficulty: 'Beginner',
     version: '2.1.0',
-    createdBy: 'Alex Rivera (Admin)',
+    createdBy: 'Workfolio Core Team',
     publishedDate: '2026-09-10',
     updatedDate: '2026-09-22',
     featured: true,
@@ -584,100 +351,13 @@ const INITIAL_RESOURCES: ExploreResource[] = [
     repositoryUrl: 'https://github.com/workfolio/analytics-ui-kit',
     documentationUrl: 'https://docs.workfolio.app/analytics-ui',
     implementationGuide: [
-      'Import the design tokens into your tailwind.config or CSS variables.',
-      'Copy the card, chart, and metric components into your UI library.',
-      'Bind data stream props to the responsive graph components.'
+      'Import design tokens into tailwind.config or CSS variables.',
+      'Mount card and chart components in your UI library.'
     ],
-    learnPoints: [
-      'Designing editorial dashboard hierarchy without cluttered borders',
-      'Implementing smooth spring motion transitions with Framer Motion'
-    ],
-    reusePoints: [
-      '20+ customizable metric card variants',
-      'Pre-configured dark/light mode palette with Warm Ivory theme'
-    ],
-    requirements: ['React 18+', 'Tailwind CSS v3/v4'],
+    learnPoints: ['Designing editorial dashboard hierarchy without cluttered borders'],
+    reusePoints: ['Customizable metric card variants'],
+    requirements: ['React 18+', 'Tailwind CSS'],
     collectionId: 'col-frontend-systems'
-  },
-  {
-    id: 'res-weather-resilient-api',
-    slug: 'weather-resilient-api-layer',
-    title: 'Resilient Data Layer & Weather Engine',
-    description: 'Fault-tolerant API wrapper with rate-limit strategy, caching and fallback states.',
-    longDescription:
-      'An production-ready backend integration layer designed for third-party weather and environmental telemetry. Features exponential backoff retries, in-memory LRU caching, and graceful fallback rendering.',
-    coverImage: '/images/mono-3.png',
-    screenshots: ['/images/mono-3.png', '/images/7638f650-8586-4403-8c13-141921a04f9d.png'],
-    type: 'API',
-    category: 'Developer Tools',
-    tags: ['API', 'Python', 'Caching', 'Architecture'],
-    technologies: ['Python 3.12', 'FastAPI', 'Redis', 'TypeScript'],
-    difficulty: 'Intermediate',
-    version: '1.0.4',
-    createdBy: 'Workfolio Core Team',
-    publishedDate: '2026-09-18',
-    updatedDate: '2026-09-25',
-    featured: false,
-    status: 'published',
-    viewsCount: 950,
-    savesCount: 210,
-    implementationsCount: 84,
-    repositoryUrl: 'https://github.com/workfolio/weather-api-engine',
-    documentationUrl: 'https://docs.workfolio.app/weather-api',
-    implementationGuide: [
-      'Configure Redis cache connection string.',
-      'Initialize API client wrapper with fallback providers.',
-      'Subscribe to real-time weather polling events.'
-    ],
-    learnPoints: [
-      'Architecting resilient API wrappers around fragile third-party endpoints',
-      'Implementing stale-while-revalidate cache patterns'
-    ],
-    reusePoints: [
-      'LRU Cache Middleware',
-      'API rate limit monitor and alerting threshold'
-    ],
-    requirements: ['Python 3.10+ or Node.js 18+'],
-    collectionId: 'col-dev-tools',
-    sourceProjectId: 'weather-api-2'
-  },
-  {
-    id: 'res-crm-automation-workflow',
-    slug: 'evidence-linked-crm-workflow',
-    title: 'Evidence-Linked Sales CRM Automation',
-    description: 'Automated deal pipeline workflows that link customer communication directly to outcome evidence.',
-    longDescription:
-      'A quiet, non-intrusive automation workflow that captures customer milestones, generates proof logs, and notifies teams when critical deal criteria are satisfied.',
-    coverImage: '/images/mono-4.png',
-    screenshots: ['/images/mono-4.png', '/images/b2401fa5-4eac-46a8-b072-6d70bd56a465.png'],
-    type: 'AUTOMATION',
-    category: 'Automation',
-    tags: ['Automation', 'CRM', 'Workflows', 'Node.js'],
-    technologies: ['Node.js', 'Webhooks', 'Zod', 'PostgreSQL'],
-    difficulty: 'Advanced',
-    version: '1.1.0',
-    createdBy: 'Alex Rivera (Admin)',
-    publishedDate: '2026-09-12',
-    updatedDate: '2026-09-20',
-    featured: true,
-    status: 'published',
-    viewsCount: 1630,
-    savesCount: 450,
-    implementationsCount: 195,
-    repositoryUrl: 'https://github.com/workfolio/crm-automation',
-    implementationGuide: [
-      'Deploy trigger handlers to serverless backend or Cloud Functions.',
-      'Set up webhook listener endpoints for deal stage updates.',
-      'Configure evidence attachment storage bucket.'
-    ],
-    learnPoints: [
-      'Connecting automated workflow triggers to verifiable evidence logs',
-      'Idempotent webhook processing under heavy load'
-    ],
-    reusePoints: ['Pipeline automation schemas', 'Webhook validation middleware'],
-    requirements: ['Node.js 18+ or Cloud Functions'],
-    collectionId: 'col-automation',
-    sourceProjectId: 'crm-automation-3'
   }
 ]
 
@@ -702,73 +382,8 @@ const INITIAL_COLLECTIONS: ExploreCollection[] = [
   }
 ]
 
-const INITIAL_PROJECTS: ProjectItem[] = [
-  {
-    id: 'expense-tracker-1',
-    name: 'Expense Tracker',
-    description: 'Voice and OCR-powered expense management system.',
-    status: 'Completed',
-    category: 'AI',
-    accent: 'bg-[#9b7b3b]',
-    date: '2026-09-20',
-    repositoryUrl: 'https://github.com/workfolio/expense-tracker',
-    liveUrl: 'https://expense-demo.workfolio.app',
-    documentationUrl: 'https://docs.workfolio.app/expense-tracker',
-    figmaUrl: 'https://figma.com/file/expense-tracker-ui',
-    explorePublished: true,
-    exploreResourceId: 'res-expense-intelligence',
-    notes: 'Primary production build for personal finance tracking.',
-    milestones: [
-      { date: '2026-09-01', title: 'Initial OCR prototype', completed: true },
-      { date: '2026-09-15', title: 'Voice receipt integration', completed: true },
-      { date: '2026-09-20', title: 'Shipped v1.2.0', completed: true }
-    ]
-  },
-  {
-    id: 'weather-api-2',
-    name: 'Weather API',
-    description: 'A resilient data layer for actionable conditions.',
-    status: 'In progress',
-    category: 'Development',
-    accent: 'bg-[#c1a05b]',
-    date: '2026-09-18',
-    repositoryUrl: 'https://github.com/workfolio/weather-api',
-    liveUrl: 'https://weather.workfolio.app',
-    explorePublished: true,
-    exploreResourceId: 'res-weather-resilient-api',
-    notes: 'Optimized API endpoint caching.',
-    milestones: [
-      { date: '2026-09-10', title: 'LRU Cache architecture', completed: true },
-      { date: '2026-09-18', title: 'Rate limit fallback testing', completed: true }
-    ]
-  },
-  {
-    id: 'crm-automation-3',
-    name: 'CRM Automation',
-    description: 'Evidence-linked workflows for a calmer sales process.',
-    status: 'Planning',
-    category: 'Automation',
-    accent: 'bg-[#7c2634]',
-    date: '2026-09-12',
-    repositoryUrl: 'https://github.com/workfolio/crm-automation',
-    explorePublished: true,
-    exploreResourceId: 'res-crm-automation-workflow'
-  }
-]
-
-const INITIAL_IMPLEMENTATIONS: ImplementationRecord[] = [
-  {
-    id: 'imp-1',
-    resourceId: 'res-analytics-ui-kit',
-    resourceTitle: 'Editorial Analytics UI System',
-    resourceVersion: '2.1.0',
-    projectId: 'expense-tracker-1',
-    projectTitle: 'Expense Tracker',
-    implementedAt: '2026-09-22',
-    status: 'IMPLEMENTED',
-    notes: 'Used editorial card components for expense breakdown views.'
-  }
-]
+const INITIAL_PROJECTS: ProjectItem[] = []
+const INITIAL_IMPLEMENTATIONS: ImplementationRecord[] = []
 
 interface WorkfolioStoreContextType {
   userProfile: UserProfile
