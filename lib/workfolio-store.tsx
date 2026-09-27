@@ -554,46 +554,36 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
   const [pendingDrafts, setPendingDrafts] = useState<PendingAIDraft[]>([])
 
   // GitHub Integration State
-  const [githubConnected, setGithubConnected] = useState<boolean>(true)
-  const [githubUsername, setGithubUsername] = useState<string>('me7Ayushrana')
-  const [githubAvatar, setGithubAvatar] = useState<string>('https://github.com/me7Ayushrana.png')
-  const [githubRepos, setGithubRepos] = useState<GitHubRepoItem[]>([
-    {
-      id: 'repo-workfolio',
-      name: 'workfolio',
-      fullName: 'me7Ayushrana/workfolio',
-      description: 'Master AI & Work Intelligence Platform with evidence vault, learning graph & BYOK key architecture.',
-      language: 'TypeScript',
-      stars: 12,
-      forks: 3,
-      url: 'https://github.com/me7Ayushrana/workfolio',
-      updatedAt: new Date().toISOString().split('T')[0]
-    }
-  ])
-  const [observedActivities, setObservedActivities] = useState<GitHubObservedActivity[]>([
-    {
-      id: 'gh-act-1',
-      type: 'COMMIT',
-      title: 'feat: add multi-provider AI task router and BYOK key vault',
-      repoName: 'me7Ayushrana/workfolio',
-      repoUrl: 'https://github.com/me7Ayushrana/workfolio',
-      date: new Date().toISOString().split('T')[0],
-      details: 'Added Gemini & Groq REST integration with quota failover.'
-    },
-    {
-      id: 'gh-act-2',
-      type: 'PULL_REQUEST',
-      title: 'PR #4: Refactor Evidence Vault with natural language activity capture',
-      repoName: 'me7Ayushrana/workfolio',
-      repoUrl: 'https://github.com/me7Ayushrana/workfolio',
-      date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-      details: 'Merged draft verification system requiring explicit user approval.'
-    }
-  ])
+  const [githubConnected, setGithubConnected] = useState<boolean>(false)
+  const [githubUsername, setGithubUsername] = useState<string>('')
+  const [githubAvatar, setGithubAvatar] = useState<string>('')
+  const [githubRepos, setGithubRepos] = useState<GitHubRepoItem[]>([])
+  const [observedActivities, setObservedActivities] = useState<GitHubObservedActivity[]>([])
 
   // Load state from localStorage on client mount
   useEffect(() => {
     try {
+      // Auto-purge legacy demo data from localStorage on first mount after clean build
+      const isClean = localStorage.getItem('workfolio_clean_state_v3')
+      if (!isClean) {
+        localStorage.removeItem('workfolio_projects')
+        localStorage.removeItem('workfolio_activities')
+        localStorage.removeItem('workfolio_skills')
+        localStorage.removeItem('workfolio_learning')
+        localStorage.removeItem('workfolio_goals')
+        localStorage.removeItem('workfolio_problems')
+        localStorage.removeItem('workfolio_implementations')
+        localStorage.setItem('workfolio_clean_state_v3', 'true')
+        setProjects([])
+        setActivities([])
+        setSkills([])
+        setLearningTracks([])
+        setGoals([])
+        setProblems([])
+        setImplementations([])
+        return
+      }
+
       const storedProfile = localStorage.getItem('workfolio_user_profile')
       if (storedProfile) setUserProfile(JSON.parse(storedProfile))
       const storedAct = localStorage.getItem('workfolio_activities')

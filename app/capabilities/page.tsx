@@ -22,9 +22,7 @@ export default function CapabilitiesPage() {
     { name: 'OCR', x: 76, y: 31, kind: 'capability' },
     { name: 'Automation', x: 82, y: 66, kind: 'capability' },
     { name: 'Problem Solving', x: 48, y: 78, kind: 'capability' },
-    { name: 'Deployment', x: 18, y: 70, kind: 'capability' },
-    { name: 'Expense Tracker', x: 48, y: 44, kind: 'project' },
-    { name: 'Weather API', x: 68, y: 57, kind: 'project' }
+    { name: 'Deployment', x: 18, y: 70, kind: 'capability' }
   ]
 
   return (

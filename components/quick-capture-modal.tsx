@@ -330,7 +330,7 @@ export function QuickCaptureModal({
                 <textarea
                   value={naturalInput}
                   onChange={(e) => setNaturalInput(e.target.value)}
-                  placeholder="e.g. Spent 2 hours building receipt threshold preprocessing for Expense Tracker project using Computer Vision skill..."
+                  placeholder="e.g. Spent 2 hours refactoring database queries and adding automated unit tests for API endpoints..."
                   rows={3}
                   className="w-full rounded-xl border border-white/10 bg-[#0c0d14] p-4 text-xs text-[#f3eee4] placeholder:text-[#f3eee4]/30 outline-none focus:border-[#c1a05b] focus:ring-1 focus:ring-[#c1a05b] transition-all leading-relaxed"
                   autoFocus

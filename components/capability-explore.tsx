@@ -14,23 +14,17 @@ const stages = [
 ]
 
 const archive = [
-  { type: 'LIVE APPLICATION', title: 'Expense Tracker', meta: 'React / OCR / API', size: 'tall', color: 'cream' },
   { type: 'ARCHITECTURE', title: 'The system behind the signal', meta: '4 layers / 12 connections', size: 'wide', color: 'gold' },
-  { type: 'REPOSITORY', title: 'weather-api / main', meta: 'GitHub · updated 2d ago', size: 'small', color: 'forest' },
   { type: 'TECHNICAL NOTE', title: 'Why we chose the long way', meta: 'PDF · 6 pages', size: 'small', color: 'burgundy' },
   { type: 'SCREENSHOT', title: 'A calmer kind of dashboard', meta: 'Product UI · v03', size: 'wide', color: 'sand' },
 ]
 
-const projects = [
-  { name: 'EXPENSE TRACKER', description: 'Voice + OCR-powered expense management for people who want their data to stay theirs.', tags: ['REACT', 'OCR', 'API INTEGRATION', 'DEPLOYMENT'], stats: '8 activities · 5 evidence items', accent: 'gold' },
-  { name: 'WEATHER API', description: 'A resilient data layer that turns raw conditions into decisions people can act on.', tags: ['PYTHON', 'DATA', 'AUTOMATION'], stats: '6 activities · 3 evidence items', accent: 'forest' },
-]
+const projects: { name: string; description: string; tags: string[]; stats: string; accent: string }[] = []
 
 const nodes = [
   { name: 'Python', x: 19, y: 27, kind: 'capability' }, { name: 'React', x: 49, y: 18, kind: 'capability' },
   { name: 'OCR', x: 76, y: 31, kind: 'capability' }, { name: 'Automation', x: 82, y: 66, kind: 'capability' },
   { name: 'Problem Solving', x: 48, y: 78, kind: 'capability' }, { name: 'Deployment', x: 18, y: 70, kind: 'capability' },
-  { name: 'Expense Tracker', x: 48, y: 44, kind: 'project' }, { name: 'Weather API', x: 68, y: 57, kind: 'project' },
 ]
 
 function SectionLabel({ number, children }: { number: string; children: React.ReactNode }) {
@@ -98,7 +92,7 @@ export function CapabilityExplore() {
 
       <footer className="flex flex-col justify-between gap-8 bg-[#7c2634] px-6 py-10 text-[#f3eee4] md:flex-row md:items-end md:px-10"><div><p className="font-serif text-3xl">WORKFOLIO</p><p className="mt-2 text-[10px] uppercase tracking-[.18em] text-[#f3eee4]/60">TRACE THE TASK · Turn your work into proof.</p></div><p className="text-[10px] uppercase tracking-[.18em] text-[#f3eee4]/60">06 / 06 · Keep building.</p></footer>
 
-      <AnimatePresence>{activeNode && <motion.aside initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="fixed right-0 top-0 z-[80] flex h-full w-full max-w-md flex-col bg-[#f3eee4] p-8 text-[#111318] shadow-2xl md:p-12"><button onClick={() => setActiveNode(null)} className="self-end" aria-label="Close inspector"><X size={20} /></button><div className="mt-auto"><SectionLabel number="INSPECTOR">SELECTED CAPABILITY</SectionLabel><h3 className="mt-5 font-serif text-6xl">{activeNode}</h3><p className="mt-4 text-sm leading-relaxed text-[#111318]/60">Strong evidence connects this capability to the work you have made visible.</p><div className="mt-10 grid grid-cols-3 gap-3 border-y border-[#0c0d14]/15 py-5">{[['08','ACTIVITIES'],['03','PROJECTS'],['05','PROOFS']].map(([num,label]) => <div key={label}><strong className="font-serif text-3xl">{num}</strong><span className="mt-1 block text-[9px] font-bold tracking-[.1em] opacity-50">{label}</span></div>)}</div><p className="mt-10 text-[10px] font-bold uppercase tracking-[.18em] text-[#9b7b3b]">Recent proof</p><ul className="mt-4 space-y-3 font-serif text-xl"><li>CRM Automation</li><li>Weather API</li><li>Data Processing</li></ul><button onClick={() => setActiveAction(activeNode)} className="mt-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em]">View capability <ArrowUpRight size={15} /></button></div></motion.aside>}</AnimatePresence>
+      <AnimatePresence>{activeNode && <motion.aside initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} className="fixed right-0 top-0 z-[80] flex h-full w-full max-w-md flex-col bg-[#f3eee4] p-8 text-[#111318] shadow-2xl md:p-12"><button onClick={() => setActiveNode(null)} className="self-end" aria-label="Close inspector"><X size={20} /></button><div className="mt-auto"><SectionLabel number="INSPECTOR">SELECTED CAPABILITY</SectionLabel><h3 className="mt-5 font-serif text-6xl">{activeNode}</h3><p className="mt-4 text-sm leading-relaxed text-[#111318]/60">Strong evidence connects this capability to the work you have made visible.</p><div className="mt-10 grid grid-cols-3 gap-3 border-y border-[#0c0d14]/15 py-5">{[['08','ACTIVITIES'],['03','PROJECTS'],['05','PROOFS']].map(([num,label]) => <div key={label}><strong className="font-serif text-3xl">{num}</strong><span className="mt-1 block text-[9px] font-bold tracking-[.1em] opacity-50">{label}</span></div>)}</div><p className="mt-10 text-[10px] font-bold uppercase tracking-[.18em] text-[#9b7b3b]">Recent proof</p><ul className="mt-4 space-y-3 font-serif text-xl"><li>Verified Activities</li><li>Data Processing</li></ul><button onClick={() => setActiveAction(activeNode)} className="mt-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em]">View capability <ArrowUpRight size={15} /></button></div></motion.aside>}</AnimatePresence>
       <AnimatePresence>{activeAction && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] flex items-center justify-center bg-[#0c0d14]/60 p-5" role="dialog" aria-modal="true" aria-labelledby="action-title"><motion.div initial={{ y: 18 }} animate={{ y: 0 }} className="w-full max-w-md bg-[#f3eee4] p-8 text-[#111318] shadow-2xl"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#9b7b3b]">Action ready</p><h2 id="action-title" className="mt-2 font-serif text-4xl font-light">{activeAction}</h2></div><button onClick={() => setActiveAction(null)} aria-label="Close action dialog"><X size={18} /></button></div><p className="mt-6 text-sm leading-relaxed text-[#111318]/65">This interaction is connected and ready for the next step. Keep building your proof ledger to make this record more useful.</p><button onClick={() => setActiveAction(null)} className="mt-8 w-full bg-[#0c0d14] px-5 py-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#f3eee4]">Continue</button></motion.div></motion.div>}</AnimatePresence>
     </main>
   )

@@ -52,9 +52,7 @@ const INITIAL_MEDIA_ITEMS: DigitalWorkspaceItem[] = [
     thumbnail: '/images/mono-1.png',
     views: '2.4K views',
     duration: '12:45',
-    description: 'End-to-end receipt OCR parsing pipeline and voice expense reconciliation showcase.',
-    projectId: 'expense-tracker-1',
-    projectTitle: 'Expense Tracker'
+    description: 'End-to-end receipt OCR parsing pipeline and voice expense reconciliation showcase.'
   },
   {
     id: 'ws-2',
@@ -65,9 +63,7 @@ const INITIAL_MEDIA_ITEMS: DigitalWorkspaceItem[] = [
     thumbnail: '/images/mono-2.png',
     views: '4.8K views',
     duration: '18:20',
-    description: 'Restrained typography architecture, custom token design, and spring physics canvas.',
-    projectId: 'expense-tracker-1',
-    projectTitle: 'Expense Tracker'
+    description: 'Restrained typography architecture, custom token design, and spring physics canvas.'
   },
   {
     id: 'ws-3',
@@ -78,22 +74,18 @@ const INITIAL_MEDIA_ITEMS: DigitalWorkspaceItem[] = [
     thumbnail: '/images/mono-3.png',
     views: '1.9K views',
     duration: '15:10',
-    description: 'Zero-downtime cache layers, stale-while-revalidate fallbacks, and rate-limit benchmarks.',
-    projectId: 'weather-api-2',
-    projectTitle: 'Weather API'
+    description: 'Zero-downtime cache layers, stale-while-revalidate fallbacks, and rate-limit benchmarks.'
   },
   {
     id: 'ws-4',
-    title: 'Automated CRM Pipeline & Verifiable Proof Logs',
+    title: 'Automated Data Pipeline & Verifiable Proof Logs',
     channel: 'Automation Workflows',
     category: 'WORKFLOW AUTOMATION',
     youtubeId: 'dQw4w9WgXcQ',
     thumbnail: '/images/mono-4.png',
     views: '3.1K views',
     duration: '22:05',
-    description: 'Connecting deal trigger webhooks to immutable evidence ledgers.',
-    projectId: 'crm-automation-3',
-    projectTitle: 'CRM Automation'
+    description: 'Connecting deal trigger webhooks to immutable evidence ledgers.'
   }
 ]
 
