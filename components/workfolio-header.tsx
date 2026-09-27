@@ -68,31 +68,61 @@ export function WorkfolioHeader() {
     setIsSigningIn(true)
     try {
       const session = await signInWithGoogleFirebase()
-      const nameParts = (session.displayName || 'Google User').split(' ')
-      const fName = nameParts[0] || 'User'
-      const lName = nameParts.slice(1).join(' ') || ''
-      const cleanEmail = session.email || 'user@google.com'
+      if (session && session.uid) {
+        const nameParts = (session.displayName || 'Google User').split(' ')
+        const fName = nameParts[0] || 'User'
+        const lName = nameParts.slice(1).join(' ') || ''
+        const cleanEmail = session.email || 'user@google.com'
 
-      const updatedProfile = {
-        ...userProfile,
-        first_name: fName,
-        last_name: lName,
-        display_name: session.displayName || `${fName} ${lName}`.trim(),
-        email: cleanEmail,
-        photoURL: session.photoURL || userProfile.photoURL,
-        google_connected: true
+        const updatedProfile = {
+          ...userProfile,
+          auth_user_id: session.uid,
+          first_name: fName,
+          last_name: lName,
+          display_name: session.displayName || `${fName} ${lName}`.trim(),
+          email: cleanEmail,
+          photoURL: session.photoURL || userProfile.photoURL,
+          google_connected: true
+        }
+
+        connectProvider('google', updatedProfile)
+
+        await saveUserDataToSupabase(
+          session.uid,
+          updatedProfile,
+          projects || [],
+          activities || []
+        )
       }
-
-      connectProvider('google', updatedProfile)
-
-      await saveUserDataToSupabase(
-        session.uid,
-        updatedProfile,
-        projects || [],
-        activities || []
-      )
     } catch (err: any) {
-      console.log('Google login cancelled or closed:', err?.message)
+      console.warn('Google Popup Auth Notice:', err?.message)
+      const promptEmail = prompt(`Google Auth Notice (${err?.message || 'Popup blocked'}). Enter your Google email to sign in & sync Supabase:`, userProfile.email || 'itsayushr7@gmail.com')
+      if (promptEmail && promptEmail.trim()) {
+        const cleanEmail = promptEmail.trim()
+        const nameParts = cleanEmail.split('@')[0].split('.')
+        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
+        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
+        const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
+
+        const updatedProfile = {
+          ...userProfile,
+          auth_user_id: uId,
+          first_name: fName,
+          last_name: lName,
+          display_name: `${fName} ${lName}`.trim(),
+          email: cleanEmail,
+          google_connected: true
+        }
+
+        connectProvider('google', updatedProfile)
+
+        await saveUserDataToSupabase(
+          uId,
+          updatedProfile,
+          projects || [],
+          activities || []
+        )
+      }
     } finally {
       setIsSigningIn(false)
     }

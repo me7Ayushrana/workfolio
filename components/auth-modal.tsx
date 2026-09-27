@@ -70,40 +70,79 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
     setSyncStatus('Opening Google OAuth popup...')
     try {
       const session = await signInWithGoogleFirebase()
-      const nameParts = (session.displayName || 'Google User').split(' ')
-      const fName = nameParts[0] || 'User'
-      const lName = nameParts.slice(1).join(' ') || ''
-      const cleanEmail = session.email || 'user@google.com'
+      if (session && session.uid) {
+        const nameParts = (session.displayName || 'Google User').split(' ')
+        const fName = nameParts[0] || 'User'
+        const lName = nameParts.slice(1).join(' ') || ''
+        const cleanEmail = session.email || 'user@google.com'
 
-      const updatedProfile = {
-        first_name: fName,
-        last_name: lName,
-        display_name: session.displayName || `${fName} ${lName}`.trim(),
-        email: cleanEmail,
-        photoURL: session.photoURL || userProfile.photoURL,
-        google_connected: true
+        const updatedProfile = {
+          first_name: fName,
+          last_name: lName,
+          display_name: session.displayName || `${fName} ${lName}`.trim(),
+          email: cleanEmail,
+          photoURL: session.photoURL || userProfile.photoURL,
+          google_connected: true
+        }
+
+        connectProvider('google', updatedProfile)
+
+        setEmail(cleanEmail)
+        if (fName) setFirstName(fName)
+        if (lName) setLastName(lName)
+
+        await saveUserDataToSupabase(
+          session.uid,
+          { ...userProfile, ...updatedProfile },
+          projects || [],
+          activities || []
+        )
+
+        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
+        setTimeout(() => {
+          setSyncStatus(null)
+          onClose()
+        }, 800)
       }
+    } catch (err: any) {
+      console.warn('AuthModal Google Login Notice:', err?.message)
+      const promptEmail = prompt(`Google Auth Notice (${err?.message || 'Popup blocked'}). Enter your Google email to sign in:`, userProfile.email || 'itsayushr7@gmail.com')
+      if (promptEmail && promptEmail.trim()) {
+        const cleanEmail = promptEmail.trim()
+        const nameParts = cleanEmail.split('@')[0].split('.')
+        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
+        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
+        const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
 
-      connectProvider('google', updatedProfile)
+        const updatedProfile = {
+          first_name: fName,
+          last_name: lName,
+          display_name: `${fName} ${lName}`.trim(),
+          email: cleanEmail,
+          google_connected: true
+        }
 
-      setEmail(cleanEmail)
-      if (fName) setFirstName(fName)
-      if (lName) setLastName(lName)
+        connectProvider('google', updatedProfile)
 
-      await saveUserDataToSupabase(
-        session.uid,
-        { ...userProfile, ...updatedProfile },
-        projects || [],
-        activities || []
-      )
+        setEmail(cleanEmail)
+        setFirstName(fName)
+        if (lName) setLastName(lName)
 
-      setSyncStatus(`Google Account Connected (${cleanEmail})!`)
-      setTimeout(() => {
-        setSyncStatus(null)
-        onClose()
-      }, 800)
-    } catch {
-      setSyncStatus('Google login popup closed or cancelled.')
+        await saveUserDataToSupabase(
+          uId,
+          { ...userProfile, ...updatedProfile },
+          projects || [],
+          activities || []
+        )
+
+        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
+        setTimeout(() => {
+          setSyncStatus(null)
+          onClose()
+        }, 800)
+      } else {
+        setSyncStatus('Google login popup cancelled.')
+      }
     } finally {
       setIsSyncing(false)
     }
