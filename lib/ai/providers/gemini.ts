@@ -17,24 +17,28 @@ export class GeminiProvider extends BaseAIProvider {
       return {
         success: false,
         status: 'NOT_CONFIGURED',
-        message: 'Google Gemini API key is missing. Please provide a key or set GEMINI_API_KEY on the server.'
+        message: 'Google Gemini API key is missing. Please enter your API key.'
       }
     }
 
-    const isStandardFormat = cleanKey.startsWith('AIzaSy') || cleanKey.length >= 15
-
     try {
-      // Validate key against Google Gemini official models REST endpoint
+      // Direct REST call to Google Gemini official models endpoint to strictly verify key accuracy
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`,
-        { method: 'GET' }
+        {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'Workfolio/1.0',
+            'Accept': 'application/json'
+          }
+        }
       )
 
       if (res.ok) {
         return {
           success: true,
           status: 'VALID',
-          message: `Successfully connected & verified Google Gemini credential.`
+          message: `Successfully connected & verified Google Gemini API Key!`
         }
       }
 
@@ -43,12 +47,10 @@ export class GeminiProvider extends BaseAIProvider {
       const lowerMsg = rawMsg.toLowerCase()
 
       if (res.status === 400 || res.status === 401) {
-        if (lowerMsg.includes('key') || lowerMsg.includes('invalid') || lowerMsg.includes('api_key')) {
-          return {
-            success: false,
-            status: 'INVALID',
-            message: `Google Gemini rejected API key credential: ${rawMsg}`
-          }
+        return {
+          success: false,
+          status: 'INVALID',
+          message: `Google Gemini rejected API key (${res.status}): ${rawMsg}. Please check your key at aistudio.google.com.`
         }
       }
 
@@ -57,13 +59,13 @@ export class GeminiProvider extends BaseAIProvider {
           return {
             success: false,
             status: 'BILLING_REQUIRED',
-            message: `Google Gemini quota/billing issue: ${rawMsg}`
+            message: `Google Gemini billing/quota issue (${res.status}): ${rawMsg}`
           }
         }
         return {
           success: false,
           status: 'PERMISSION_ERROR',
-          message: `Google Gemini permission error: ${rawMsg}`
+          message: `Google Gemini permission error (${res.status}): ${rawMsg}`
         }
       }
 
@@ -71,35 +73,28 @@ export class GeminiProvider extends BaseAIProvider {
         return {
           success: false,
           status: 'RATE_LIMITED',
-          message: `Google Gemini rate limit exceeded: ${rawMsg}`
+          message: `Google Gemini rate limit exceeded (${res.status}): ${rawMsg}`
         }
       }
 
-      if (isStandardFormat) {
+      if (res.status >= 500) {
         return {
-          success: true,
-          status: 'VALID',
-          message: `Google Gemini API key saved to server vault!`
+          success: false,
+          status: 'PROVIDER_ERROR',
+          message: `Google Gemini service temporary error (HTTP ${res.status}): ${rawMsg}`
         }
       }
 
       return {
         success: false,
         status: 'INVALID',
-        message: `Google Gemini connection error (HTTP ${res.status}): ${rawMsg}`
+        message: `Google Gemini rejected key (HTTP ${res.status}): ${rawMsg}`
       }
     } catch (err: any) {
-      if (isStandardFormat) {
-        return {
-          success: true,
-          status: 'VALID',
-          message: `Google Gemini API key verified & saved to server vault!`
-        }
-      }
       return {
         success: false,
         status: 'NETWORK_ERROR',
-        message: `Network failure connecting to Google Gemini: ${err?.message || 'Connection refused'}`
+        message: `Network failure connecting to Google Gemini API: ${err?.message || 'Connection refused'}`
       }
     }
   }

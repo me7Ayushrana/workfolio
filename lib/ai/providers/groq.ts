@@ -17,23 +17,26 @@ export class GroqProvider extends BaseAIProvider {
       return {
         success: false,
         status: 'NOT_CONFIGURED',
-        message: 'Groq API key is missing. Please provide a key or set GROQ_API_KEY on the server.'
+        message: 'Groq API key is missing. Please enter your API key.'
       }
     }
 
-    const isStandardFormat = cleanKey.startsWith('gsk_') || cleanKey.length >= 15
-
     try {
+      // Direct REST call to Groq official models endpoint to strictly verify key accuracy
       const res = await fetch('https://api.groq.com/openai/v1/models', {
         method: 'GET',
-        headers: { Authorization: `Bearer ${cleanKey}` }
+        headers: {
+          'Authorization': `Bearer ${cleanKey}`,
+          'User-Agent': 'Workfolio/1.0',
+          'Accept': 'application/json'
+        }
       })
 
       if (res.ok) {
         return {
           success: true,
           status: 'VALID',
-          message: `Successfully connected & verified Groq credential (${model}).`
+          message: `Successfully connected & verified Groq API Key (${model})!`
         }
       }
 
@@ -41,13 +44,11 @@ export class GroqProvider extends BaseAIProvider {
       const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
       const lowerMsg = rawMsg.toLowerCase()
 
-      if (res.status === 401) {
-        if (lowerMsg.includes('invalid') || lowerMsg.includes('api_key') || lowerMsg.includes('unauthorized')) {
-          return {
-            success: false,
-            status: 'INVALID',
-            message: `Groq rejected API key credential: ${rawMsg}`
-          }
+      if (res.status === 401 || res.status === 400) {
+        return {
+          success: false,
+          status: 'INVALID',
+          message: `Groq rejected API key (${res.status}): ${rawMsg}. Please check your key at console.groq.com/keys.`
         }
       }
 
@@ -56,13 +57,13 @@ export class GroqProvider extends BaseAIProvider {
           return {
             success: false,
             status: 'BILLING_REQUIRED',
-            message: `Groq quota/billing limit reached: ${rawMsg}`
+            message: `Groq quota/billing limit reached (${res.status}): ${rawMsg}`
           }
         }
         return {
           success: false,
           status: 'PERMISSION_ERROR',
-          message: `Groq permission error: ${rawMsg}`
+          message: `Groq permission error (${res.status}): ${rawMsg}`
         }
       }
 
@@ -70,35 +71,28 @@ export class GroqProvider extends BaseAIProvider {
         return {
           success: false,
           status: 'RATE_LIMITED',
-          message: `Groq rate limit exceeded: ${rawMsg}`
+          message: `Groq rate limit exceeded (${res.status}): ${rawMsg}`
         }
       }
 
-      if (isStandardFormat) {
+      if (res.status >= 500) {
         return {
-          success: true,
-          status: 'VALID',
-          message: `Groq API key saved to server vault!`
+          success: false,
+          status: 'PROVIDER_ERROR',
+          message: `Groq service temporary error (HTTP ${res.status}): ${rawMsg}`
         }
       }
 
       return {
         success: false,
         status: 'INVALID',
-        message: `Groq error (HTTP ${res.status}): ${rawMsg}`
+        message: `Groq rejected key (HTTP ${res.status}): ${rawMsg}`
       }
     } catch (err: any) {
-      if (isStandardFormat) {
-        return {
-          success: true,
-          status: 'VALID',
-          message: `Groq API key verified & saved to server vault!`
-        }
-      }
       return {
         success: false,
         status: 'NETWORK_ERROR',
-        message: `Network failure connecting to Groq: ${err?.message || 'Connection refused'}`
+        message: `Network failure connecting to Groq API: ${err?.message || 'Connection refused'}`
       }
     }
   }
