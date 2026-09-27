@@ -67,7 +67,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
 
   const handleGoogleLogin = async () => {
     setIsSyncing(true)
-    setSyncStatus('Connecting to Firebase Auth...')
+    setSyncStatus('Connecting to Google Auth...')
     try {
       const session = await signInWithGoogleFirebase()
       const nameParts = (session.displayName || 'Google User').split(' ')
@@ -86,16 +86,17 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
       if (fName) setFirstName(fName)
       if (lName) setLastName(lName)
 
-      const syncRes = await saveUserDataToSupabase(
-        session.uid,
-        { ...userProfile, google_connected: true, email: session.email },
-        projects || [],
-        activities || []
-      )
-
-      setSyncStatus(`Firebase Auth Verified (${session.email})! ${syncRes.message}`)
+      setSyncStatus(`Google Account Connected (${session.email})!`)
+      setTimeout(() => {
+        setSyncStatus(null)
+        onClose()
+      }, 800)
     } catch (err: any) {
-      setSyncStatus(`Google sign-in cancelled or failed: ${err.message}`)
+      if (err.message?.includes('cancelled')) {
+        setSyncStatus(null)
+      } else {
+        setSyncStatus(`Notice: ${err.message}`)
+      }
     } finally {
       setIsSyncing(false)
     }
@@ -372,34 +373,22 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                     <Github size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">GitHub Identity Provider</h4>
-                    <p className="text-[11px] text-[#f3eee4]/60">
-                      {userProfile.github_connected ? `@${userProfile.github_username}` : 'Not connected'}
+                    <h4 className="font-bold text-white">GitHub Integration</h4>
+                    <p className="text-[11px] text-[#c1a05b]">
+                      {userProfile.github_connected
+                        ? `@${userProfile.github_username} (Token Active)`
+                        : 'OAuth Currently Unavailable — Connect via Personal Access Token'}
                     </p>
                   </div>
                 </div>
 
-                {userProfile.github_connected ? (
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 border border-emerald-500/30 rounded-lg">
-                      <Check size={12} /> Connected
-                    </span>
-                    <button
-                      onClick={() => disconnectProvider('github')}
-                      className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleGithubLogin}
-                    disabled={isSyncing}
-                    className="rounded-xl bg-purple-600 text-white font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-purple-500 transition-all cursor-pointer shadow"
-                  >
-                    {isSyncing ? 'Connecting...' : 'Connect GitHub'}
-                  </button>
-                )}
+                <button
+                  onClick={() => setActiveTab('apikeys')}
+                  className="rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 text-[#c1a05b] font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow flex items-center gap-1.5"
+                >
+                  <Key size={13} />
+                  <span>Connect API Token</span>
+                </button>
               </div>
 
               {/* DATA SYNC CARD */}
