@@ -456,7 +456,6 @@ export function WorkfolioMascot({
         width={dimensions.width}
         height={dimensions.height}
         className="block cursor-pointer transition-all duration-300 group-hover/mascot:scale-105 drop-shadow-2xl"
-        title={`Workfolio 3D Mascot (${activeVariant === 'male' ? 'Male' : 'Female'}) - Interactive Box-Bound Head Tracking`}
       />
 
       {/* Optional Gender Switcher Pill */}
