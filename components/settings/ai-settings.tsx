@@ -52,7 +52,7 @@ export function AISettings() {
   const [syncingGithub, setSyncingGithub] = useState(false)
 
   const [showInfoModal, setShowInfoModal] = useState(false)
-  const [activeTab, setActiveTab] = useState<'keys' | 'failover' | 'github'>('keys')
+  const [activeTab, setActiveTab] = useState<'keys' | 'failover' | 'github' | 'wakatime'>('keys')
 
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
@@ -512,7 +512,7 @@ export function AISettings() {
         </div>
       </div>
 
-      {/* GITHUB INTEGRATION CARD */}
+      {/* GITHUB & WAKATIME INTEGRATION CARD */}
       <div className="rounded-3xl border border-purple-500/30 bg-gradient-to-b from-purple-950/20 via-[#10121a] to-[#0d0e15] p-7 space-y-6 shadow-2xl">
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-3">
@@ -520,97 +520,149 @@ export function AISettings() {
               <Github size={22} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">GitHub Engineering Intelligence</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-white">GitHub Intelligence & App Integration</h3>
+                <span className="rounded bg-purple-500/20 border border-purple-500/30 px-2 py-0.5 text-[9px] font-bold text-purple-300">
+                  {githubUser ? 'CONNECTED' : 'NOT CONNECTED'}
+                </span>
+              </div>
               <p className="text-xs text-[#f3eee4]/60">
-                Observes commits, PRs, issues & releases to generate evidence drafts
+                Observes commits, PRs, issues, releases, and CI runs. (Metadata: SOURCE: GITHUB · STATUS: OBSERVED)
               </p>
             </div>
           </div>
-          <a
-            href="https://github.com/settings/tokens"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 text-xs font-bold text-[#c1a05b] hover:underline"
-          >
-            <span>GitHub Tokens</span>
-            <ExternalLink size={13} />
-          </a>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <label className="text-xs font-bold text-[#f3eee4]/90 block mb-2">GitHub Username</label>
-            <input
-              type="text"
-              value={githubUser}
-              onChange={(e) => setGithubUser(e.target.value)}
-              className="w-full rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white focus:border-[#c1a05b] focus:outline-none transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-[#f3eee4]/90 block mb-2">Personal Access Token (Optional)</label>
-            <input
-              type="password"
-              value={githubToken}
-              onChange={(e) => setGithubToken(e.target.value)}
-              placeholder="ghp_..."
-              className="w-full rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white placeholder:text-white/30 focus:border-[#c1a05b] focus:outline-none transition-all"
-            />
-          </div>
-
-          <div className="flex items-end">
+          <div className="flex items-center gap-2">
             <button
-              onClick={handleSyncGitHub}
-              disabled={syncingGithub}
-              className="w-full rounded-2xl border border-[#c1a05b] bg-[#c1a05b] px-5 py-3 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              onClick={() => setActiveTab('github')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'github' ? 'bg-[#c1a05b] text-[#08090f]' : 'bg-white/5 text-[#f3eee4]/70 hover:text-white'
+              }`}
             >
-              {syncingGithub ? <RefreshCw size={15} className="animate-spin" /> : <RefreshCw size={15} />}
-              <span>SYNC GITHUB ACTIVITY</span>
+              GitHub App
+            </button>
+            <button
+              onClick={() => setActiveTab('wakatime')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'wakatime' ? 'bg-[#c1a05b] text-[#08090f]' : 'bg-white/5 text-[#f3eee4]/70 hover:text-white'
+              }`}
+            >
+              WakaTime
             </button>
           </div>
         </div>
 
-        {/* OBSERVED ACTIVITIES FEED */}
-        <div className="space-y-3 pt-4 border-t border-white/10">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
-              Observed Engineering Activity ({observedActivities.length})
-            </h4>
-            <span className="text-[10px] text-[#f3eee4]/50">Click "Add as Evidence" to convert commit into draft</span>
+        {activeTab === 'wakatime' ? (
+          <div className="rounded-2xl border border-white/10 bg-black/40 p-6 space-y-3 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-[#c1a05b] uppercase text-[10px]">WAKATIME TIME TRACKING FOUNDATION</span>
+              <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[9px] font-bold text-amber-300">READY FOR API KEY</span>
+            </div>
+            <p className="text-[#f3eee4]/80 leading-relaxed">
+              Integrate WakaTime API key to observe daily editor coding duration, editor IDE splits, and language breakdowns. Distinguishes WakaTime observed coding time from GitHub commits and Workfolio logged work.
+            </p>
+            <div className="flex items-center gap-3 pt-2">
+              <input
+                type="password"
+                placeholder="waka_..."
+                className="flex-1 rounded-xl border border-white/15 bg-[#0b0c14] px-4 py-2 text-xs text-white outline-none focus:border-[#c1a05b]"
+              />
+              <button className="rounded-xl bg-[#c1a05b] px-4 py-2 text-xs font-bold text-[#08090f]">
+                Save WakaTime Key
+              </button>
+            </div>
           </div>
-
-          <div className="space-y-3">
-            {observedActivities.map((act) => (
-              <div
-                key={act.id}
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0b0c14] p-4 text-xs transition-all hover:border-white/20"
-              >
-                <div className="flex items-center gap-3">
-                  {act.type === 'COMMIT' ? (
-                    <GitCommit size={20} className="text-emerald-400" />
-                  ) : (
-                    <GitPullRequest size={20} className="text-sky-400" />
-                  )}
-                  <div>
-                    <div className="font-bold text-white">{act.title}</div>
-                    <div className="text-[11px] text-[#f3eee4]/60 mt-0.5">
-                      {act.repoName} • {act.date} {act.details ? `• ${act.details}` : ''}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleConvertGitHubToDraft(act)}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3.5 py-2 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow-md"
-                >
-                  <Sparkles size={13} />
-                  <span>ADD AS EVIDENCE</span>
-                </button>
+        ) : (
+          <>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <label className="text-xs font-bold text-[#f3eee4]/90 block mb-2">GitHub Username</label>
+                <input
+                  type="text"
+                  value={githubUser}
+                  onChange={(e) => setGithubUser(e.target.value)}
+                  placeholder="e.g. me7Ayushrana"
+                  className="w-full rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white focus:border-[#c1a05b] focus:outline-none transition-all"
+                />
               </div>
-            ))}
-          </div>
-        </div>
+
+              <div>
+                <label className="text-xs font-bold text-[#f3eee4]/90 block mb-2">App / Token (Optional override)</label>
+                <input
+                  type="password"
+                  value={githubToken}
+                  onChange={(e) => setGithubToken(e.target.value)}
+                  placeholder="ghp_... or server app installation"
+                  className="w-full rounded-2xl border border-white/15 bg-[#0b0c14] px-4 py-3 text-xs text-white placeholder:text-white/30 focus:border-[#c1a05b] focus:outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex items-end gap-2">
+                <button
+                  onClick={handleSyncGitHub}
+                  disabled={syncingGithub}
+                  className="flex-1 rounded-2xl border border-[#c1a05b] bg-[#c1a05b] px-4 py-3 text-xs font-bold text-[#08090f] hover:bg-[#d4b46c] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                >
+                  {syncingGithub ? <RefreshCw size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+                  <span>SYNC NOW</span>
+                </button>
+
+                {githubUser && (
+                  <button
+                    onClick={() => {
+                      setGithubUser('')
+                      setStatusMessage({ type: 'success', text: 'Disconnected GitHub account.' })
+                    }}
+                    className="rounded-2xl border border-red-500/30 bg-red-500/10 px-3 py-3 text-xs font-semibold text-red-400 hover:bg-red-500/20"
+                  >
+                    Disconnect
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* OBSERVED ACTIVITIES FEED */}
+            <div className="space-y-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#c1a05b]">
+                  Observed Engineering Activity ({observedActivities.length})
+                </h4>
+                <span className="text-[10px] text-[#f3eee4]/50">SOURCE: GITHUB · STATUS: OBSERVED</span>
+              </div>
+
+              <div className="space-y-3">
+                {observedActivities.map((act) => (
+                  <div
+                    key={act.id}
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0b0c14] p-4 text-xs transition-all hover:border-white/20"
+                  >
+                    <div className="flex items-center gap-3">
+                      {act.type === 'COMMIT' ? (
+                        <GitCommit size={20} className="text-emerald-400" />
+                      ) : (
+                        <GitPullRequest size={20} className="text-sky-400" />
+                      )}
+                      <div>
+                        <div className="font-bold text-white">{act.title}</div>
+                        <div className="text-[11px] text-[#f3eee4]/60 mt-0.5">
+                          {act.repoName} • {act.date} {act.details ? `• ${act.details}` : ''}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleConvertGitHubToDraft(act)}
+                      className="flex items-center gap-1.5 rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 px-3.5 py-2 text-[11px] font-bold text-[#c1a05b] hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow-md"
+                    >
+                      <Sparkles size={13} />
+                      <span>ADD AS EVIDENCE</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* MASTER KEY INTEGRATION GUIDE MODAL */}
