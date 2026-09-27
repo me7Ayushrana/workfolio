@@ -13,8 +13,6 @@ export class GroqProvider extends BaseAIProvider {
       return { success: false, message: 'Groq API key is missing. Please enter your API key.' }
     }
 
-    const isStandardFormat = cleanKey.startsWith('gsk_') || cleanKey.length >= 10
-
     try {
       const res = await fetch('https://api.groq.com/openai/v1/models', {
         method: 'GET',
@@ -22,19 +20,16 @@ export class GroqProvider extends BaseAIProvider {
       })
 
       if (res.ok) {
-        return { success: true, message: `Successfully connected to Groq (${model}).` }
+        return { success: true, message: `Successfully connected & verified Groq API Key (${model})!` }
       } else {
         const errorData = await res.json().catch(() => ({}))
         const rawMsg = errorData?.error?.message || `HTTP ${res.status}`
-        if (isStandardFormat) {
-          return { success: true, message: `Groq API Key saved to local vault and activated!` }
+        return {
+          success: false,
+          message: `Key Verification Failed (${res.status}): ${rawMsg}`
         }
-        return { success: false, message: `Groq error (${res.status}): ${rawMsg}` }
       }
     } catch (err: any) {
-      if (isStandardFormat) {
-        return { success: true, message: `Groq API Key saved to local vault and activated!` }
-      }
       return { success: false, message: `Network error reaching Groq API: ${err?.message || 'Connection refused'}` }
     }
   }

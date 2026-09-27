@@ -620,8 +620,9 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       if (storedGemini) {
         try {
           const parsed = JSON.parse(storedGemini)
-          if (parsed.apiKey && parsed.apiKey.trim().length > 5) {
-            parsed.status = 'active'
+          if (!parsed.apiKey || !parsed.apiKey.trim()) {
+            parsed.apiKey = ''
+            parsed.status = 'unconfigured'
           }
           setGeminiConfig(parsed)
         } catch {}
@@ -631,8 +632,9 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       if (storedGroq) {
         try {
           const parsed = JSON.parse(storedGroq)
-          if (parsed.apiKey && parsed.apiKey.trim().length > 5) {
-            parsed.status = 'active'
+          if (!parsed.apiKey || !parsed.apiKey.trim()) {
+            parsed.apiKey = ''
+            parsed.status = 'unconfigured'
           }
           setGroqConfig(parsed)
         } catch {}
@@ -1227,16 +1229,18 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     if (providerId === 'gemini') {
       setGeminiConfig((prev) => {
         const next = { ...prev, ...updates }
-        if (next.apiKey && next.apiKey.trim().length > 5 && next.status !== 'error') {
-          next.status = 'active'
+        if (!next.apiKey || !next.apiKey.trim()) {
+          next.apiKey = ''
+          next.status = 'unconfigured'
         }
         return next
       })
     } else {
       setGroqConfig((prev) => {
         const next = { ...prev, ...updates }
-        if (next.apiKey && next.apiKey.trim().length > 5 && next.status !== 'error') {
-          next.status = 'active'
+        if (!next.apiKey || !next.apiKey.trim()) {
+          next.apiKey = ''
+          next.status = 'unconfigured'
         }
         return next
       })
