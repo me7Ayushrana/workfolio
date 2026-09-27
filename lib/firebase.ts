@@ -46,12 +46,21 @@ export function formatFirebaseUser(user: User): FirebaseUserSession {
 export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
   try {
     const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({ prompt: 'select_account' })
     const result = await signInWithPopup(auth, provider)
     return formatFirebaseUser(result.user)
   } catch (err: any) {
+    console.error('Firebase Google Auth error:', err)
+    if (err.code === 'auth/popup-closed-by-user') {
+      throw new Error('Google Sign-In popup was closed before completing.')
+    }
+    if (err.code === 'auth/unauthorized-domain') {
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'current domain'
+      throw new Error(`Domain "${currentHost}" is not authorized in Firebase Console. Go to Firebase Console -> Authentication -> Settings -> Authorized domains and add "${currentHost}".`)
+    }
     if (err.code === 'auth/configuration-not-found' || err.code === 'auth/invalid-api-key' || err.message?.includes('api-key')) {
       // Direct email prompt fallback for quick local testing when Firebase project keys are pending
-      const email = prompt('Enter your Google email to sign in:', 'developer@google.com')
+      const email = prompt('Enter your Google email to sign in (Demo Mode):', 'developer@google.com')
       if (!email) throw new Error('Google Sign-In cancelled.')
       return {
         uid: `firebase-google-${btoa(email).slice(0, 12)}`,

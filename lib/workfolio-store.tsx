@@ -9,6 +9,7 @@ import {
   PendingAIDraft,
   AISourceAttribution
 } from './ai/types'
+import { subscribeAuthState } from './firebase'
 
 export interface GitHubRepoItem {
   id: string
@@ -652,6 +653,22 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
     } catch {
       // Fallback
     }
+
+    const unsubscribe = subscribeAuthState((firebaseUser) => {
+      if (firebaseUser) {
+        const nameParts = (firebaseUser.displayName || 'Google User').split(' ')
+        setUserProfile((prev) => ({
+          ...prev,
+          google_connected: true,
+          email: firebaseUser.email || prev.email,
+          display_name: firebaseUser.displayName || prev.display_name,
+          first_name: nameParts[0] || prev.first_name,
+          last_name: nameParts.slice(1).join(' ') || prev.last_name,
+          photoURL: firebaseUser.photoURL || prev.photoURL
+        }))
+      }
+    })
+    return () => unsubscribe()
   }, [])
 
   // Sync state to localStorage
