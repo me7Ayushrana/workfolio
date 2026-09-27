@@ -232,10 +232,12 @@ export function WorkfolioHeader() {
             <button
               onClick={() => setShowAuthModal(true)}
               className="flex items-center gap-2 border border-[#c1a05b]/40 bg-[#0c0d14] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f3eee4] hover:border-[#c1a05b] hover:text-[#c1a05b] transition-all cursor-pointer"
-              title="Profile & Identity Console"
+              title="Profile & Settings - Change Display Name"
             >
               <Settings size={13} className="text-[#c1a05b]" />
-              <span className="hidden md:inline">PROFILE</span>
+              <span className="hidden md:inline max-w-[120px] truncate">
+                {userProfile?.display_name || userProfile?.first_name || 'SET DISPLAY NAME'}
+              </span>
             </button>
 
             {/* PRIMARY + LOG ACTIVITY BUTTON */}

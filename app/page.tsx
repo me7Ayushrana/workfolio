@@ -57,6 +57,21 @@ export default function Home() {
   // Active skills
   const activeSkills = skills.filter((s) => s.status !== 'ARCHIVED').slice(0, 3)
 
+  const [greetingPrefix, setGreetingPrefix] = useState('Good morning')
+
+  React.useEffect(() => {
+    const hour = new Date().getHours()
+    if (hour >= 4 && hour < 12) {
+      setGreetingPrefix('Good morning')
+    } else if (hour >= 12 && hour < 17) {
+      setGreetingPrefix('Good afternoon')
+    } else if (hour >= 17 && hour < 22) {
+      setGreetingPrefix('Good evening')
+    } else {
+      setGreetingPrefix('Good night')
+    }
+  }, [])
+
   return (
     <main className="min-h-screen bg-[#f3eee4] text-[#111318]">
       <WorkfolioHeader />
@@ -72,12 +87,12 @@ export default function Home() {
         <section className="border border-[#c1a05b]/30 bg-[#0c0d14] p-6 md:p-8 text-[#f3eee4] shadow-xl rounded">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             
-            {/* Left Content Column - Cleaned Greeting */}
+            {/* Left Content Column - Dynamic Greeting */}
             <div className="lg:col-span-7 space-y-5">
               <h1 className="font-serif text-4xl font-light leading-none tracking-[-.03em] md:text-5xl text-[#f3eee4]">
-                {userProfile?.first_name || userProfile?.display_name
-                  ? `Good morning, ${userProfile.first_name || userProfile.display_name}.`
-                  : 'Good morning.'}
+                {userProfile?.display_name || userProfile?.first_name
+                  ? `${greetingPrefix}, ${userProfile.display_name || userProfile.first_name}.`
+                  : `${greetingPrefix}.`}
               </h1>
 
               {/* Quick Metrics Bar */}
