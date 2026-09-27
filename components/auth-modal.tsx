@@ -21,8 +21,6 @@ import {
 } from 'lucide-react'
 import { MascotVariant, useWorkfolio } from '@/lib/workfolio-store'
 import { WorkfolioMascot } from './workfolio-mascot'
-import { signInWithGoogleFirebase, signInWithGithubFirebase } from '@/lib/firebase'
-import { saveUserDataToSupabase } from '@/lib/supabase'
 
 interface AuthModalProps {
   onClose: () => void
@@ -31,7 +29,7 @@ interface AuthModalProps {
 
 export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
   const router = useRouter()
-  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider, projects, activities } = useWorkfolio()
+  const { userProfile, updateUserProfile, setMascotVariant, connectProvider, disconnectProvider } = useWorkfolio()
 
   const [activeTab, setActiveTab] = useState<'profile' | 'auth' | 'apikeys'>(initialTab)
 
@@ -63,82 +61,6 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
     setMascotVariant(mascotVariant)
     setSyncStatus('Profile updated and synchronized locally!')
     setTimeout(() => onClose(), 600)
-  }
-
-  const handleGoogleLogin = async () => {
-    setIsSyncing(true)
-    setSyncStatus('Opening Google OAuth popup...')
-    try {
-      const session = await signInWithGoogleFirebase()
-      if (session && session.uid) {
-        const nameParts = (session.displayName || 'Google User').split(' ')
-        const fName = nameParts[0] || 'User'
-        const lName = nameParts.slice(1).join(' ') || ''
-        const cleanEmail = session.email || 'user@google.com'
-
-        const updatedProfile = {
-          first_name: fName,
-          last_name: lName,
-          display_name: session.displayName || `${fName} ${lName}`.trim(),
-          email: cleanEmail,
-          photoURL: session.photoURL || userProfile.photoURL,
-          google_connected: true
-        }
-
-        connectProvider('google', updatedProfile)
-
-        setEmail(cleanEmail)
-        if (fName) setFirstName(fName)
-        if (lName) setLastName(lName)
-
-        await saveUserDataToSupabase(
-          session.uid,
-          { ...userProfile, ...updatedProfile },
-          projects || [],
-          activities || []
-        )
-
-        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
-        setTimeout(() => {
-          setSyncStatus(null)
-          onClose()
-        }, 800)
-      }
-    } catch (err: any) {
-      console.warn('AuthModal Google Login Notice:', err?.message)
-      setSyncStatus(`Google Sign-In notice: ${err?.message || 'Popup closed or blocked.'}`)
-    } finally {
-      setIsSyncing(false)
-    }
-  }
-
-  const handleGithubLogin = async () => {
-    setIsSyncing(true)
-    setSyncStatus('Connecting to GitHub via Firebase Auth...')
-    try {
-      const session = await signInWithGithubFirebase()
-      const ghName = session.displayName || 'github-user'
-
-      connectProvider('github', {
-        github_username: ghName,
-        github_connected: true
-      })
-
-      setGithubUser(ghName)
-
-      const syncRes = await saveUserDataToSupabase(
-        session.uid,
-        { ...userProfile, github_connected: true, github_username: ghName },
-        projects || [],
-        activities || []
-      )
-
-      setSyncStatus(`GitHub Connected (@${ghName})! ${syncRes.message}`)
-    } catch (err: any) {
-      setSyncStatus(`GitHub sign-in cancelled or failed: ${err.message}`)
-    } finally {
-      setIsSyncing(false)
-    }
   }
 
   const handleRedirectToApiSettings = () => {
@@ -333,61 +255,24 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
           {activeTab === 'auth' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-bold text-white">Authentication Providers & Data Sync</h3>
+                <h3 className="text-xl font-bold text-white">Local Workspace Data & Sync</h3>
                 <p className="text-xs text-[#f3eee4]/70 mt-1 leading-relaxed">
-                  Log in with Google or GitHub to sync your active projects, learning tracks, and evidence logs across LocalStorage and Firebase sync state.
+                  Your active projects, learning tracks, and evidence logs are automatically managed and synchronized in high-speed local browser storage.
                 </p>
               </div>
 
-              {/* GOOGLE IDENTITY PROVIDER */}
-              <div className="flex items-center justify-between rounded-2xl border border-[#4285F4]/30 bg-[#121420] p-5 shadow-md">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#4285F4] font-black text-lg shadow-sm shrink-0">
-                    G
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white text-sm">Google Identity Provider</h4>
-                    <p className="text-[11px] text-[#f3eee4]/60">
-                      {userProfile.google_connected ? `Connected as ${userProfile.email}` : 'Sign in with Google OAuth popup to select your account & sync data'}
-                    </p>
-                  </div>
-                </div>
-
-                {userProfile.google_connected ? (
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1.5 border border-emerald-500/30 rounded-lg">
-                      <Check size={12} /> Connected
-                    </span>
-                    <button
-                      onClick={() => disconnectProvider('google')}
-                      className="text-[10px] font-bold uppercase text-[#f3eee4]/50 hover:text-red-400 ml-2 cursor-pointer"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleGoogleLogin}
-                    disabled={isSyncing}
-                    className="rounded-xl bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-xs uppercase tracking-wider px-4 py-2 transition-all cursor-pointer shadow flex items-center gap-1.5 shrink-0"
-                  >
-                    <span>{isSyncing ? 'Opening Google...' : 'Connect Google'}</span>
-                  </button>
-                )}
-              </div>
-
-              {/* GITHUB LOGIN CARD */}
+              {/* GITHUB INTEGRATION CARD */}
               <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#121420] p-4 text-xs shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-950/40 text-purple-300 border border-purple-500/30 font-bold">
                     <Github size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">GitHub Integration</h4>
+                    <h4 className="font-bold text-white">GitHub Token Integration</h4>
                     <p className="text-[11px] text-[#c1a05b]">
-                      {userProfile.github_connected
-                        ? `@${userProfile.github_username} (Token Active)`
-                        : 'OAuth Currently Unavailable — Connect via Personal Access Token'}
+                      {userProfile.github_username
+                        ? `@${userProfile.github_username} (Token Configured)`
+                        : 'Connect via Personal Access Token in API Credentials'}
                     </p>
                   </div>
                 </div>
@@ -397,7 +282,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
                   className="rounded-xl border border-[#c1a05b]/40 bg-[#c1a05b]/10 text-[#c1a05b] font-bold text-xs uppercase tracking-wider px-4 py-2 hover:bg-[#c1a05b] hover:text-[#08090f] transition-all cursor-pointer shadow flex items-center gap-1.5"
                 >
                   <Key size={13} />
-                  <span>Connect API Token</span>
+                  <span>Configure API Token</span>
                 </button>
               </div>
 
@@ -405,12 +290,12 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
               <div className="rounded-2xl border border-white/10 bg-[#121420] p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between font-bold text-white">
                   <span className="flex items-center gap-1.5 text-[#c1a05b]">
-                    <Database size={15} /> Workspace Data Synchronization
+                    <Database size={15} /> Workspace Data Storage
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-bold">Active LocalStorage & Cache</span>
+                  <span className="text-[10px] text-emerald-400 font-bold">Active Local Storage & State</span>
                 </div>
                 <p className="text-[#f3eee4]/75 text-[11px] leading-relaxed">
-                  Your activity logs, project milestones, and evidence vault items are synchronized across browser storage and cached Firebase state upon login.
+                  All activity logs, project milestones, skills, and evidence vault items persist instantly in local client state.
                 </p>
               </div>
             </div>

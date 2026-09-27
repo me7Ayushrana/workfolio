@@ -1,17 +1,4 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
-import {
-  getAuth,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  User,
-  onAuthStateChanged
-} from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyCxFGoSzbINdC2gCbuAhbj8waj4eSXm_VQ',
@@ -23,131 +10,37 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-ZGD9K1DGEP'
 }
 
-if (typeof window !== 'undefined') {
-  console.log('[FIREBASE CONFIG DIAGNOSTICS]')
-  console.log('Firebase projectId:', firebaseConfig.projectId)
-  console.log('Firebase authDomain:', firebaseConfig.authDomain)
-  console.log('Firebase appId:', firebaseConfig.appId)
-  console.log('Firebase API key present:', Boolean(firebaseConfig.apiKey))
-  console.log('Firebase API key prefix:', firebaseConfig.apiKey ? firebaseConfig.apiKey.slice(0, 6) + '...' : 'NONE')
-}
-
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
-export const auth = getAuth(app)
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
 
 export interface FirebaseUserSession {
   uid: string
   displayName: string | null
   email: string | null
   photoURL: string | null
-  providerId: 'google.com' | 'github.com' | 'password' | 'local'
-  getIdToken?: () => Promise<string>
+  providerId: 'local'
 }
 
-export function formatFirebaseUser(user: User): FirebaseUserSession {
-  return {
-    uid: user.uid,
-    displayName: user.displayName || user.email?.split('@')[0] || 'Workfolio User',
-    email: user.email,
-    photoURL: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email || user.uid}`,
-    providerId: (user.providerData[0]?.providerId as any) || 'password',
-    getIdToken: () => user.getIdToken()
-  }
+export async function signInWithGoogleFirebase(): Promise<FirebaseUserSession> {
+  throw new Error('Authentication has been removed.')
 }
 
-export async function signInWithGoogleFirebase(forceRedirect = false): Promise<FirebaseUserSession> {
-  const provider = new GoogleAuthProvider()
-  provider.setCustomParameters({ prompt: 'select_account' })
-
-  if (forceRedirect) {
-    console.log('[FIREBASE OAUTH] Executing signInWithRedirect...')
-    await signInWithRedirect(auth, provider)
-    return new Promise(() => {})
-  }
-
-  try {
-    console.log('[FIREBASE OAUTH] Executing signInWithPopup...')
-    const result = await signInWithPopup(auth, provider)
-    return formatFirebaseUser(result.user)
-  } catch (err: any) {
-    console.error('FIREBASE GOOGLE OAUTH ERROR CODE:', err?.code)
-    console.error('FIREBASE GOOGLE OAUTH ERROR MESSAGE:', err?.message)
-    console.error('FULL FIREBASE ERROR OBJECT:', err)
-
-    if (
-      err?.code === 'auth/popup-blocked' ||
-      err?.code === 'auth/popup-closed-by-user' ||
-      err?.code === 'auth/cancelled-popup-request'
-    ) {
-      console.warn('[FIREBASE OAUTH] Popup was blocked or closed. Falling back to signInWithRedirect...')
-      await signInWithRedirect(auth, provider)
-      return new Promise(() => {})
-    }
-
-    throw err
-  }
-}
-
-export async function signInWithGoogleRedirect(): Promise<void> {
-  const provider = new GoogleAuthProvider()
-  provider.setCustomParameters({ prompt: 'select_account' })
-  await signInWithRedirect(auth, provider)
-}
-
+export async function signInWithGoogleRedirect(): Promise<void> {}
 
 export async function signInWithGithubFirebase(): Promise<FirebaseUserSession> {
-  try {
-    const provider = new GithubAuthProvider()
-    const result = await signInWithPopup(auth, provider)
-    return formatFirebaseUser(result.user)
-  } catch (err: any) {
-    if (err.code === 'auth/configuration-not-found' || err.code === 'auth/invalid-api-key' || err.message?.includes('api-key')) {
-      const handle = prompt('Enter your GitHub handle to sign in:', 'me7Ayushrana')
-      if (!handle) throw new Error('GitHub Sign-In cancelled.')
-      return {
-        uid: `firebase-github-${handle}`,
-        displayName: handle,
-        email: `${handle.toLowerCase()}@users.noreply.github.com`,
-        photoURL: `https://github.com/${handle}.png`,
-        providerId: 'github.com'
-      }
-    }
-    throw err
-  }
+  throw new Error('Authentication has been removed.')
 }
 
-export async function signInWithEmailPasswordFirebase(email: string, pass: string): Promise<FirebaseUserSession> {
-  const result = await signInWithEmailAndPassword(auth, email, pass)
-  return formatFirebaseUser(result.user)
+export async function signInWithEmailPasswordFirebase(): Promise<FirebaseUserSession> {
+  throw new Error('Authentication has been removed.')
 }
 
-export async function signUpWithEmailPasswordFirebase(email: string, pass: string): Promise<FirebaseUserSession> {
-  const result = await createUserWithEmailAndPassword(auth, email, pass)
-  return formatFirebaseUser(result.user)
+export async function signUpWithEmailPasswordFirebase(): Promise<FirebaseUserSession> {
+  throw new Error('Authentication has been removed.')
 }
 
-export async function signOutFirebase(): Promise<void> {
-  try {
-    await firebaseSignOut(auth)
-  } catch {
-    // Ignore error
-  }
-}
+export async function signOutFirebase(): Promise<void> {}
 
 export function subscribeAuthState(callback: (user: FirebaseUserSession | null) => void) {
-  try {
-    getRedirectResult(auth).then((result) => {
-      if (result?.user) {
-        callback(formatFirebaseUser(result.user))
-      }
-    }).catch(() => {})
-  } catch {}
-
-  return onAuthStateChanged(auth, (user) => {
-    if (user) {
-      callback(formatFirebaseUser(user))
-    } else {
-      callback(null)
-    }
-  })
+  // Return dummy unsubscribe
+  return () => {}
 }
