@@ -63,8 +63,10 @@ export function WorkfolioHeader() {
   const [proofDropdownOpen, setProofDropdownOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
 
   const handleGoogleLoginDirectly = async () => {
+    setAuthError(null)
     setIsSigningIn(true)
     try {
       const session = await signInWithGoogleFirebase()
@@ -95,41 +97,13 @@ export function WorkfolioHeader() {
         )
       }
     } catch (err: any) {
-      console.warn('Google Popup Auth Notice:', err?.message)
-      // Open account dropdown menu as smooth inline fallback without annoying prompts
-      setAccountDropdownOpen(true)
+      console.error('Google Sign-In Error:', err?.code, err?.message, err)
+      const errCode = err?.code || 'auth/error'
+      const errMsg = err?.message || 'Google OAuth failed.'
+      setAuthError(`[${errCode}] ${errMsg}`)
     } finally {
       setIsSigningIn(false)
     }
-  }
-
-  const handleQuickAccountSelect = async (selectedEmail: string) => {
-    const cleanEmail = selectedEmail.trim()
-    const nameParts = cleanEmail.split('@')[0].split('.')
-    const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
-    const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
-    const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
-
-    const updatedProfile = {
-      ...userProfile,
-      auth_user_id: uId,
-      first_name: fName,
-      last_name: lName,
-      display_name: `${fName} ${lName}`.trim(),
-      email: cleanEmail,
-      google_connected: true
-    }
-
-    connectProvider('google', updatedProfile)
-
-    await saveUserDataToSupabase(
-      uId,
-      updatedProfile,
-      projects || [],
-      activities || []
-    )
-
-    setAccountDropdownOpen(false)
   }
 
   const handleSignOutClick = async () => {
@@ -368,36 +342,11 @@ export function WorkfolioHeader() {
                 </button>
               )}
 
-              {accountDropdownOpen && userProfile.google_connected && (
-                <div className="absolute right-0 top-full z-50 mt-1 w-64 border border-[#c1a05b]/40 bg-[#0c0d14] p-3 shadow-2xl rounded-xl text-xs space-y-3">
-                  <div className="flex items-center gap-2.5 pb-2.5 border-b border-[#f3eee4]/10">
-                    <GoogleLogo className="w-4 h-4 shrink-0" />
-                    <div className="overflow-hidden">
-                      <p className="text-xs font-bold text-[#f3eee4] truncate">
-                        {userProfile.display_name || 'Google Account'}
-                      </p>
-                      <p className="text-[9px] text-[#f3eee4]/60 truncate">
-                        {userProfile.email || 'Connected'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setAccountDropdownOpen(false)
-                      setShowAuthModal(true)
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#c1a05b] hover:bg-[#1a1c24] rounded-lg transition-colors"
-                  >
-                    Profile & API Credentials
-                  </button>
-
-                  <button
-                    onClick={handleSignOutClick}
-                    className="w-full text-left px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors"
-                  >
-                    Sign Out (Disconnect)
-                  </button>
+              {authError && (
+                <div className="absolute right-0 top-full z-50 mt-1 max-w-xs rounded-xl border border-rose-500/40 bg-[#12080a] p-2.5 text-[10px] text-rose-300 shadow-2xl">
+                  <p className="font-bold text-rose-400">Google Auth Error</p>
+                  <p className="mt-0.5 leading-tight">{authError}</p>
+                  <button onClick={() => setAuthError(null)} className="mt-1 text-[9px] text-rose-400 underline">Dismiss</button>
                 </div>
               )}
             </div>
