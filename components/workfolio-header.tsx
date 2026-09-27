@@ -96,36 +96,40 @@ export function WorkfolioHeader() {
       }
     } catch (err: any) {
       console.warn('Google Popup Auth Notice:', err?.message)
-      const promptEmail = prompt(`Google Auth Notice (${err?.message || 'Popup blocked'}). Enter your Google email to sign in & sync Supabase:`, userProfile.email || 'itsayushr7@gmail.com')
-      if (promptEmail && promptEmail.trim()) {
-        const cleanEmail = promptEmail.trim()
-        const nameParts = cleanEmail.split('@')[0].split('.')
-        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
-        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
-        const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
-
-        const updatedProfile = {
-          ...userProfile,
-          auth_user_id: uId,
-          first_name: fName,
-          last_name: lName,
-          display_name: `${fName} ${lName}`.trim(),
-          email: cleanEmail,
-          google_connected: true
-        }
-
-        connectProvider('google', updatedProfile)
-
-        await saveUserDataToSupabase(
-          uId,
-          updatedProfile,
-          projects || [],
-          activities || []
-        )
-      }
+      // Open account dropdown menu as smooth inline fallback without annoying prompts
+      setAccountDropdownOpen(true)
     } finally {
       setIsSigningIn(false)
     }
+  }
+
+  const handleQuickAccountSelect = async (selectedEmail: string) => {
+    const cleanEmail = selectedEmail.trim()
+    const nameParts = cleanEmail.split('@')[0].split('.')
+    const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
+    const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
+    const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
+
+    const updatedProfile = {
+      ...userProfile,
+      auth_user_id: uId,
+      first_name: fName,
+      last_name: lName,
+      display_name: `${fName} ${lName}`.trim(),
+      email: cleanEmail,
+      google_connected: true
+    }
+
+    connectProvider('google', updatedProfile)
+
+    await saveUserDataToSupabase(
+      uId,
+      updatedProfile,
+      projects || [],
+      activities || []
+    )
+
+    setAccountDropdownOpen(false)
   }
 
   const handleSignOutClick = async () => {

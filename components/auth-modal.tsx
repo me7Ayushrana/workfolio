@@ -106,43 +106,7 @@ export function AuthModal({ onClose, initialTab = 'profile' }: AuthModalProps) {
       }
     } catch (err: any) {
       console.warn('AuthModal Google Login Notice:', err?.message)
-      const promptEmail = prompt(`Google Auth Notice (${err?.message || 'Popup blocked'}). Enter your Google email to sign in:`, userProfile.email || 'itsayushr7@gmail.com')
-      if (promptEmail && promptEmail.trim()) {
-        const cleanEmail = promptEmail.trim()
-        const nameParts = cleanEmail.split('@')[0].split('.')
-        const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User'
-        const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : ''
-        const uId = `firebase-google-${btoa(cleanEmail).slice(0, 12)}`
-
-        const updatedProfile = {
-          first_name: fName,
-          last_name: lName,
-          display_name: `${fName} ${lName}`.trim(),
-          email: cleanEmail,
-          google_connected: true
-        }
-
-        connectProvider('google', updatedProfile)
-
-        setEmail(cleanEmail)
-        setFirstName(fName)
-        if (lName) setLastName(lName)
-
-        await saveUserDataToSupabase(
-          uId,
-          { ...userProfile, ...updatedProfile },
-          projects || [],
-          activities || []
-        )
-
-        setSyncStatus(`Google Account Connected (${cleanEmail})!`)
-        setTimeout(() => {
-          setSyncStatus(null)
-          onClose()
-        }, 800)
-      } else {
-        setSyncStatus('Google login popup cancelled.')
-      }
+      setSyncStatus(`Google Sign-In notice: ${err?.message || 'Popup closed or blocked.'}`)
     } finally {
       setIsSyncing(false)
     }
