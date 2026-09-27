@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Key,
   Bot,
@@ -46,6 +46,18 @@ export function AISettings() {
   const [groqKey, setGroqKey] = useState(groqConfig.apiKey || '')
   const [githubUser, setGithubUser] = useState(githubUsername || '')
   const [githubToken, setGithubToken] = useState('')
+
+  useEffect(() => {
+    if (geminiConfig.apiKey && !geminiKey) {
+      setGeminiKey(geminiConfig.apiKey)
+    }
+  }, [geminiConfig.apiKey])
+
+  useEffect(() => {
+    if (groqConfig.apiKey && !groqKey) {
+      setGroqKey(groqConfig.apiKey)
+    }
+  }, [groqConfig.apiKey])
 
   const [testingGemini, setTestingGemini] = useState(false)
   const [testingGroq, setTestingGroq] = useState(false)

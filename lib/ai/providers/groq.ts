@@ -53,7 +53,7 @@ export class GroqProvider extends BaseAIProvider {
       throw new Error('Groq API key is not configured.')
     }
 
-    const modelName = options.model || this.defaultModel
+    const modelName = options.model && !options.model.includes('gemini') ? options.model : this.defaultModel
     const messages = []
     if (options.systemInstruction) {
       messages.push({ role: 'system', content: options.systemInstruction })

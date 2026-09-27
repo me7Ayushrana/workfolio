@@ -1,4 +1,3 @@
-import { callGeminiStructured } from './gemini'
 import { PROMPTS } from './prompts'
 import { GeminiProvider } from './providers/gemini'
 import { GroqProvider } from './providers/groq'
@@ -20,6 +19,41 @@ import { WORKFOLIO_TOOLS, WorkfolioContextData } from './tools'
 export class AIService {
   private geminiProvider = new GeminiProvider()
   private groqProvider = new GroqProvider()
+
+  /**
+   * Unified AI Structured Dispatcher (Handles Groq & Gemini seamlessly)
+   */
+  private async executeStructuredAI<T>(
+    prompt: string,
+    options: { apiKey?: string; model?: string } = {},
+    systemInstruction?: string
+  ): Promise<T> {
+    const key = options.apiKey?.trim() || process.env.GEMINI_API_KEY?.trim() || process.env.GROQ_API_KEY?.trim()
+
+    if (!key) {
+      const error: any = new Error('AI is not configured yet. Please set or connect your API key in Settings.')
+      error.code = 'NOT_CONFIGURED'
+      throw error
+    }
+
+    const isGroqKey = key.startsWith('gsk_') || (options.model && options.model.includes('llama'))
+
+    if (isGroqKey) {
+      return this.groqProvider.generateStructuredOutput<T>({
+        prompt,
+        apiKey: key,
+        model: options.model && options.model.includes('llama') ? options.model : 'llama-3.3-70b-versatile',
+        systemInstruction
+      })
+    } else {
+      return this.geminiProvider.generateStructuredOutput<T>({
+        prompt,
+        apiKey: key,
+        model: options.model && options.model.includes('gemini') ? options.model : 'gemini-1.5-flash',
+        systemInstruction
+      })
+    }
+  }
 
   /**
    * Connection Verification for Gemini and Groq BYOK
@@ -60,11 +94,7 @@ export class AIService {
       .replace('{projectsContext}', projectsContext)
       .replace('{skillsContext}', skillsContext)
 
-    const rawResult = await callGeminiStructured({
-      prompt,
-      apiKey: options.apiKey,
-      model: options.model
-    })
+    const rawResult = await this.executeStructuredAI<any>(prompt, options)
 
     const validated = validateActivityParseResult(rawResult)
 
@@ -165,11 +195,7 @@ export class AIService {
       .replace('{problemsContext}', problemsContext)
       .replace('{learningContext}', learningContext)
 
-    const rawResult = await callGeminiStructured({
-      prompt,
-      apiKey: options.apiKey,
-      model: options.model
-    })
+    const rawResult = await this.executeStructuredAI<any>(prompt, options)
 
     const validated = validateWeeklyReflectionResult(rawResult)
     validated.supportingRecordIds = activities.map((a) => a.id).slice(0, 10)
@@ -211,11 +237,7 @@ export class AIService {
       .replace('{problemsContext}', problemsContext)
       .replace('{goalsContext}', goalsContext)
 
-    const rawResult = await callGeminiStructured({
-      prompt,
-      apiKey: options.apiKey,
-      model: options.model
-    })
+    const rawResult = await this.executeStructuredAI<any>(prompt, options)
 
     return validateNextActionResult(rawResult)
   }
@@ -252,11 +274,7 @@ ${matchedProblems.slice(0, 4).map((pr) => `- [Problem ID ${pr.id}]: Title: "${pr
       .replace('{userQuestion}', userQuestion)
       .replace('{databaseContext}', databaseContext)
 
-    const rawResult = await callGeminiStructured({
-      prompt,
-      apiKey: options.apiKey,
-      model: options.model
-    })
+    const rawResult = await this.executeStructuredAI<any>(prompt, options)
 
     const validated = validateAskWorkfolioResult(rawResult)
 
@@ -308,11 +326,7 @@ ${matchedProblems.slice(0, 4).map((pr) => `- [Problem ID ${pr.id}]: Title: "${pr
       .replace('{projectLogsContext}', projectLogsContext)
       .replace('{milestonesContext}', milestonesContext)
 
-    const rawResult = await callGeminiStructured({
-      prompt,
-      apiKey: options.apiKey,
-      model: options.model
-    })
+    const rawResult = await this.executeStructuredAI<any>(prompt, options)
 
     const validated = validateProjectSummaryResult(rawResult)
     validated.sources = projectActivities.slice(0, 5).map((a) => ({

@@ -54,7 +54,7 @@ export class GeminiProvider extends BaseAIProvider {
       throw new Error('Google Gemini API key is not configured.')
     }
 
-    const modelName = options.model || this.defaultModel
+    const modelName = options.model && options.model.includes('gemini') ? options.model : this.defaultModel
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`
 
     const contents = []
