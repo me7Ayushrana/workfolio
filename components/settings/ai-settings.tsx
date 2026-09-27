@@ -44,7 +44,7 @@ export function AISettings() {
 
   const [geminiKey, setGeminiKey] = useState(geminiConfig.apiKey || '')
   const [groqKey, setGroqKey] = useState(groqConfig.apiKey || '')
-  const [githubUser, setGithubUser] = useState(githubUsername || 'me7Ayushrana')
+  const [githubUser, setGithubUser] = useState(githubUsername || '')
   const [githubToken, setGithubToken] = useState('')
 
   const [testingGemini, setTestingGemini] = useState(false)

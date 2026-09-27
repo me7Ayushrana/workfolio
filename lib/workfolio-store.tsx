@@ -294,23 +294,23 @@ export interface UserProfile {
 }
 
 export const DEFAULT_USER_PROFILE: UserProfile = {
-  id: 'usr_wf_1',
-  auth_user_id: 'auth_wf_1',
-  first_name: 'Alex',
-  last_name: 'Rivera',
-  display_name: 'Alex Rivera',
-  username: 'alexrivera',
-  email: 'alex.rivera@workfolio.app',
-  avatar_url: '/images/avatar.jpg',
+  id: '',
+  auth_user_id: '',
+  first_name: '',
+  last_name: '',
+  display_name: '',
+  username: '',
+  email: '',
+  avatar_url: '',
   mascot_variant: 'male',
-  headline: 'Senior Full Stack & AI Systems Engineer',
-  bio: 'Building verifiable proof systems, OCR pipelines, and minimalist workspace tools.',
+  headline: '',
+  bio: '',
   github_username: '',
   github_connected: false,
   google_connected: false,
-  onboarding_completed: true,
-  created_at: '2026-08-01',
-  updated_at: '2026-09-26'
+  onboarding_completed: false,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
 }
 
 // -------------------------------------------------------------

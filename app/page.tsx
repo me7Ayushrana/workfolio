@@ -72,7 +72,7 @@ export default function Home() {
               <h1 className="font-serif text-4xl font-light leading-none tracking-[-.03em] md:text-5xl text-[#f3eee4]">
                 {userProfile?.first_name || userProfile?.display_name
                   ? `Good morning, ${userProfile.first_name || userProfile.display_name}.`
-                  : 'Good morning, Ayush.'}
+                  : 'Good morning.'}
               </h1>
 
               {/* Quick Metrics Bar */}
