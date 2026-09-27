@@ -617,10 +617,26 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
       if (storedRecent) setRecentlyViewedIds(JSON.parse(storedRecent))
 
       const storedGemini = localStorage.getItem('workfolio_gemini_config')
-      if (storedGemini) setGeminiConfig(JSON.parse(storedGemini))
+      if (storedGemini) {
+        try {
+          const parsed = JSON.parse(storedGemini)
+          if (parsed.apiKey && parsed.apiKey.trim().length > 5) {
+            parsed.status = 'active'
+          }
+          setGeminiConfig(parsed)
+        } catch {}
+      }
 
       const storedGroq = localStorage.getItem('workfolio_groq_config')
-      if (storedGroq) setGroqConfig(JSON.parse(storedGroq))
+      if (storedGroq) {
+        try {
+          const parsed = JSON.parse(storedGroq)
+          if (parsed.apiKey && parsed.apiKey.trim().length > 5) {
+            parsed.status = 'active'
+          }
+          setGroqConfig(parsed)
+        } catch {}
+      }
 
       const storedDrafts = localStorage.getItem('workfolio_pending_drafts')
       if (storedDrafts) setPendingDrafts(JSON.parse(storedDrafts))
@@ -1209,9 +1225,21 @@ export function WorkfolioProvider({ children }: { children: ReactNode }) {
   // AI & GitHub Actions Implementation
   const updateAIProviderConfig = (providerId: AIProviderId, updates: Partial<AIProviderConfig>) => {
     if (providerId === 'gemini') {
-      setGeminiConfig((prev) => ({ ...prev, ...updates }))
+      setGeminiConfig((prev) => {
+        const next = { ...prev, ...updates }
+        if (next.apiKey && next.apiKey.trim().length > 5 && next.status !== 'error') {
+          next.status = 'active'
+        }
+        return next
+      })
     } else {
-      setGroqConfig((prev) => ({ ...prev, ...updates }))
+      setGroqConfig((prev) => {
+        const next = { ...prev, ...updates }
+        if (next.apiKey && next.apiKey.trim().length > 5 && next.status !== 'error') {
+          next.status = 'active'
+        }
+        return next
+      })
     }
   }
 
